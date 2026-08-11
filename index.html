@@ -712,9 +712,100 @@
   .owner-row .o-goto{color:var(--accent);text-decoration:underline;}
   .owner-row .o-remove{color:var(--ink-faint);text-decoration:underline;}
   .owner-row .o-remove:hover{color:var(--brick);}
+
+  /* ---------- Tela de acesso (login / cadastro) ---------- */
+  body.not-authed .app-shell{display:none;}
+  body:not(.not-authed) .auth-overlay{display:none;}
+  .auth-overlay{
+    position:fixed;inset:0;z-index:100;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 30% 20%, #EEF3F1 0%, var(--bg) 55%);
+    padding:24px;
+  }
+  .auth-card{
+    width:100%;max-width:380px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 4px 24px rgba(27,43,41,0.08), 0 1px 2px rgba(27,43,41,0.05);
+    padding:36px 32px 30px;
+  }
+  .auth-card .eyebrow{margin-bottom:8px;}
+  .auth-title{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:30px;line-height:1.08;margin:0 0 10px;letter-spacing:-0.01em;
+  }
+  .auth-sub{
+    font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink-soft);
+    line-height:1.5;margin:0 0 24px;
+  }
+  .auth-card form{display:flex;flex-direction:column;gap:14px;}
+  .auth-card .field{margin:0;}
+  .auth-error{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--brick);
+    margin:0;min-height:14px;line-height:1.4;
+  }
+  .auth-submit{width:100%;padding:12px 14px;font-size:14px;margin-top:2px;}
+  .auth-switch{
+    margin-top:20px;padding-top:18px;border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-soft);
+  }
+  .auth-switch button{
+    background:none;border:none;padding:0;cursor:pointer;
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+    color:var(--accent);text-decoration:underline;
+  }
+  .auth-forgot{
+    display:block;margin:14px auto 0;background:none;border:none;cursor:pointer;padding:0;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.03em;
+    color:var(--ink-faint);text-decoration:underline;
+  }
+  .auth-forgot:hover{color:var(--ink-soft);}
+  .auth-loading{
+    text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);
+  }
+  .user-bar{
+    display:flex;align-items:center;gap:10px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
+  }
+  .user-bar button{
+    background:none;border:none;cursor:pointer;padding:0;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+    color:var(--accent);text-decoration:underline;white-space:nowrap;
+  }
+  .foto-add.uploading{opacity:.5;pointer-events:none;}
 </style>
 </head>
-<body>
+<body class="not-authed">
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <p class="eyebrow">Acesso privado</p>
+    <h1 class="auth-title" id="authTitle">Carteira de Imóveis</h1>
+    <p class="auth-sub" id="authSub">Entre com seu e-mail e senha para acessar e sincronizar sua carteira.</p>
+    <form id="authForm">
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="authEmail" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="authPassword" required autocomplete="current-password" minlength="6">
+      </div>
+      <p class="auth-error" id="authError"></p>
+      <button type="submit" class="btn primary auth-submit" id="authSubmitBtn">Entrar</button>
+    </form>
+    <div class="auth-switch">
+      <span id="authSwitchText">Ainda não tem conta?</span>
+      <button type="button" id="authSwitchBtn">Criar conta</button>
+    </div>
+    <button type="button" id="authForgotBtn" class="auth-forgot">Esqueci minha senha</button>
+    <p class="auth-loading" id="authLoading" style="display:none;">Conectando…</p>
+  </div>
+</div>
+
+<div class="app-shell" id="appShell">
 
 <header class="top">
   <div class="top-inner">
@@ -943,11 +1034,19 @@
 <footer>
   <span id="syncStatusFooter">Dados salvos automaticamente neste navegador.</span>
   <span>Faça backup (Exportar) sempre que atualizar muitos imóveis.</span>
+  <span class="user-bar" id="userBar" style="display:none;">
+    <span id="userEmailLabel"></span>
+    <button type="button" id="signOutBtn">Sair</button>
+  </span>
 </footer>
 
-<!-- Firebase (sincronização entre dispositivos/navegadores) -->
+</div><!-- /#appShell -->
+
+<!-- Firebase (login, sincronização entre dispositivos e fotos na nuvem) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 
 <script>
 /* ---------- Dados base (fixos) ---------- */
@@ -1068,62 +1167,85 @@ const TAGS_CONDOMINIO = [
 ];
 
 /* ======================================================================
-   FIREBASE — sincronização entre dispositivos/navegadores
+   FIREBASE — login, sincronização entre dispositivos e fotos na nuvem
    ======================================================================
    1) Crie um projeto gratuito em https://console.firebase.google.com
-   2) No menu lateral, ative "Firestore Database" (pode começar em modo
-      de teste; depois, se quiser, restrinja as regras de acesso).
-   3) Em "Configurações do projeto" → aba "Geral" → "Seus apps" → ícone
+   2) Ative "Firestore Database" (modo produção ou teste).
+   3) Ative "Storage" (é onde as fotos dos imóveis vão ficar).
+   4) Ative "Authentication" → aba "Sign-in method" → habilite o
+      provedor "E-mail/senha".
+   5) Em "Configurações do projeto" → aba "Geral" → "Seus apps" → ícone
       Web (</>), registre um app e copie o objeto de configuração que
       aparece — cole-o substituindo o objeto abaixo.
-   4) Nas regras do Firestore (aba "Regras"), para uso simples entre
-      você e sua equipe, algo como:
+   6) Crie as contas de quem vai usar o app: pela própria tela de login
+      deste arquivo (aba "Criar conta"), ou manualmente em Authentication
+      → "Users" → "Add user".
+   7) Regras do Firestore (aba "Regras" de Firestore Database) — como
+      agora existe login, a recomendação é exigir autenticação:
 
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
-            match /{document=**} { allow read, write: if true; }
+            match /{document=**} { allow read, write: if request.auth != null; }
           }
         }
 
-      Isso deixa o banco aberto para quem tiver o link do app — é o
-      suficiente para uso pessoal/interno, mas não adicione dados
-      sensíveis de terceiros sem avaliar essa exposição. Para travar o
-      acesso, o ideal é combinar com o Firebase Authentication.
+   8) Regras do Storage (aba "Regras" de Storage) — mesma lógica:
 
-   IMPORTANTE sobre fotos: elas são guardadas como texto (base64) dentro
-   do próprio documento do imóvel. O Firestore tem um limite de 1MB por
-   documento — se um imóvel acumular muitas fotos em alta resolução,
-   esse limite pode ser atingido e o salvamento daquele imóvel falhará
-   (o app avisa no console do navegador). Se isso acontecer, o caminho
-   seria migrar fotos para o Firebase Storage — fica fora deste arquivo,
-   mas se precisar, é só pedir.
+        rules_version = '2';
+        service firebase.storage {
+          match /b/{bucket}/o {
+            match /{allPaths=**} { allow read, write: if request.auth != null; }
+          }
+        }
+
+      Essas regras liberam leitura/escrita para qualquer pessoa logada
+      com e-mail e senha válidos — é o suficiente para uso pessoal ou de
+      uma pequena equipe. Não é uma separação de dados por usuário (todo
+      mundo logado vê a mesma carteira), o que costuma ser o esperado
+      para um time compartilhando os mesmos imóveis.
    ====================================================================== */
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY_AQUI",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",
+  authDomain: "carteira-imoveis-d6262.firebaseapp.com",
+  projectId: "carteira-imoveis-d6262",
+  storageBucket: "carteira-imoveis-d6262.firebasestorage.app",
+  messagingSenderId: "158894380045",
+  appId: "1:158894380045:web:b7f61e6f59616dfde73144",
+  measurementId: "G-WST0KSBPJH"
 };
 
+/* O plano gratuito (Spark) do Firebase não dá mais acesso ao Storage —
+   ele exige o plano pago Blaze (mesmo que o uso real fique em R$0).
+   Como optamos por não usar o Blaze, esta chave fica em "false": as
+   fotos continuam sendo guardadas como antes, direto no navegador de
+   cada dispositivo (sem sincronizar entre aparelhos). Login, imóveis,
+   notas e agenda continuam sincronizando normalmente pelo Firestore.
+   Se um dia você assinar o Blaze, é só mudar para "true" aqui. */
+const USAR_STORAGE_FOTOS = false;
+
 let db = null;
+let auth = null;
+let storage = null;
 let firebaseAtivo = false;
 try{
   if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY_AQUI" && typeof firebase !== "undefined"){
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
+    auth = firebase.auth();
+    storage = firebase.storage();
     db.enablePersistence({synchronizeTabs:true}).catch(()=>{
       /* falha comum quando há mais de uma aba aberta sem synchronizeTabs, ou navegador sem suporte — segue sem cache offline do Firestore */
     });
     firebaseAtivo = true;
   }else{
-    console.warn('Firebase não configurado: preencha o objeto firebaseConfig no início do arquivo para sincronizar entre dispositivos. Por enquanto os dados ficam só neste navegador.');
+    console.warn('Firebase não configurado: preencha o objeto firebaseConfig no início do arquivo para ativar login, sincronização e fotos na nuvem. Por enquanto o app funciona só neste navegador, sem tela de login.');
   }
 }catch(e){
-  console.warn('Não foi possível iniciar o Firebase — os dados vão continuar sendo salvos apenas neste navegador.', e);
+  console.warn('Não foi possível iniciar o Firebase — o app vai continuar funcionando apenas neste navegador.', e);
   db = null;
+  auth = null;
+  storage = null;
   firebaseAtivo = false;
 }
 
@@ -1141,6 +1263,131 @@ const FIREBASE_DOCS = firebaseAtivo ? {
   notas:   db.collection('carteiraImoveis').doc('notas'),
   eventos: db.collection('carteiraImoveis').doc('eventos')
 } : null;
+
+/* ---------- Tela de login / cadastro ---------- */
+const authOverlay = document.getElementById('authOverlay');
+const appShell = document.getElementById('appShell');
+const authForm = document.getElementById('authForm');
+const authEmailInput = document.getElementById('authEmail');
+const authPasswordInput = document.getElementById('authPassword');
+const authError = document.getElementById('authError');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const authSwitchBtn = document.getElementById('authSwitchBtn');
+const authSwitchText = document.getElementById('authSwitchText');
+const authSub = document.getElementById('authSub');
+const authForgotBtn = document.getElementById('authForgotBtn');
+const authLoading = document.getElementById('authLoading');
+const userBar = document.getElementById('userBar');
+const userEmailLabel = document.getElementById('userEmailLabel');
+const signOutBtn = document.getElementById('signOutBtn');
+
+let authModo = 'login'; // 'login' | 'cadastro'
+let appJaIniciado = false;
+
+function alternarModoAuth(){
+  authModo = authModo === 'login' ? 'cadastro' : 'login';
+  authError.textContent = '';
+  if(authModo === 'cadastro'){
+    authSub.textContent = 'Crie sua conta com e-mail e senha para começar a sincronizar sua carteira.';
+    authSubmitBtn.textContent = 'Criar conta';
+    authSwitchText.textContent = 'Já tem conta?';
+    authSwitchBtn.textContent = 'Entrar';
+  }else{
+    authSub.textContent = 'Entre com seu e-mail e senha para acessar e sincronizar sua carteira.';
+    authSubmitBtn.textContent = 'Entrar';
+    authSwitchText.textContent = 'Ainda não tem conta?';
+    authSwitchBtn.textContent = 'Criar conta';
+  }
+}
+authSwitchBtn.addEventListener('click', alternarModoAuth);
+
+function mensagemErroAuth(err){
+  const mapa = {
+    'auth/invalid-email': 'E-mail inválido.',
+    'auth/user-not-found': 'Não existe conta com esse e-mail.',
+    'auth/wrong-password': 'Senha incorreta.',
+    'auth/invalid-credential': 'E-mail ou senha incorretos.',
+    'auth/email-already-in-use': 'Já existe uma conta com esse e-mail.',
+    'auth/weak-password': 'A senha precisa ter pelo menos 6 caracteres.',
+    'auth/too-many-requests': 'Muitas tentativas seguidas. Aguarde um pouco e tente de novo.',
+    'auth/network-request-failed': 'Falha de conexão. Verifique sua internet.'
+  };
+  return mapa[err.code] || 'Não foi possível concluir. Tente novamente.';
+}
+
+authForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(!auth) return;
+  authError.textContent = '';
+  authSubmitBtn.disabled = true;
+  const email = authEmailInput.value.trim();
+  const senha = authPasswordInput.value;
+  try{
+    if(authModo === 'login'){
+      await auth.signInWithEmailAndPassword(email, senha);
+    }else{
+      await auth.createUserWithEmailAndPassword(email, senha);
+    }
+    /* onAuthStateChanged cuida do resto (esconder tela, iniciar app) */
+  }catch(err){
+    authError.textContent = mensagemErroAuth(err);
+  }finally{
+    authSubmitBtn.disabled = false;
+  }
+});
+
+authForgotBtn.addEventListener('click', async ()=>{
+  if(!auth) return;
+  const email = authEmailInput.value.trim();
+  if(!email){
+    authError.textContent = 'Digite seu e-mail acima para receber o link de redefinição.';
+    return;
+  }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    authError.style.color = 'var(--accent)';
+    authError.textContent = 'Enviamos um link de redefinição para ' + email + '.';
+  }catch(err){
+    authError.style.color = '';
+    authError.textContent = mensagemErroAuth(err);
+  }
+});
+
+signOutBtn.addEventListener('click', ()=>{
+  if(auth) auth.signOut();
+});
+
+function iniciarAppAutenticado(){
+  if(appJaIniciado) return;
+  appJaIniciado = true;
+  rebuildBairroUI();
+  render();
+  renderNotesList();
+  renderCalendarSide();
+  if(firebaseAtivo) iniciarSincronizacaoFirebase();
+}
+
+if(firebaseAtivo && auth){
+  authLoading.style.display = 'block';
+  authForm.style.display = 'none';
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      document.body.classList.remove('not-authed');
+      userBar.style.display = 'flex';
+      userEmailLabel.textContent = user.email || '';
+      iniciarAppAutenticado();
+    }else{
+      document.body.classList.add('not-authed');
+      userBar.style.display = 'none';
+      authLoading.style.display = 'none';
+      authForm.style.display = 'flex';
+    }
+  });
+}else{
+  /* Firebase não configurado: pula a tela de login e libera o app
+     direto, funcionando só neste navegador (comportamento anterior). */
+  document.body.classList.remove('not-authed');
+}
 
 function setSyncStatus(texto){
   const el = document.getElementById('syncStatusFooter');
@@ -1786,7 +2033,7 @@ function renderCard(item){
     saveState(state);
   });
 
-  // fotos
+  // fotos (enviadas ao Firebase Storage quando configurado; senão, guardadas como base64 só neste navegador)
   const fotosRow = card.querySelector('[data-role="fotos-row"]');
   function renderFotos(){
     fotosRow.innerHTML = '';
@@ -1795,9 +2042,15 @@ function renderCard(item){
       thumb.className = 'foto-thumb';
       thumb.innerHTML = `<img src="${src}" alt="Foto do imóvel ${item.cod}"><button title="Remover">×</button>`;
       thumb.querySelector('button').addEventListener('click', ()=>{
+        const removida = entry.fotos[idx];
         entry.fotos.splice(idx,1);
         saveState(state);
         renderFotos();
+        if(USAR_STORAGE_FOTOS && firebaseAtivo && storage && typeof removida === 'string' && removida.includes('firebasestorage')){
+          storage.refFromURL(removida).delete().catch(()=>{
+            /* já pode ter sido removida antes, ou a URL não é mais válida — sem problema */
+          });
+        }
       });
       fotosRow.appendChild(thumb);
     });
@@ -1807,12 +2060,27 @@ function renderCard(item){
     addBtn.innerHTML = `+<input type="file" accept="image/*" multiple>`;
     addBtn.querySelector('input').addEventListener('change', async (e)=>{
       const files = Array.from(e.target.files);
+      if(files.length === 0) return;
+      addBtn.classList.add('uploading');
+      addBtn.title = 'Enviando…';
       for(const f of files){
         try{
-          const b64 = await fileToBase64(f);
-          entry.fotos.push(b64);
-        }catch(err){}
+          if(USAR_STORAGE_FOTOS && firebaseAtivo && storage){
+            const caminho = `fotosImoveis/${item.key}/${Date.now()}-${Math.random().toString(36).slice(2,7)}-${f.name}`;
+            const ref = storage.ref(caminho);
+            await ref.put(f);
+            const url = await ref.getDownloadURL();
+            entry.fotos.push(url);
+          }else{
+            const b64 = await fileToBase64(f);
+            entry.fotos.push(b64);
+          }
+        }catch(err){
+          console.warn('Falha ao enviar foto:', err);
+          alert('Não foi possível enviar uma das fotos. Tente novamente.');
+        }
       }
+      addBtn.classList.remove('uploading');
       saveState(state);
       renderFotos();
     });
@@ -2912,16 +3180,15 @@ document.getElementById('calExportIcsBtn').addEventListener('click', ()=>{
 
 renderCalendarSide();
 
-/* ---------- Inicialização ---------- */
-rebuildBairroUI();
-render();
-
-/* Liga a sincronização com o Firebase (se configurado). A tela já foi
-   desenhada acima com os dados em cache deste navegador, então não há
-   espera: quando os dados da nuvem chegarem, a tela é atualizada de
-   novo automaticamente — inclusive quando outra pessoa/dispositivo
-   mudar algo depois. */
-iniciarSincronizacaoFirebase();
+/* ---------- Inicialização ----------
+   Se o Firebase estiver configurado, a tela de login decide quando o
+   app é iniciado (função iniciarAppAutenticado, chamada pelo
+   onAuthStateChanged lá em cima). Sem Firebase configurado, não há
+   tela de login e o app inicia direto, como antes. */
+if(!firebaseAtivo){
+  rebuildBairroUI();
+  render();
+}
 </script>
 </body>
 </html>

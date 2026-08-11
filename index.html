@@ -941,9 +941,13 @@
 </div>
 
 <footer>
-  <span>Dados salvos automaticamente neste navegador.</span>
+  <span id="syncStatusFooter">Dados salvos automaticamente neste navegador.</span>
   <span>Faça backup (Exportar) sempre que atualizar muitos imóveis.</span>
 </footer>
+
+<!-- Firebase (sincronização entre dispositivos/navegadores) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <script>
 /* ---------- Dados base (fixos) ---------- */
@@ -1063,7 +1067,186 @@ const TAGS_CONDOMINIO = [
   "Segurança 24h","Portaria 24 horas","Salão de festas","Quadra esportiva"
 ];
 
-/* ---------- Estado editável (persistido no localStorage) ---------- */
+/* ======================================================================
+   FIREBASE — sincronização entre dispositivos/navegadores
+   ======================================================================
+   1) Crie um projeto gratuito em https://console.firebase.google.com
+   2) No menu lateral, ative "Firestore Database" (pode começar em modo
+      de teste; depois, se quiser, restrinja as regras de acesso).
+   3) Em "Configurações do projeto" → aba "Geral" → "Seus apps" → ícone
+      Web (</>), registre um app e copie o objeto de configuração que
+      aparece — cole-o substituindo o objeto abaixo.
+   4) Nas regras do Firestore (aba "Regras"), para uso simples entre
+      você e sua equipe, algo como:
+
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            match /{document=**} { allow read, write: if true; }
+          }
+        }
+
+      Isso deixa o banco aberto para quem tiver o link do app — é o
+      suficiente para uso pessoal/interno, mas não adicione dados
+      sensíveis de terceiros sem avaliar essa exposição. Para travar o
+      acesso, o ideal é combinar com o Firebase Authentication.
+
+   IMPORTANTE sobre fotos: elas são guardadas como texto (base64) dentro
+   do próprio documento do imóvel. O Firestore tem um limite de 1MB por
+   documento — se um imóvel acumular muitas fotos em alta resolução,
+   esse limite pode ser atingido e o salvamento daquele imóvel falhará
+   (o app avisa no console do navegador). Se isso acontecer, o caminho
+   seria migrar fotos para o Firebase Storage — fica fora deste arquivo,
+   mas se precisar, é só pedir.
+   ====================================================================== */
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY_AQUI",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+
+let db = null;
+let firebaseAtivo = false;
+try{
+  if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY_AQUI" && typeof firebase !== "undefined"){
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(()=>{
+      /* falha comum quando há mais de uma aba aberta sem synchronizeTabs, ou navegador sem suporte — segue sem cache offline do Firestore */
+    });
+    firebaseAtivo = true;
+  }else{
+    console.warn('Firebase não configurado: preencha o objeto firebaseConfig no início do arquivo para sincronizar entre dispositivos. Por enquanto os dados ficam só neste navegador.');
+  }
+}catch(e){
+  console.warn('Não foi possível iniciar o Firebase — os dados vão continuar sendo salvos apenas neste navegador.', e);
+  db = null;
+  firebaseAtivo = false;
+}
+
+function debounce(fn, delay){
+  let t;
+  return function(...args){
+    clearTimeout(t);
+    t = setTimeout(()=> fn.apply(this, args), delay);
+  };
+}
+
+const FIREBASE_DOCS = firebaseAtivo ? {
+  estado:  db.collection('carteiraImoveis').doc('estado'),
+  custom:  db.collection('carteiraImoveis').doc('custom'),
+  notas:   db.collection('carteiraImoveis').doc('notas'),
+  eventos: db.collection('carteiraImoveis').doc('eventos')
+} : null;
+
+function setSyncStatus(texto){
+  const el = document.getElementById('syncStatusFooter');
+  if(el) el.textContent = texto;
+}
+
+function avisoErroSync(rotulo){
+  return (err)=>{
+    console.warn(`Falha ao sincronizar "${rotulo}" com o Firebase:`, err);
+    setSyncStatus('Não foi possível sincronizar agora — os dados continuam salvos neste navegador. Verifique sua conexão.');
+  };
+}
+
+const pushEstadoFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS) return;
+  FIREBASE_DOCS.estado.set({dados: state}).catch(avisoErroSync('imóveis'));
+}, 700);
+const pushCustomFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS) return;
+  FIREBASE_DOCS.custom.set({itens: customItems}).catch(avisoErroSync('imóveis personalizados'));
+}, 700);
+const pushNotasFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS) return;
+  FIREBASE_DOCS.notas.set({itens: notes}).catch(avisoErroSync('notas'));
+}, 700);
+const pushEventosFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS) return;
+  FIREBASE_DOCS.eventos.set({dados: calEvents}).catch(avisoErroSync('agenda'));
+}, 700);
+
+/* Liga os "escutadores" em tempo real: qualquer alteração feita em outro
+   dispositivo/navegador chega aqui e atualiza a tela automaticamente. */
+function iniciarSincronizacaoFirebase(){
+  if(!FIREBASE_DOCS){
+    setSyncStatus('Firebase não configurado — dados salvos apenas neste navegador.');
+    return;
+  }
+  setSyncStatus('Conectando à nuvem…');
+
+  FIREBASE_DOCS.estado.onSnapshot(snap=>{
+    if(snap.exists){
+      if(!snap.metadata.hasPendingWrites){
+        const dados = snap.data().dados;
+        if(dados && typeof dados === 'object'){
+          state = dados;
+          safeStorageSet(STORAGE_KEY, JSON.stringify(state));
+          rebuildBairroUI();
+          render();
+        }
+      }
+    }else{
+      pushEstadoFirebase();
+    }
+    setSyncStatus('Sincronizado com a nuvem ✓');
+  }, avisoErroSync('imóveis'));
+
+  FIREBASE_DOCS.custom.onSnapshot(snap=>{
+    if(snap.exists){
+      if(!snap.metadata.hasPendingWrites){
+        const dados = snap.data().itens;
+        if(Array.isArray(dados)){
+          customItems = dados;
+          safeStorageSet(CUSTOM_KEY, JSON.stringify(customItems));
+          rebuildBairroUI();
+          render();
+        }
+      }
+    }else{
+      pushCustomFirebase();
+    }
+  }, avisoErroSync('imóveis personalizados'));
+
+  FIREBASE_DOCS.notas.onSnapshot(snap=>{
+    if(snap.exists){
+      if(!snap.metadata.hasPendingWrites){
+        const dados = snap.data().itens;
+        if(Array.isArray(dados)){
+          notes = dados;
+          safeStorageSet(NOTES_KEY, JSON.stringify(notes));
+          renderNotesList();
+        }
+      }
+    }else{
+      pushNotasFirebase();
+    }
+  }, avisoErroSync('notas'));
+
+  FIREBASE_DOCS.eventos.onSnapshot(snap=>{
+    if(snap.exists){
+      if(!snap.metadata.hasPendingWrites){
+        const dados = snap.data().dados;
+        if(dados && typeof dados === 'object'){
+          calEvents = dados;
+          safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
+          renderCalendar();
+          renderCalendarSide();
+        }
+      }
+    }else{
+      pushEventosFirebase();
+    }
+  }, avisoErroSync('agenda'));
+}
+/* ====================================================================== */
+
+/* ---------- Estado editável (persistido no localStorage + Firebase) ---------- */
 const STORAGE_KEY = "carteira_imoveis_v1";
 const CUSTOM_KEY = "carteira_imoveis_custom_v1";
 
@@ -1089,6 +1272,7 @@ function loadState(){
 }
 function saveState(state){
   safeStorageSet(STORAGE_KEY, JSON.stringify(state));
+  pushEstadoFirebase();
 }
 let state = loadState();
 
@@ -1101,6 +1285,7 @@ function loadCustom(){
 }
 function saveCustom(){
   safeStorageSet(CUSTOM_KEY, JSON.stringify(customItems));
+  pushCustomFirebase();
 }
 let customItems = loadCustom();
 
@@ -2165,6 +2350,7 @@ function loadNotes(){
 }
 function saveNotes(){
   safeStorageSet(NOTES_KEY, JSON.stringify(notes));
+  pushNotasFirebase();
 }
 let notes = loadNotes();
 let currentNoteId = null;
@@ -2388,6 +2574,7 @@ function loadCalEvents(){
 }
 function saveCalEvents(){
   safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
+  pushEventosFirebase();
 }
 let calEvents = loadCalEvents(); // { "YYYY-MM-DD": [{id, text}] }
 
@@ -2728,6 +2915,13 @@ renderCalendarSide();
 /* ---------- Inicialização ---------- */
 rebuildBairroUI();
 render();
+
+/* Liga a sincronização com o Firebase (se configurado). A tela já foi
+   desenhada acima com os dados em cache deste navegador, então não há
+   espera: quando os dados da nuvem chegarem, a tela é atualizada de
+   novo automaticamente — inclusive quando outra pessoa/dispositivo
+   mudar algo depois. */
+iniciarSincronizacaoFirebase();
 </script>
 </body>
 </html>

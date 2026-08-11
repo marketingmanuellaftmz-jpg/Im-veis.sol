@@ -7,6 +7,8 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root{
     --bg:#F4F6F5;
@@ -941,11 +943,54 @@
 </div>
 
 <footer>
-  <span>Dados salvos automaticamente neste navegador.</span>
+  <span>Dados salvos automaticamente na nuvem (Firebase).</span>
   <span>Faça backup (Exportar) sempre que atualizar muitos imóveis.</span>
 </footer>
 
 <script>
+/* ---------- Firebase / Firestore ---------- */
+// Para o SDK JS do Firebase v7.20.0 e versões posteriores, measurementId é opcional.
+const firebaseConfig = {
+  apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",
+  authDomain: "carteira-imoveis-d6262.firebaseapp.com",
+  projectId: "carteira-imoveis-d6262",
+  storageBucket: "carteira-imoveis-d6262.firebasestorage.app",
+  messagingSenderId: "158894380045",
+  appId: "1:158894380045:web:b7f61e6f59616dfde73144",
+  measurementId: "G-WST0KSBPJH"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const DOC_REF = db.collection('carteira_imoveis').doc('dados');
+
+let firestoreSaveTimeout = null;
+function persistToFirestore(){
+  clearTimeout(firestoreSaveTimeout);
+  firestoreSaveTimeout = setTimeout(async ()=>{
+    try{
+      await DOC_REF.set({ state, customItems, notes, calEvents });
+    }catch(e){
+      console.error('Erro ao salvar no Firestore', e);
+    }
+  }, 600); // debounce: agrupa edições rápidas num único save
+}
+
+async function carregarDadosFirestore(){
+  try{
+    const snap = await DOC_REF.get();
+    if(snap.exists){
+      const d = snap.data();
+      state = d.state || {};
+      customItems = d.customItems || [];
+      notes = d.notes || [];
+      calEvents = d.calEvents || {};
+    }
+  }catch(e){
+    console.error('Erro ao carregar do Firestore', e);
+    alert('Não foi possível carregar os dados da nuvem. Verifique sua conexão e recarregue a página.');
+  }
+}
+
 /* ---------- Dados base (fixos) ---------- */
 const IMOVEIS = [
   {n:4, cod:"JH3116", bairro:"Água Branca", end:"R Clélia, 2145 - Und. 41", tipo:"Venda"},
@@ -1063,46 +1108,16 @@ const TAGS_CONDOMINIO = [
   "Segurança 24h","Portaria 24 horas","Salão de festas","Quadra esportiva"
 ];
 
-/* ---------- Estado editável (persistido no localStorage) ---------- */
-const STORAGE_KEY = "carteira_imoveis_v1";
-const CUSTOM_KEY = "carteira_imoveis_custom_v1";
+/* ---------- Estado editável (persistido no Firestore) ---------- */
+let state = {};
+let customItems = [];
 
-let storageAvisoMostrado = false;
-function safeStorageSet(key, value){
-  try{
-    localStorage.setItem(key, value);
-    return true;
-  }catch(e){
-    if(!storageAvisoMostrado){
-      storageAvisoMostrado = true;
-      alert('Este navegador está bloqueando o salvamento automático (comum em navegadores dentro de apps como Instagram/WhatsApp, ou no modo anônimo). O que você adicionar vai continuar funcionando nesta visita, mas não vai ficar salvo ao fechar a página. Abra o arquivo direto no Chrome ou Safari para salvar normalmente.');
-    }
-    return false;
-  }
-}
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  }catch(e){ return {}; }
-}
-function saveState(state){
-  safeStorageSet(STORAGE_KEY, JSON.stringify(state));
-}
-let state = loadState();
-
-function loadCustom(){
-  try{
-    const raw = localStorage.getItem(CUSTOM_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  }catch(e){ return []; }
+function saveState(){
+  persistToFirestore();
 }
 function saveCustom(){
-  safeStorageSet(CUSTOM_KEY, JSON.stringify(customItems));
+  persistToFirestore();
 }
-let customItems = loadCustom();
 
 function allItems(){
   return IMOVEIS.concat(customItems);
@@ -2153,21 +2168,13 @@ function renderOwnersList(){
 
 document.getElementById('ownersSearchInput').addEventListener('input', renderOwnersList);
 
-/* ---------- Bloco de notas ---------- */
-const NOTES_KEY = "carteira_imoveis_notas_v1";
-
-function loadNotes(){
-  try{
-    const raw = localStorage.getItem(NOTES_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  }catch(e){ return []; }
-}
-function saveNotes(){
-  safeStorageSet(NOTES_KEY, JSON.stringify(notes));
-}
-let notes = loadNotes();
+/* ---------- Bloco de notas (persistido no Firestore) ---------- */
+let notes = [];
 let currentNoteId = null;
+
+function saveNotes(){
+  persistToFirestore();
+}
 
 function noteTitle(note){
   const firstLine = (note.content || '').split('\n')[0].trim();
@@ -2266,10 +2273,7 @@ document.getElementById('downloadNoteBtn').addEventListener('click', ()=>{
   URL.revokeObjectURL(url);
 });
 
-renderNotesList();
-
 /* ---------- Calendário de visitas ---------- */
-const CAL_EVENTS_KEY = "carteira_imoveis_cal_eventos_v1";
 
 /* Paleta de cores para diferenciar múltiplas visitas no mesmo dia */
 const VISIT_COLOR_PALETTE = [
@@ -2379,17 +2383,11 @@ function buildICS(){
   return lines.join('\r\n');
 }
 
-function loadCalEvents(){
-  try{
-    const raw = localStorage.getItem(CAL_EVENTS_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return (parsed && typeof parsed === 'object') ? parsed : {};
-  }catch(e){ return {}; }
-}
+let calEvents = {}; // { "YYYY-MM-DD": [{id, text}] }
+
 function saveCalEvents(){
-  safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
+  persistToFirestore();
 }
-let calEvents = loadCalEvents(); // { "YYYY-MM-DD": [{id, text}] }
 
 let calViewDate = new Date(); // mês exibido
 calViewDate.setDate(1);
@@ -2723,11 +2721,16 @@ document.getElementById('calExportIcsBtn').addEventListener('click', ()=>{
   URL.revokeObjectURL(url);
 });
 
-renderCalendarSide();
-
-/* ---------- Inicialização ---------- */
-rebuildBairroUI();
-render();
+/* ---------- Inicialização (aguarda o Firestore) ---------- */
+(async function iniciar(){
+  document.body.style.visibility = 'hidden';
+  await carregarDadosFirestore();
+  document.body.style.visibility = 'visible';
+  rebuildBairroUI();
+  render();
+  renderNotesList();
+  renderCalendarSide();
+})();
 </script>
 </body>
 </html>

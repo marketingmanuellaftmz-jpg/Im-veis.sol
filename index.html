@@ -796,10 +796,6 @@
       <p class="auth-error" id="authError"></p>
       <button type="submit" class="btn primary auth-submit" id="authSubmitBtn">Entrar</button>
     </form>
-    <div class="auth-switch">
-      <span id="authSwitchText">Ainda não tem conta?</span>
-      <button type="button" id="authSwitchBtn">Criar conta</button>
-    </div>
     <button type="button" id="authForgotBtn" class="auth-forgot">Esqueci minha senha</button>
     <p class="auth-loading" id="authLoading" style="display:none;">Conectando…</p>
   </div>
@@ -1177,9 +1173,11 @@ const TAGS_CONDOMINIO = [
    5) Em "Configurações do projeto" → aba "Geral" → "Seus apps" → ícone
       Web (</>), registre um app e copie o objeto de configuração que
       aparece — cole-o substituindo o objeto abaixo.
-   6) Crie as contas de quem vai usar o app: pela própria tela de login
-      deste arquivo (aba "Criar conta"), ou manualmente em Authentication
-      → "Users" → "Add user".
+   6) Crie as contas de quem vai usar o app: em Authentication → aba
+      "Users" → "Add user" (e-mail + senha). O app não tem tela de
+      "criar conta" de propósito — só entra quem você cadastrar aqui,
+      manualmente. Isso é o que garante que estranhos não acessem seus
+      dados mesmo se encontrarem o arquivo ou o link.
    7) Regras do Firestore (aba "Regras" de Firestore Database) — como
       agora existe login, a recomendação é exigir autenticação:
 
@@ -1264,7 +1262,7 @@ const FIREBASE_DOCS = firebaseAtivo ? {
   eventos: db.collection('carteiraImoveis').doc('eventos')
 } : null;
 
-/* ---------- Tela de login / cadastro ---------- */
+/* ---------- Tela de login ---------- */
 const authOverlay = document.getElementById('authOverlay');
 const appShell = document.getElementById('appShell');
 const authForm = document.getElementById('authForm');
@@ -1272,8 +1270,6 @@ const authEmailInput = document.getElementById('authEmail');
 const authPasswordInput = document.getElementById('authPassword');
 const authError = document.getElementById('authError');
 const authSubmitBtn = document.getElementById('authSubmitBtn');
-const authSwitchBtn = document.getElementById('authSwitchBtn');
-const authSwitchText = document.getElementById('authSwitchText');
 const authSub = document.getElementById('authSub');
 const authForgotBtn = document.getElementById('authForgotBtn');
 const authLoading = document.getElementById('authLoading');
@@ -1281,25 +1277,12 @@ const userBar = document.getElementById('userBar');
 const userEmailLabel = document.getElementById('userEmailLabel');
 const signOutBtn = document.getElementById('signOutBtn');
 
-let authModo = 'login'; // 'login' | 'cadastro'
 let appJaIniciado = false;
 
-function alternarModoAuth(){
-  authModo = authModo === 'login' ? 'cadastro' : 'login';
-  authError.textContent = '';
-  if(authModo === 'cadastro'){
-    authSub.textContent = 'Crie sua conta com e-mail e senha para começar a sincronizar sua carteira.';
-    authSubmitBtn.textContent = 'Criar conta';
-    authSwitchText.textContent = 'Já tem conta?';
-    authSwitchBtn.textContent = 'Entrar';
-  }else{
-    authSub.textContent = 'Entre com seu e-mail e senha para acessar e sincronizar sua carteira.';
-    authSubmitBtn.textContent = 'Entrar';
-    authSwitchText.textContent = 'Ainda não tem conta?';
-    authSwitchBtn.textContent = 'Criar conta';
-  }
-}
-authSwitchBtn.addEventListener('click', alternarModoAuth);
+/* Cadastro fica de fora de propósito: contas só são criadas por você,
+   direto no console do Firebase (Authentication → Users → Add user).
+   Assim, ninguém que apenas encontrar o arquivo/link consegue entrar —
+   só quem tiver um e-mail e senha que você mesmo cadastrou. */
 
 function mensagemErroAuth(err){
   const mapa = {
@@ -1307,8 +1290,6 @@ function mensagemErroAuth(err){
     'auth/user-not-found': 'Não existe conta com esse e-mail.',
     'auth/wrong-password': 'Senha incorreta.',
     'auth/invalid-credential': 'E-mail ou senha incorretos.',
-    'auth/email-already-in-use': 'Já existe uma conta com esse e-mail.',
-    'auth/weak-password': 'A senha precisa ter pelo menos 6 caracteres.',
     'auth/too-many-requests': 'Muitas tentativas seguidas. Aguarde um pouco e tente de novo.',
     'auth/network-request-failed': 'Falha de conexão. Verifique sua internet.'
   };
@@ -1319,15 +1300,12 @@ authForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   if(!auth) return;
   authError.textContent = '';
+  authError.style.color = '';
   authSubmitBtn.disabled = true;
   const email = authEmailInput.value.trim();
   const senha = authPasswordInput.value;
   try{
-    if(authModo === 'login'){
-      await auth.signInWithEmailAndPassword(email, senha);
-    }else{
-      await auth.createUserWithEmailAndPassword(email, senha);
-    }
+    await auth.signInWithEmailAndPassword(email, senha);
     /* onAuthStateChanged cuida do resto (esconder tela, iniciar app) */
   }catch(err){
     authError.textContent = mensagemErroAuth(err);

@@ -775,6 +775,55 @@
     color:var(--accent);text-decoration:underline;white-space:nowrap;
   }
   .foto-add.uploading{opacity:.5;pointer-events:none;}
+
+  /* ---- Assistente IA ---- */
+  .ai-wrap{
+    max-width:820px;margin:0 auto;padding:0 28px 100px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+  .ai-intro{
+    font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink-soft);
+    line-height:1.5;margin:0;
+  }
+  .ai-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:20px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .ai-card textarea{
+    width:100%;min-height:90px;
+    border:1px solid var(--line);border-radius:8px;
+    padding:12px 14px;background:#FBFBFA;
+    font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;color:var(--ink);
+    resize:vertical;
+  }
+  .ai-card textarea:focus{outline:2px solid var(--accent);outline-offset:0;background:#fff;}
+  .ai-card-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .ai-status{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+  }
+  .ai-answer{
+    background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;
+    padding:16px 18px;
+    font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;color:var(--ink);
+    white-space:pre-wrap;
+    display:none;
+  }
+  .ai-answer.show{display:block;}
+  .ai-error{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--brick);
+    display:none;
+  }
+  .ai-error.show{display:block;}
+  .ai-suggestions{
+    display:flex;flex-wrap:wrap;gap:6px;
+  }
+  .ai-sugg-chip{
+    font-family:'Inter',sans-serif;font-size:12px;
+    padding:6px 12px;border-radius:20px;border:1px solid var(--line);
+    background:#FBFBFA;color:var(--ink-soft);cursor:pointer;
+  }
+  .ai-sugg-chip:hover{border-color:var(--accent);color:var(--accent);}
 </style>
 </head>
 <body class="not-authed">
@@ -822,6 +871,7 @@
   <button class="main-tab" id="tabCalendarioBtn">Calendário</button>
   <button class="main-tab" id="tabProprietariosBtn">Proprietários</button>
   <button class="main-tab" id="tabNotasBtn">Bloco de notas</button>
+  <button class="main-tab" id="tabAssistenteBtn">Assistente IA</button>
 </nav>
 
 <div class="tab-panel active" id="panelImoveis">
@@ -976,6 +1026,27 @@
         <button class="btn ghost" id="deleteNoteBtn">Excluir</button>
         <span class="note-status" id="noteStatus"></span>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panelAssistente">
+  <div class="ai-wrap">
+    <p class="ai-intro">Pergunte qualquer coisa sobre sua carteira de imóveis (bairros, endereços, status, proprietários) ou peça ajuda com textos — descrições de anúncio, mensagens para proprietários, resumos do dia. O assistente usa o Gemini e enxerga um resumo dos seus imóveis (sem dados de contato).</p>
+    <div class="ai-card">
+      <textarea id="aiInput" placeholder="Ex: Quais imóveis em Pinheiros estão disponíveis para locação? / Escreva uma descrição de anúncio para o imóvel JH1088."></textarea>
+      <div class="ai-suggestions">
+        <button type="button" class="ai-sugg-chip" data-q="Quais imóveis estão disponíveis em Perdizes?">Disponíveis em Perdizes</button>
+        <button type="button" class="ai-sugg-chip" data-q="Quantos imóveis estão em negociação agora?">Em negociação agora</button>
+        <button type="button" class="ai-sugg-chip" data-q="Escreva uma mensagem curta de WhatsApp para avisar um proprietário sobre uma visita marcada.">Mensagem de visita</button>
+      </div>
+      <div class="ai-card-actions">
+        <button type="button" class="btn primary" id="aiAskBtn">Perguntar</button>
+        <button type="button" class="btn ghost" id="aiClearBtn">Limpar</button>
+        <span class="ai-status" id="aiStatus"></span>
+      </div>
+      <p class="ai-error" id="aiError"></p>
+      <div class="ai-answer" id="aiAnswer"></div>
     </div>
   </div>
 </div>
@@ -1221,6 +1292,14 @@ const TAGS_CONDOMINIO = [
       Essas regras liberam leitura/escrita só para os e-mails da lista,
       mesmo que exista alguma conta adicional (criada por engano ou por
       alguém tentando burlar a tela de login).
+
+   9) App Check (recomendado, e obrigatório a partir de 2/nov/2026 para
+      quem usa o Firebase AI Logic — veja o bloco de IA mais abaixo):
+      Console Firebase → App Check → registre seu app Web com o
+      provedor reCAPTCHA v3, copie a "site key" gerada e cole no lugar
+      de "SUA_RECAPTCHA_V3_SITE_KEY_AQUI" logo abaixo. Depois, na
+      mesma tela do App Check, ative o "enforcement" para Firestore,
+      Storage e para o Firebase AI Logic.
    ====================================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",
@@ -1231,6 +1310,13 @@ const firebaseConfig = {
   appId: "1:158894380045:web:b7f61e6f59616dfde73144",
   measurementId: "G-WST0KSBPJH"
 };
+
+/* Chave pública do reCAPTCHA v3 usada pelo Firebase App Check. Gere a
+   sua em Console Firebase → App Check → Web app → reCAPTCHA v3, e
+   cole aqui. Enquanto ficar com o valor de exemplo, o App Check fica
+   desativado e o app segue funcionando normalmente (só sem essa
+   camada extra de proteção). */
+const APP_CHECK_RECAPTCHA_SITE_KEY = "";
 
 /* O plano gratuito (Spark) do Firebase não dá mais acesso ao Storage —
    ele exige o plano pago Blaze (mesmo que o uso real fique em R$0).
@@ -2480,13 +2566,15 @@ const tabImoveisBtn = document.getElementById('tabImoveisBtn');
 const tabCalendarioBtn = document.getElementById('tabCalendarioBtn');
 const tabProprietariosBtn = document.getElementById('tabProprietariosBtn');
 const tabNotasBtn = document.getElementById('tabNotasBtn');
+const tabAssistenteBtn = document.getElementById('tabAssistenteBtn');
 const panelImoveis = document.getElementById('panelImoveis');
 const panelCalendario = document.getElementById('panelCalendario');
 const panelProprietarios = document.getElementById('panelProprietarios');
 const panelNotas = document.getElementById('panelNotas');
+const panelAssistente = document.getElementById('panelAssistente');
 
-const allTabBtns = [tabImoveisBtn, tabCalendarioBtn, tabProprietariosBtn, tabNotasBtn];
-const allPanels = [panelImoveis, panelCalendario, panelProprietarios, panelNotas];
+const allTabBtns = [tabImoveisBtn, tabCalendarioBtn, tabProprietariosBtn, tabNotasBtn, tabAssistenteBtn];
+const allPanels = [panelImoveis, panelCalendario, panelProprietarios, panelNotas, panelAssistente];
 
 function activateTab(btn, panel){
   allTabBtns.forEach(b=>b.classList.toggle('active', b===btn));
@@ -2504,6 +2592,7 @@ tabProprietariosBtn.addEventListener('click', ()=>{
   renderOwnersList();
 });
 tabNotasBtn.addEventListener('click', ()=> activateTab(tabNotasBtn, panelNotas));
+tabAssistenteBtn.addEventListener('click', ()=> activateTab(tabAssistenteBtn, panelAssistente));
 
 /* ---------- Aba Proprietários ---------- */
 function populateOwnerAddSelect(){
@@ -3177,6 +3266,19 @@ document.getElementById('calExportIcsBtn').addEventListener('click', ()=>{
 
 renderCalendarSide();
 
+/* ---------- Assistente IA: monta contexto resumido da carteira ---------- */
+function montarContextoImoveisParaIA(){
+  const linhas = allItems().map(item=>{
+    const entry = getEntry(item.key);
+    return `${item.cod || 's/cod'} | ${item.bairro} | ${item.end} | ${item.tipo} | status: ${statusLabel(entry.status)}`;
+  });
+  return linhas.join('\n');
+}
+
+/* Função global que o módulo de IA (carregado abaixo) vai preencher.
+   Definida aqui para que o botão já funcione assim que o módulo terminar de carregar. */
+window.perguntarIAImoveis = null;
+
 /* ---------- Inicialização ----------
    Se o Firebase estiver configurado, a tela de login decide quando o
    app é iniciado (função iniciarAppAutenticado, chamada pelo
@@ -3187,5 +3289,151 @@ if(!firebaseAtivo){
   render();
 }
 </script>
+
+<!-- ======================================================================
+     Assistente IA (Firebase AI Logic + Gemini)
+     ======================================================================
+     Usa um app Firebase modular separado (mesmo projeto, mesma
+     configuração pública) só para o AI Logic, porque o SDK de IA exige
+     os módulos ES do Firebase (diferentes dos scripts "compat" usados
+     acima para login/Firestore/Storage). Funciona no plano gratuito
+     Spark, sem cartão de crédito, usando o modelo gemini-3.6-flash.
+
+     Proteções ativas:
+     - Só chama o Gemini se houver um usuário logado no Firebase Auth
+       (auth.currentUser), mesmo que a função seja chamada manualmente
+       fora da tela (ex: console do navegador).
+     - App Check (reCAPTCHA v3): se você preencher
+       APP_CHECK_RECAPTCHA_SITE_KEY acima com uma chave real, o SDK
+       passa a exigir um token de App Check válido em toda chamada ao
+       Gemini — bloqueando pedidos feitos fora do seu site, mesmo por
+       alguém que tenha copiado o firebaseConfig. Sem a chave, o app
+       continua funcionando normalmente, só sem essa camada extra (e a
+       partir de 2/nov/2026 o Firebase vai passar a exigi-la).
+     ====================================================================== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app-check.js";
+  import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-ai.js";
+
+  // Mesma config pública do projeto (chave de API do Firebase não é
+  // secreta). Duplicada aqui porque este é um módulo ES separado do
+  // script principal (que usa os SDKs "compat").
+  const firebaseConfigIA = {
+    apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",
+    authDomain: "carteira-imoveis-d6262.firebaseapp.com",
+    projectId: "carteira-imoveis-d6262",
+    storageBucket: "carteira-imoveis-d6262.firebasestorage.app",
+    messagingSenderId: "158894380045",
+    appId: "1:158894380045:web:b7f61e6f59616dfde73144"
+  };
+
+  const RECAPTCHA_SITE_KEY = "SUA_RECAPTCHA_V3_SITE_KEY_AQUI";
+
+  let model = null;
+  try{
+    const aiApp = initializeApp(firebaseConfigIA, "appIA");
+
+    // App Check: só ativa de verdade se você já tiver colado uma chave
+    // real do reCAPTCHA v3 (gerada em Console Firebase → App Check).
+    if(RECAPTCHA_SITE_KEY && RECAPTCHA_SITE_KEY !== "SUA_RECAPTCHA_V3_SITE_KEY_AQUI"){
+      initializeAppCheck(aiApp, {
+        provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),
+        isTokenAutoRefreshEnabled: true
+      });
+    }else{
+      console.warn('App Check não configurado (APP_CHECK_RECAPTCHA_SITE_KEY / RECAPTCHA_SITE_KEY ainda com valor de exemplo). O assistente de IA continua funcionando, mas sem essa proteção extra contra uso indevido da chave fora do seu site.');
+    }
+
+    const ai = getAI(aiApp, { backend: new GoogleAIBackend() });
+    model = getGenerativeModel(ai, { model: "gemini-3.6-flash" });
+  }catch(e){
+    console.warn("Não foi possível iniciar o Firebase AI Logic. O assistente de IA vai ficar indisponível.", e);
+  }
+
+  const aiInput = document.getElementById('aiInput');
+  const aiAskBtn = document.getElementById('aiAskBtn');
+  const aiClearBtn = document.getElementById('aiClearBtn');
+  const aiStatus = document.getElementById('aiStatus');
+  const aiError = document.getElementById('aiError');
+  const aiAnswer = document.getElementById('aiAnswer');
+
+  function setLoading(loading){
+    aiAskBtn.disabled = loading;
+    aiStatus.textContent = loading ? 'Pensando…' : '';
+  }
+
+  // Confere se existe alguém logado no Firebase Auth (instância "compat"
+  // criada no script principal). Isso evita que a função seja chamada
+  // pelo console do navegador por alguém que não passou pela tela de
+  // login — mesmo sabendo a URL do site publicado.
+  function usuarioEstaLogado(){
+    // Se o Firebase nem estiver ativo neste projeto, não bloqueia
+    // (comportamento local, sem login, como já era antes).
+    if(typeof firebaseAtivo !== 'undefined' && !firebaseAtivo) return true;
+    return !!(typeof auth !== 'undefined' && auth && auth.currentUser);
+  }
+
+  async function perguntarIAImoveis(perguntaForcada){
+    const pergunta = (perguntaForcada !== undefined ? perguntaForcada : aiInput.value).trim();
+    if(!pergunta){
+      aiError.textContent = 'Escreva uma pergunta ou pedido antes.';
+      aiError.classList.add('show');
+      return;
+    }
+    if(!usuarioEstaLogado()){
+      aiError.textContent = 'Faça login para usar o assistente de IA.';
+      aiError.classList.add('show');
+      return;
+    }
+    if(!model){
+      aiError.textContent = 'O assistente de IA não está disponível agora (Firebase AI Logic não ativado ou sem conexão).';
+      aiError.classList.add('show');
+      return;
+    }
+    aiError.classList.remove('show');
+    aiAnswer.classList.remove('show');
+    setLoading(true);
+    try{
+      const contexto = (typeof montarContextoImoveisParaIA === 'function') ? montarContextoImoveisParaIA() : '';
+      const prompt =
+        'Você é um assistente para uma corretora/carteira de imóveis em São Paulo. ' +
+        'Responda em português do Brasil, de forma direta e útil. ' +
+        'Se a pergunta for sobre os imóveis da carteira, use a lista abaixo (formato: código | bairro | endereço | tipo | status). ' +
+        'Se a pergunta pedir um texto (descrição de anúncio, mensagem, resumo), escreva o texto pronto. ' +
+        'Se não souber algo com certeza a partir da lista, diga isso claramente em vez de inventar.\n\n' +
+        '--- Lista de imóveis ---\n' + contexto + '\n--- Fim da lista ---\n\n' +
+        'Pergunta/pedido do usuário: ' + pergunta;
+
+      const result = await model.generateContent(prompt);
+      const texto = result.response.text();
+      aiAnswer.textContent = texto;
+      aiAnswer.classList.add('show');
+    }catch(err){
+      console.warn('Erro ao chamar o Gemini via Firebase AI Logic:', err);
+      aiError.textContent = 'Não foi possível obter uma resposta agora. Tente novamente em instantes.';
+      aiError.classList.add('show');
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  aiAskBtn.addEventListener('click', ()=> perguntarIAImoveis());
+  aiClearBtn.addEventListener('click', ()=>{
+    aiInput.value = '';
+    aiAnswer.classList.remove('show');
+    aiError.classList.remove('show');
+    aiInput.focus();
+  });
+  document.querySelectorAll('.ai-sugg-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      aiInput.value = chip.dataset.q;
+      perguntarIAImoveis(chip.dataset.q);
+    });
+  });
+
+  window.perguntarIAImoveis = perguntarIAImoveis;
+</script>
+
 </body>
 </html>

@@ -1178,30 +1178,49 @@ const TAGS_CONDOMINIO = [
       "criar conta" de propósito — só entra quem você cadastrar aqui,
       manualmente. Isso é o que garante que estranhos não acessem seus
       dados mesmo se encontrarem o arquivo ou o link.
-   7) Regras do Firestore (aba "Regras" de Firestore Database) — como
-      agora existe login, a recomendação é exigir autenticação:
+   7) Regras do Firestore (aba "Regras" de Firestore Database) — em vez
+      de liberar para qualquer conta logada, restrinja por e-mail, numa
+      lista fixa de quem pode acessar. Assim, mesmo que alguém consiga
+      criar uma conta por fora do app (ex: pelo console do navegador),
+      ela não consegue ler nem escrever nada, porque o e-mail dela não
+      está na lista:
 
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
-            match /{document=**} { allow read, write: if request.auth != null; }
+            match /{document=**} {
+              allow read, write: if request.auth != null
+                && request.auth.token.email in [
+                  'seuemail@exemplo.com',
+                  'outraconta@exemplo.com'
+                ];
+            }
           }
         }
 
-   8) Regras do Storage (aba "Regras" de Storage) — mesma lógica:
+      Troque a lista pelos e-mails reais de quem você cadastrou em
+      Authentication → Users. Adicione ou remova e-mails aqui sempre
+      que der ou tirar acesso de alguém.
+
+   8) Regras do Storage (aba "Regras" de Storage) — mesma lista, para
+      manter a mesma proteção caso um dia você ative o Storage:
 
         rules_version = '2';
         service firebase.storage {
           match /b/{bucket}/o {
-            match /{allPaths=**} { allow read, write: if request.auth != null; }
+            match /{allPaths=**} {
+              allow read, write: if request.auth != null
+                && request.auth.token.email in [
+                  'seuemail@exemplo.com',
+                  'outraconta@exemplo.com'
+                ];
+            }
           }
         }
 
-      Essas regras liberam leitura/escrita para qualquer pessoa logada
-      com e-mail e senha válidos — é o suficiente para uso pessoal ou de
-      uma pequena equipe. Não é uma separação de dados por usuário (todo
-      mundo logado vê a mesma carteira), o que costuma ser o esperado
-      para um time compartilhando os mesmos imóveis.
+      Essas regras liberam leitura/escrita só para os e-mails da lista,
+      mesmo que exista alguma conta adicional (criada por engano ou por
+      alguém tentando burlar a tela de login).
    ====================================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",

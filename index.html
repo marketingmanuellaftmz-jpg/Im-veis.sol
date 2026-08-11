@@ -330,6 +330,7 @@
   .main-tabs{
     max-width:1180px;margin:0 auto;padding:22px 28px 0;
     display:flex;gap:6px;
+    flex-wrap:wrap;
   }
   .main-tab{
     font-family:'IBM Plex Mono',monospace;
@@ -473,6 +474,244 @@
   .details-toggle.open .chev{transform:rotate(180deg);}
   .details-block{display:none;}
   .details-block.open{display:flex;}
+
+  /* ---- Calendário de visitas ---- */
+  .cal-wrap{
+    max-width:1180px;margin:0 auto;padding:0 28px 100px;
+    display:grid;grid-template-columns:1fr 320px;gap:24px;
+    align-items:start;
+  }
+  .cal-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:20px;
+  }
+  .cal-head{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;
+  }
+  .cal-head h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0;
+    text-transform:capitalize;
+  }
+  .cal-nav{display:flex;gap:6px;align-items:center;}
+  .cal-nav button{
+    border:1px solid var(--line);background:var(--surface);border-radius:6px;
+    width:32px;height:32px;font-size:15px;cursor:pointer;color:var(--ink);
+  }
+  .cal-nav button:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+  .cal-nav .cal-today-btn{
+    width:auto;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:.05em;
+  }
+  .cal-grid{
+    display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  }
+  .cal-dow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--ink-faint);text-align:center;padding:4px 0 8px;
+  }
+  .cal-day{
+    position:relative;
+    min-height:76px;
+    border:1px solid var(--line);border-radius:8px;
+    background:#FBFBFA;
+    padding:6px;
+    cursor:pointer;
+    display:flex;flex-direction:column;gap:4px;
+    transition:background .12s ease, border-color .12s ease;
+  }
+  .cal-day:hover{border-color:var(--accent);}
+  .cal-day.other-month{opacity:.35;}
+  .cal-day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
+  .cal-day.selected{background:var(--accent-soft);border-color:var(--accent);}
+  .cal-day .cal-daynum{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
+  }
+  .cal-day.today .cal-daynum{color:var(--accent);font-weight:700;}
+  .cal-chip-list{display:flex;flex-direction:column;gap:2px;overflow:hidden;}
+  .cal-chip{
+    font-family:'Inter',sans-serif;font-size:10.5px;line-height:1.3;
+    background:var(--accent);color:#fff;
+    border-radius:4px;padding:2px 5px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .cal-chip.evento{background:var(--gold);}
+  .cal-more{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-faint);
+  }
+  .cal-side{display:flex;flex-direction:column;gap:14px;}
+  .cal-side-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:18px;
+  }
+  .cal-side-card h3{
+    font-family:'Fraunces',serif;font-weight:600;font-size:16px;margin:0 0 4px;
+  }
+  .cal-side-date{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);
+    margin-bottom:12px;text-transform:capitalize;
+  }
+  .cal-visit-item{
+    border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;
+    background:#FBFBFA;
+    border-left-width:4px;
+  }
+  .cal-visit-item .v-end{
+    font-family:'Fraunces',serif;font-size:14px;font-weight:500;margin:0 0 2px;
+  }
+  .cal-visit-item .v-bairro{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-faint);
+    margin:0 0 6px;
+  }
+  .cal-visit-item .v-goto{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--accent);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0;
+  }
+  .v-gcal, .e-gcal{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--ink-soft);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0;
+    margin-left:10px;
+  }
+  .v-gcal:hover, .e-gcal:hover{color:var(--accent);}
+  .cal-sync-row{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+    margin-bottom:14px;
+  }
+  .cal-sync-note{
+    font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-faint);
+    max-width:520px;line-height:1.4;
+  }
+  .cal-event-item{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
+    border:1px solid var(--gold);background:var(--gold-soft);border-radius:8px;
+    padding:8px 10px;margin-bottom:8px;font-size:13px;color:var(--ink);
+  }
+  .cal-event-item button{
+    background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:12px;
+    font-family:'IBM Plex Mono',monospace;flex-shrink:0;
+  }
+  .cal-event-item button:hover{color:var(--brick);}
+  .cal-add-event{display:flex;flex-direction:column;gap:8px;}
+  .cal-add-event input{
+    border:1px solid var(--line);border-radius:6px;padding:8px 9px;
+    font-family:'Inter',sans-serif;font-size:13px;background:#FBFBFA;
+  }
+  .cal-add-wrap{border-top:1px solid var(--line);padding-top:14px;}
+  .cal-add-tabs{
+    display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--line);
+  }
+  .cal-add-tab{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+    padding:7px 4px 9px;background:none;border:none;border-bottom:2px solid transparent;
+    color:var(--ink-faint);cursor:pointer;
+  }
+  .cal-add-tab:hover{color:var(--ink-soft);}
+  .cal-add-tab.active{color:var(--accent);border-color:var(--accent);font-weight:600;}
+  .cal-add-panel{display:none;}
+  .cal-add-panel.active{display:block;}
+  .cal-add-visita{display:flex;flex-direction:column;gap:8px;}
+  .cal-add-visita .field-row{gap:8px;}
+  .cal-add-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--ink-faint);
+  }
+  .cal-add-visita select, .cal-add-visita input{
+    border:1px solid var(--line);border-radius:6px;padding:8px 9px;
+    font-family:'Inter',sans-serif;font-size:13px;background:#FBFBFA;width:100%;
+  }
+  .cal-add-visita .btn{align-self:flex-start;margin-top:2px;}
+  .cal-visit-item{position:relative;}
+  .cal-visit-item .v-hora{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:#fff;border-radius:4px;padding:1px 6px;margin-bottom:4px;
+  }
+  .cal-visit-item .v-remove{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-faint);
+    background:none;border:none;cursor:pointer;padding:0;margin-left:10px;text-decoration:underline;
+  }
+  .cal-visit-item .v-remove:hover{color:var(--brick);}
+  .cal-empty{
+    font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-faint);
+  }
+  .cal-legend{
+    display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);
+  }
+  .cal-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .cal-legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
+  @media (max-width:820px){
+    .cal-wrap{grid-template-columns:1fr;}
+    .cal-day{min-height:58px;}
+  }
+
+  /* ---- Sugestões de busca (autocomplete) ---- */
+  .search-suggest{
+    position:absolute;top:calc(100% + 6px);left:0;right:0;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 8px 28px rgba(27,43,41,0.14);
+    max-height:340px;overflow-y:auto;
+    z-index:30;
+    display:none;
+  }
+  .search-suggest.open{display:block;}
+  .search-suggest-item{
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .search-suggest-item:last-child{border-bottom:none;}
+  .search-suggest-item:hover{background:var(--accent-soft);}
+  .search-suggest-item .s-end{
+    font-family:'Fraunces',serif;font-size:14px;font-weight:500;color:var(--ink);
+  }
+  .search-suggest-item .s-meta{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint);
+  }
+  .search-suggest-empty{
+    padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-faint);
+  }
+
+  /* ---- Aba Proprietários ---- */
+  .owners-wrap{
+    max-width:900px;margin:0 auto;padding:0 28px 100px;
+    display:flex;flex-direction:column;gap:24px;
+  }
+  .owners-add-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:22px;
+  }
+  .owners-add-card h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0 0 16px;
+  }
+  .owners-list-card h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0 0 4px;
+  }
+  .owners-list-sub{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+    margin:0 0 14px;
+  }
+  .owner-row{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;
+    gap:12px;margin-bottom:10px;
+  }
+  .owner-row .o-nome{
+    font-family:'Fraunces',serif;font-size:15px;font-weight:500;margin:0 0 2px;
+  }
+  .owner-row .o-tel{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin:0 0 6px;
+  }
+  .owner-row .o-imovel{
+    font-family:'Inter',sans-serif;font-size:12.5px;color:var(--ink-faint);
+  }
+  .owner-row .o-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;}
+  .owner-row .o-actions button{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    background:none;border:none;cursor:pointer;padding:0;white-space:nowrap;
+  }
+  .owner-row .o-goto{color:var(--accent);text-decoration:underline;}
+  .owner-row .o-remove{color:var(--ink-faint);text-decoration:underline;}
+  .owner-row .o-remove:hover{color:var(--brick);}
 </style>
 </head>
 <body>
@@ -493,6 +732,8 @@
 
 <nav class="main-tabs">
   <button class="main-tab active" id="tabImoveisBtn">Imóveis</button>
+  <button class="main-tab" id="tabCalendarioBtn">Calendário</button>
+  <button class="main-tab" id="tabProprietariosBtn">Proprietários</button>
   <button class="main-tab" id="tabNotasBtn">Bloco de notas</button>
 </nav>
 
@@ -501,7 +742,8 @@
 <div class="controls">
   <div class="controls-inner">
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Buscar por endereço, código JH, bairro ou contato...">
+      <input type="text" id="searchInput" placeholder="Buscar por endereço, código JH, bairro ou contato..." autocomplete="off">
+      <div class="search-suggest" id="searchSuggest"></div>
     </div>
     <select id="filterBairro"><option value="">Todos os bairros</option></select>
     <select id="filterTipo">
@@ -531,6 +773,102 @@
   <div id="results"></div>
 </div>
 
+</div>
+
+<div class="tab-panel" id="panelCalendario">
+  <div class="cal-wrap">
+    <div class="cal-card">
+      <div class="cal-head">
+        <h2 id="calMonthLabel"></h2>
+        <div class="cal-nav">
+          <button type="button" id="calPrevBtn" title="Mês anterior">‹</button>
+          <button type="button" class="cal-today-btn" id="calTodayBtn">Hoje</button>
+          <button type="button" id="calNextBtn" title="Próximo mês">›</button>
+        </div>
+      </div>
+      <div class="cal-sync-row">
+        <p class="cal-sync-note">Cada visita e lembrete tem um link "+ Google Agenda" para adicionar direto. Ou baixe tudo de uma vez e importe no Google Agenda (Configurações → Importar e exportar).</p>
+        <button type="button" class="btn ghost" id="calExportIcsBtn">Exportar .ics</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend" id="calLegend">
+        <span><i style="background:var(--gold);"></i> Lembrete/evento</span>
+      </div>
+    </div>
+    <div class="cal-side">
+      <div class="cal-side-card">
+        <h3 id="calSideTitle">Selecione um dia</h3>
+        <div class="cal-side-date" id="calSideDate"></div>
+        <div id="calVisitsForDay"></div>
+        <div id="calEventsForDay"></div>
+        <div class="cal-add-wrap" id="calAddWrap" style="display:none;">
+          <div class="cal-add-tabs">
+            <button type="button" class="cal-add-tab active" id="calTabLembreteBtn">Lembrete</button>
+            <button type="button" class="cal-add-tab" id="calTabVisitaBtn">+ Visita</button>
+          </div>
+
+          <div class="cal-add-panel active" id="calPanelLembrete">
+            <div class="cal-add-event">
+              <input type="text" id="calEventInput" placeholder="Adicionar lembrete para este dia...">
+              <button type="button" class="btn primary" id="calAddEventBtn" style="align-self:flex-start;">+ Adicionar lembrete</button>
+            </div>
+          </div>
+
+          <div class="cal-add-panel" id="calPanelVisita">
+            <div class="cal-add-visita">
+              <div>
+                <label class="cal-add-label">Imóvel</label>
+                <select id="calVisitaImovel"></select>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label class="cal-add-label">Horário</label>
+                  <input type="time" id="calVisitaHora">
+                </div>
+              </div>
+              <div>
+                <label class="cal-add-label">Observação (opcional)</label>
+                <input type="text" id="calVisitaObs" placeholder="Ex: levar chave reserva, confirmar com proprietário...">
+              </div>
+              <button type="button" class="btn primary" id="calAddVisitaBtn">+ Agendar visita</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panelProprietarios">
+  <div class="owners-wrap">
+    <div class="owners-add-card">
+      <h2>Adicionar proprietário</h2>
+      <div class="field">
+        <label>Imóvel</label>
+        <select id="ownerAddImovel"></select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Nome</label>
+          <input type="text" id="ownerAddNome" placeholder="Nome do proprietário">
+        </div>
+        <div class="field">
+          <label>Telefone</label>
+          <input type="text" id="ownerAddTelefone" placeholder="(11) 90000-0000">
+        </div>
+      </div>
+      <button type="button" class="btn primary" id="ownerAddBtn">+ Adicionar proprietário</button>
+    </div>
+
+    <div class="owners-list-card">
+      <h2>Todos os proprietários</h2>
+      <p class="owners-list-sub" id="ownersListSub"></p>
+      <div class="field" style="margin-bottom:14px;">
+        <input type="text" id="ownersSearchInput" placeholder="Buscar por nome, telefone ou endereço..." autocomplete="off">
+      </div>
+      <div id="ownersListWrap"></div>
+    </div>
+  </div>
 </div>
 
 <div class="tab-panel" id="panelNotas">
@@ -787,7 +1125,9 @@ function blankDetails(){
     telefone2:"",
     caractImovel:[], caractCondominio:[],
     locacaoTemporada:"",
-    linkMaps:""
+    linkMaps:"",
+    latitude:"", longitude:"",
+    horaVisita:""
   };
 }
 
@@ -941,9 +1281,15 @@ function renderCard(item){
       <div class="owners-list" data-role="owners-list"></div>
       <button type="button" class="btn ghost owner-add-btn" data-role="add-owner">+ Adicionar outro proprietário</button>
     </div>
-    <div class="field">
-      <label>Data da visita</label>
-      <input type="date" class="visita-input" value="${escapeHtml(entry.dataVisita)}">
+    <div class="field-row">
+      <div class="field">
+        <label>Data da visita</label>
+        <input type="date" class="visita-input" value="${escapeHtml(entry.dataVisita)}">
+      </div>
+      <div class="field">
+        <label>Horário</label>
+        <input type="time" class="hora-visita-input" value="${escapeHtml(entry.horaVisita)}">
+      </div>
     </div>
     <div class="field">
       <label>Observações</label>
@@ -1157,6 +1503,16 @@ function renderCard(item){
         </div>
         <a class="maps-link-btn" data-role="maps-open" href="#" target="_blank" rel="noopener">Abrir no Maps ↗</a>
       </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Latitude</label>
+          <input type="text" class="det-latitude" placeholder="Ex: -23.543210" value="${escapeHtml(entry.latitude)}">
+        </div>
+        <div class="field">
+          <label>Longitude</label>
+          <input type="text" class="det-longitude" placeholder="Ex: -46.678910" value="${escapeHtml(entry.longitude)}">
+        </div>
+      </div>
       <div class="maps-embed" data-role="maps-embed"></div>
 
     </div>
@@ -1228,6 +1584,13 @@ function renderCard(item){
   const visitaInput = card.querySelector('.visita-input');
   visitaInput.addEventListener('input', ()=>{
     entry.dataVisita = visitaInput.value;
+    saveState(state);
+  });
+
+  // horário da visita
+  const horaVisitaInput = card.querySelector('.hora-visita-input');
+  horaVisitaInput.addEventListener('input', ()=>{
+    entry.horaVisita = horaVisitaInput.value;
     saveState(state);
   });
 
@@ -1325,7 +1688,31 @@ function renderCard(item){
     renderMaps();
   });
 
+  // latitude / longitude
+  const latInput = card.querySelector('.det-latitude');
+  const lngInput = card.querySelector('.det-longitude');
+  latInput.addEventListener('input', ()=>{
+    entry.latitude = latInput.value;
+    saveState(state);
+    renderMaps();
+  });
+  lngInput.addEventListener('input', ()=>{
+    entry.longitude = lngInput.value;
+    saveState(state);
+    renderMaps();
+  });
+
+  function hasCoords(){
+    const lat = parseFloat((entry.latitude||'').replace(',','.'));
+    const lng = parseFloat((entry.longitude||'').replace(',','.'));
+    return !isNaN(lat) && !isNaN(lng);
+  }
   function mapsQuery(){
+    if(hasCoords()){
+      const lat = parseFloat((entry.latitude||'').replace(',','.'));
+      const lng = parseFloat((entry.longitude||'').replace(',','.'));
+      return `${lat},${lng}`;
+    }
     if(entry.linkMaps && entry.linkMaps.trim()){
       return entry.linkMaps.trim();
     }
@@ -1339,7 +1726,11 @@ function renderCard(item){
     openBtn.href = openHref;
 
     const embedWrap = card.querySelector('[data-role="maps-embed"]');
-    const embedSrc = `https://www.google.com/maps?q=${encodeURIComponent(isUrl ? (item.end+', '+item.bairro+', São Paulo, SP') : q)}&output=embed`;
+    let embedQuery;
+    if(hasCoords()) embedQuery = q;
+    else if(isUrl) embedQuery = `${item.end}, ${item.bairro}, São Paulo, SP`;
+    else embedQuery = q;
+    const embedSrc = `https://www.google.com/maps?q=${encodeURIComponent(embedQuery)}&output=embed`;
     embedWrap.innerHTML = `<iframe src="${embedSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
   }
   renderMaps();
@@ -1479,11 +1870,73 @@ function updateStatLine(shownCount){
     `Mostrando ${shown} de ${total} · Disponíveis: ${disp} · Negociando: ${neg} · Vendidos/Alugados: ${vend}`;
 }
 
+function scrollToCard(key){
+  requestAnimationFrame(()=>{
+    const cardEl = document.querySelector(`.card[data-key="${CSS.escape(key)}"]`);
+    if(cardEl){
+      cardEl.scrollIntoView({behavior:'smooth', block:'center'});
+      cardEl.style.transition = 'box-shadow .3s ease';
+      cardEl.style.boxShadow = '0 0 0 3px var(--accent)';
+      setTimeout(()=>{ cardEl.style.boxShadow = ''; }, 1600);
+    }
+  });
+}
+
 ['searchInput'].forEach(id=>{
   document.getElementById(id).addEventListener('input', render);
 });
 ['filterBairro','filterTipo','filterStatus'].forEach(id=>{
   document.getElementById(id).addEventListener('change', render);
+});
+
+/* ---------- Sugestões de busca (autocomplete) ---------- */
+const searchInputEl = document.getElementById('searchInput');
+const searchSuggestEl = document.getElementById('searchSuggest');
+
+function renderSearchSuggestions(){
+  const q = searchInputEl.value.trim().toLowerCase();
+  if(!q){
+    searchSuggestEl.classList.remove('open');
+    searchSuggestEl.innerHTML = '';
+    return;
+  }
+  const matchesList = allItems().filter(item=>{
+    const entry = getEntry(item.key);
+    const proprietariosStr = entry.proprietarios.map(p=>`${p.nome} ${p.telefone}`).join(' ');
+    const hay = `${item.end} ${item.cod||''} ${item.bairro} ${proprietariosStr}`.toLowerCase();
+    return hay.includes(q);
+  }).slice(0, 8);
+
+  searchSuggestEl.innerHTML = '';
+  if(matchesList.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'search-suggest-empty';
+    empty.textContent = 'Nenhum imóvel encontrado.';
+    searchSuggestEl.appendChild(empty);
+  }else{
+    matchesList.forEach(item=>{
+      const el = document.createElement('div');
+      el.className = 'search-suggest-item';
+      el.innerHTML = `<span class="s-end">${escapeHtml(item.end)}</span><span class="s-meta">${escapeHtml(item.bairro)}${item.cod ? ' · '+escapeHtml(item.cod) : ''}</span>`;
+      el.addEventListener('mousedown', (e)=>{
+        // mousedown para disparar antes do blur do input
+        e.preventDefault();
+        searchSuggestEl.classList.remove('open');
+        activateTab(tabImoveisBtn, panelImoveis);
+        render();
+        scrollToCard(item.key);
+      });
+      searchSuggestEl.appendChild(el);
+    });
+  }
+  searchSuggestEl.classList.add('open');
+}
+
+searchInputEl.addEventListener('input', renderSearchSuggestions);
+searchInputEl.addEventListener('focus', ()=>{ if(searchInputEl.value.trim()) renderSearchSuggestions(); });
+searchInputEl.addEventListener('blur', ()=>{ setTimeout(()=> searchSuggestEl.classList.remove('open'), 120); });
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape') searchSuggestEl.classList.remove('open');
 });
 
 /* ---------- Backup (exportar / importar) ---------- */
@@ -1574,22 +2027,131 @@ addForm.addEventListener('submit', (e)=>{
 
 /* ---------- Abas principais ---------- */
 const tabImoveisBtn = document.getElementById('tabImoveisBtn');
+const tabCalendarioBtn = document.getElementById('tabCalendarioBtn');
+const tabProprietariosBtn = document.getElementById('tabProprietariosBtn');
 const tabNotasBtn = document.getElementById('tabNotasBtn');
 const panelImoveis = document.getElementById('panelImoveis');
+const panelCalendario = document.getElementById('panelCalendario');
+const panelProprietarios = document.getElementById('panelProprietarios');
 const panelNotas = document.getElementById('panelNotas');
 
-tabImoveisBtn.addEventListener('click', ()=>{
-  tabImoveisBtn.classList.add('active');
-  tabNotasBtn.classList.remove('active');
-  panelImoveis.classList.add('active');
-  panelNotas.classList.remove('active');
+const allTabBtns = [tabImoveisBtn, tabCalendarioBtn, tabProprietariosBtn, tabNotasBtn];
+const allPanels = [panelImoveis, panelCalendario, panelProprietarios, panelNotas];
+
+function activateTab(btn, panel){
+  allTabBtns.forEach(b=>b.classList.toggle('active', b===btn));
+  allPanels.forEach(p=>p.classList.toggle('active', p===panel));
+}
+
+tabImoveisBtn.addEventListener('click', ()=> activateTab(tabImoveisBtn, panelImoveis));
+tabCalendarioBtn.addEventListener('click', ()=>{
+  activateTab(tabCalendarioBtn, panelCalendario);
+  renderCalendar();
 });
-tabNotasBtn.addEventListener('click', ()=>{
-  tabNotasBtn.classList.add('active');
-  tabImoveisBtn.classList.remove('active');
-  panelNotas.classList.add('active');
-  panelImoveis.classList.remove('active');
+tabProprietariosBtn.addEventListener('click', ()=>{
+  activateTab(tabProprietariosBtn, panelProprietarios);
+  populateOwnerAddSelect();
+  renderOwnersList();
 });
+tabNotasBtn.addEventListener('click', ()=> activateTab(tabNotasBtn, panelNotas));
+
+/* ---------- Aba Proprietários ---------- */
+function populateOwnerAddSelect(){
+  const sel = document.getElementById('ownerAddImovel');
+  if(!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  getBairros().forEach(b=>{
+    const group = document.createElement('optgroup');
+    group.label = b;
+    allItems().filter(i=>i.bairro===b).sort((a,b2)=>(a.n||9999)-(b2.n||9999)).forEach(item=>{
+      const opt = document.createElement('option');
+      opt.value = item.key;
+      opt.textContent = `${item.end}${item.cod ? ' · '+item.cod : ''}`;
+      group.appendChild(opt);
+    });
+    sel.appendChild(group);
+  });
+  if(currentVal && [...sel.options].some(o=>o.value===currentVal)) sel.value = currentVal;
+}
+
+document.getElementById('ownerAddBtn').addEventListener('click', ()=>{
+  const sel = document.getElementById('ownerAddImovel');
+  const key = sel.value;
+  if(!key){ alert('Selecione um imóvel.'); return; }
+  const nomeInput = document.getElementById('ownerAddNome');
+  const telInput = document.getElementById('ownerAddTelefone');
+  const nome = nomeInput.value.trim();
+  const telefone = telInput.value.trim();
+  if(!nome && !telefone){ alert('Informe ao menos o nome ou o telefone do proprietário.'); return; }
+  const entry = getEntry(key);
+  entry.proprietarios.push({nome, telefone});
+  saveState(state);
+  nomeInput.value = '';
+  telInput.value = '';
+  renderOwnersList();
+});
+
+function getAllOwnerRows(){
+  const rows = [];
+  allItems().forEach(item=>{
+    const entry = getEntry(item.key);
+    entry.proprietarios.forEach((owner, idx)=>{
+      if(owner.nome || owner.telefone){
+        rows.push({owner, idx, item, entry});
+      }
+    });
+  });
+  return rows;
+}
+
+function renderOwnersList(){
+  const wrap = document.getElementById('ownersListWrap');
+  const sub = document.getElementById('ownersListSub');
+  const q = (document.getElementById('ownersSearchInput').value || '').trim().toLowerCase();
+  const rows = getAllOwnerRows().filter(r=>{
+    if(!q) return true;
+    const hay = `${r.owner.nome} ${r.owner.telefone} ${r.item.end} ${r.item.bairro} ${r.item.cod||''}`.toLowerCase();
+    return hay.includes(q);
+  });
+  sub.textContent = `${rows.length} proprietário${rows.length===1?'':'s'} cadastrado${rows.length===1?'':'s'}`;
+  wrap.innerHTML = '';
+  if(rows.length === 0){
+    wrap.innerHTML = '<div class="notes-empty">Nenhum proprietário encontrado.</div>';
+    return;
+  }
+  rows.sort((a,b)=> (a.owner.nome||'').localeCompare(b.owner.nome||'', 'pt-BR'));
+  rows.forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'owner-row';
+    row.innerHTML = `
+      <div>
+        <p class="o-nome">${escapeHtml(r.owner.nome || 'Sem nome')}</p>
+        ${r.owner.telefone ? `<p class="o-tel">${escapeHtml(r.owner.telefone)}</p>` : ''}
+        <p class="o-imovel">${escapeHtml(r.item.end)} · ${escapeHtml(r.item.bairro)}${r.item.cod ? ' · '+escapeHtml(r.item.cod) : ''}</p>
+      </div>
+      <div class="o-actions">
+        <button type="button" class="o-goto">Ver imóvel →</button>
+        <button type="button" class="o-remove">Remover</button>
+      </div>
+    `;
+    row.querySelector('.o-goto').addEventListener('click', ()=>{
+      activateTab(tabImoveisBtn, panelImoveis);
+      render();
+      scrollToCard(r.item.key);
+    });
+    row.querySelector('.o-remove').addEventListener('click', ()=>{
+      if(!confirm('Remover este proprietário?')) return;
+      r.entry.proprietarios.splice(r.idx,1);
+      saveState(state);
+      renderOwnersList();
+      if(panelImoveis.classList.contains('active')) render();
+    });
+    wrap.appendChild(row);
+  });
+}
+
+document.getElementById('ownersSearchInput').addEventListener('input', renderOwnersList);
 
 /* ---------- Bloco de notas ---------- */
 const NOTES_KEY = "carteira_imoveis_notas_v1";
@@ -1705,6 +2267,463 @@ document.getElementById('downloadNoteBtn').addEventListener('click', ()=>{
 });
 
 renderNotesList();
+
+/* ---------- Calendário de visitas ---------- */
+const CAL_EVENTS_KEY = "carteira_imoveis_cal_eventos_v1";
+
+/* Paleta de cores para diferenciar múltiplas visitas no mesmo dia */
+const VISIT_COLOR_PALETTE = [
+  '#1F6F5C', // verde (accent)
+  '#2B6CB0', // azul
+  '#A54A3A', // terracota
+  '#5A4E9E', // roxo
+  '#B8842E', // dourado
+  '#2F855A', // verde escuro
+  '#B83280', // pink
+  '#316B83', // petróleo
+];
+function visitColor(index){
+  return VISIT_COLOR_PALETTE[index % VISIT_COLOR_PALETTE.length];
+}
+
+/* ---------- Integração com Google Agenda ---------- */
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function toGCalDates(dateStr, timeStr){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  if(timeStr){
+    const [hh,mm] = timeStr.split(':').map(Number);
+    const start = new Date(y, m-1, d, hh, mm, 0);
+    const end = new Date(start.getTime() + 60*60*1000);
+    const fmt = (dt)=> `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}T${pad2(dt.getHours())}${pad2(dt.getMinutes())}00`;
+    return `${fmt(start)}/${fmt(end)}`;
+  }
+  const start = new Date(y, m-1, d);
+  const end = new Date(y, m-1, d+1);
+  const fmt = (dt)=> `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}`;
+  return `${fmt(start)}/${fmt(end)}`;
+}
+
+function buildGCalUrl({title, dateStr, timeStr, details, location}){
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title || '',
+    dates: toGCalDates(dateStr, timeStr),
+    details: details || '',
+    location: location || ''
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function icsEscape(str){
+  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+}
+
+function icsDtStamp(){
+  const d = new Date();
+  return `${d.getUTCFullYear()}${pad2(d.getUTCMonth()+1)}${pad2(d.getUTCDate())}T${pad2(d.getUTCHours())}${pad2(d.getUTCMinutes())}${pad2(d.getUTCSeconds())}Z`;
+}
+
+function buildICS(){
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Carteira de Imoveis//PT-BR','CALSCALE:GREGORIAN'];
+  const stamp = icsDtStamp();
+
+  allItems().forEach(item=>{
+    const entry = getEntry(item.key);
+    if(!entry.dataVisita) return;
+    const [y,m,d] = entry.dataVisita.split('-').map(Number);
+    let dtStartLine, dtEndLine;
+    if(entry.horaVisita){
+      const [hh,mm] = entry.horaVisita.split(':').map(Number);
+      const start = new Date(y, m-1, d, hh, mm, 0);
+      const end = new Date(start.getTime() + 60*60*1000);
+      const fmt = (dt)=> `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}T${pad2(dt.getHours())}${pad2(dt.getMinutes())}00`;
+      dtStartLine = `DTSTART:${fmt(start)}`;
+      dtEndLine = `DTEND:${fmt(end)}`;
+    }else{
+      const fmt = (yy,mm2,dd)=> `${yy}${pad2(mm2)}${pad2(dd)}`;
+      const endDate = new Date(y, m-1, d+1);
+      dtStartLine = `DTSTART;VALUE=DATE:${fmt(y,m,d)}`;
+      dtEndLine = `DTEND;VALUE=DATE:${fmt(endDate.getFullYear(), endDate.getMonth()+1, endDate.getDate())}`;
+    }
+    const descParts = [item.bairro];
+    if(item.cod) descParts.push(item.cod);
+    if(entry.obs) descParts.push(entry.obs);
+    lines.push('BEGIN:VEVENT');
+    lines.push(`UID:visita-${item.key}-${entry.dataVisita}@carteira-imoveis`);
+    lines.push(`DTSTAMP:${stamp}`);
+    lines.push(dtStartLine);
+    lines.push(dtEndLine);
+    lines.push(`SUMMARY:${icsEscape('Visita: '+item.end)}`);
+    lines.push(`DESCRIPTION:${icsEscape(descParts.join(' - '))}`);
+    lines.push(`LOCATION:${icsEscape(item.end+', '+item.bairro+', São Paulo, SP')}`);
+    lines.push('END:VEVENT');
+  });
+
+  Object.keys(calEvents).forEach(dateStr=>{
+    (calEvents[dateStr]||[]).forEach(ev=>{
+      const [y,m,d] = dateStr.split('-').map(Number);
+      const fmt = (yy,mm2,dd)=> `${yy}${pad2(mm2)}${pad2(dd)}`;
+      const endDate = new Date(y, m-1, d+1);
+      lines.push('BEGIN:VEVENT');
+      lines.push(`UID:${ev.id}@carteira-imoveis`);
+      lines.push(`DTSTAMP:${stamp}`);
+      lines.push(`DTSTART;VALUE=DATE:${fmt(y,m,d)}`);
+      lines.push(`DTEND;VALUE=DATE:${fmt(endDate.getFullYear(), endDate.getMonth()+1, endDate.getDate())}`);
+      lines.push(`SUMMARY:${icsEscape(ev.text)}`);
+      lines.push('END:VEVENT');
+    });
+  });
+
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function loadCalEvents(){
+  try{
+    const raw = localStorage.getItem(CAL_EVENTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  }catch(e){ return {}; }
+}
+function saveCalEvents(){
+  safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
+}
+let calEvents = loadCalEvents(); // { "YYYY-MM-DD": [{id, text}] }
+
+let calViewDate = new Date(); // mês exibido
+calViewDate.setDate(1);
+let calSelectedDate = null; // string YYYY-MM-DD
+
+const DOW_LABELS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const MONTH_LABELS = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+
+function dateKey(y,m,d){
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function todayKey(){
+  const t = new Date();
+  return dateKey(t.getFullYear(), t.getMonth(), t.getDate());
+}
+
+/* Agrupa todas as visitas cadastradas (campo "Data da visita" de cada imóvel) por data */
+function getVisitsByDate(){
+  const map = {};
+  allItems().forEach(item=>{
+    const entry = getEntry(item.key);
+    if(entry.dataVisita){
+      if(!map[entry.dataVisita]) map[entry.dataVisita] = [];
+      map[entry.dataVisita].push(item);
+    }
+  });
+  Object.keys(map).forEach(k=>{
+    map[k].sort((a,b)=>{
+      const ha = getEntry(a.key).horaVisita || '99:99';
+      const hb = getEntry(b.key).horaVisita || '99:99';
+      return ha.localeCompare(hb);
+    });
+  });
+  return map;
+}
+
+function goToProperty(key){
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterBairro').value = '';
+  document.getElementById('filterTipo').value = '';
+  document.getElementById('filterStatus').value = '';
+  activateTab(tabImoveisBtn, panelImoveis);
+  render();
+  scrollToCard(key);
+}
+
+function renderCalendar(){
+  const y = calViewDate.getFullYear();
+  const m = calViewDate.getMonth();
+  document.getElementById('calMonthLabel').textContent = `${MONTH_LABELS[m]} de ${y}`;
+
+  const visitsByDate = getVisitsByDate();
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  DOW_LABELS.forEach(l=>{
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = l;
+    grid.appendChild(el);
+  });
+
+  const firstDow = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const daysInPrevMonth = new Date(y, m, 0).getDate();
+  const tKey = todayKey();
+
+  const cells = [];
+  for(let i=firstDow-1; i>=0; i--){
+    cells.push({day: daysInPrevMonth - i, otherMonth:true, y: m===0?y-1:y, m: m===0?11:m-1});
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    cells.push({day:d, otherMonth:false, y, m});
+  }
+  while(cells.length % 7 !== 0 || cells.length < 42){
+    const last = cells[cells.length-1];
+    const nd = new Date(last.y, last.m, last.day+1);
+    cells.push({day:nd.getDate(), otherMonth:true, y:nd.getFullYear(), m:nd.getMonth()});
+    if(cells.length >= 42) break;
+  }
+
+  cells.forEach(c=>{
+    const key = dateKey(c.y, c.m, c.day);
+    const dayEl = document.createElement('div');
+    dayEl.className = 'cal-day' + (c.otherMonth?' other-month':'') + (key===tKey?' today':'') + (key===calSelectedDate?' selected':'');
+
+    const num = document.createElement('div');
+    num.className = 'cal-daynum';
+    num.textContent = c.day;
+    dayEl.appendChild(num);
+
+    const chipList = document.createElement('div');
+    chipList.className = 'cal-chip-list';
+    const visits = visitsByDate[key] || [];
+    const events = calEvents[key] || [];
+    const totalItems = visits.length + events.length;
+    let shown = 0;
+    visits.slice(0,2).forEach((v, vIdx)=>{
+      const vEntry = getEntry(v.key);
+      const chip = document.createElement('div');
+      chip.className = 'cal-chip';
+      chip.style.background = visitColor(vIdx);
+      chip.textContent = (vEntry.horaVisita ? vEntry.horaVisita+' · ' : '') + v.bairro + ' · ' + v.end;
+      chipList.appendChild(chip);
+      shown++;
+    });
+    if(shown < 2){
+      events.slice(0, 2-shown).forEach(ev=>{
+        const chip = document.createElement('div');
+        chip.className = 'cal-chip evento';
+        chip.textContent = ev.text;
+        chipList.appendChild(chip);
+        shown++;
+      });
+    }
+    if(totalItems > shown){
+      const more = document.createElement('div');
+      more.className = 'cal-more';
+      more.textContent = `+${totalItems - shown} mais`;
+      chipList.appendChild(more);
+    }
+    dayEl.appendChild(chipList);
+
+    dayEl.addEventListener('click', ()=>{
+      calSelectedDate = key;
+      if(c.otherMonth){
+        calViewDate = new Date(c.y, c.m, 1);
+      }
+      renderCalendar();
+      renderCalendarSide();
+    });
+
+    grid.appendChild(dayEl);
+  });
+}
+
+function renderCalendarSide(){
+  const sideTitle = document.getElementById('calSideTitle');
+  const sideDate = document.getElementById('calSideDate');
+  const visitsWrap = document.getElementById('calVisitsForDay');
+  const eventsWrap = document.getElementById('calEventsForDay');
+  const addWrap = document.getElementById('calAddWrap');
+
+  if(!calSelectedDate){
+    sideTitle.textContent = 'Selecione um dia';
+    sideDate.textContent = '';
+    visitsWrap.innerHTML = '';
+    eventsWrap.innerHTML = '';
+    addWrap.style.display = 'none';
+    return;
+  }
+
+  addWrap.style.display = 'block';
+  const [y,m,d] = calSelectedDate.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  sideTitle.textContent = calSelectedDate === todayKey() ? 'Hoje' : 'Dia selecionado';
+  sideDate.textContent = dt.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+
+  const visitsByDate = getVisitsByDate();
+  const visits = visitsByDate[calSelectedDate] || [];
+  visitsWrap.innerHTML = '';
+  if(visits.length === 0){
+    const p = document.createElement('p');
+    p.className = 'cal-empty';
+    p.textContent = 'Nenhuma visita de imóvel marcada para este dia.';
+    visitsWrap.appendChild(p);
+  }else{
+    visits.forEach((item, vIdx)=>{
+      const entry = getEntry(item.key);
+      const color = visitColor(vIdx);
+      const div = document.createElement('div');
+      div.className = 'cal-visit-item';
+      div.style.borderLeftColor = color;
+      const gcalUrl = buildGCalUrl({
+        title: 'Visita: ' + item.end,
+        dateStr: entry.dataVisita,
+        timeStr: entry.horaVisita,
+        details: [item.bairro, item.cod, entry.obs].filter(Boolean).join(' - '),
+        location: `${item.end}, ${item.bairro}, São Paulo, SP`
+      });
+      div.innerHTML = `
+        ${entry.horaVisita ? `<span class="v-hora" style="background:${color};">${escapeHtml(entry.horaVisita)}</span>` : ''}
+        <p class="v-end">${escapeHtml(item.end)}</p>
+        <p class="v-bairro">${escapeHtml(item.bairro)}${item.cod ? ' · '+escapeHtml(item.cod) : ''} · ${statusLabel(entry.status)}</p>
+        <button type="button" class="v-goto">Ver imóvel →</button>
+        <a class="v-gcal" href="${gcalUrl}" target="_blank" rel="noopener">+ Google Agenda</a>
+        <button type="button" class="v-remove">Remover desta data</button>
+      `;
+      div.querySelector('.v-goto').addEventListener('click', ()=> goToProperty(item.key));
+      div.querySelector('.v-remove').addEventListener('click', ()=>{
+        entry.dataVisita = '';
+        entry.horaVisita = '';
+        saveState(state);
+        renderCalendar();
+        renderCalendarSide();
+      });
+      visitsWrap.appendChild(div);
+    });
+  }
+
+  const dayEvents = calEvents[calSelectedDate] || [];
+  eventsWrap.innerHTML = '';
+  dayEvents.forEach(ev=>{
+    const div = document.createElement('div');
+    div.className = 'cal-event-item';
+    const gcalUrl = buildGCalUrl({
+      title: ev.text,
+      dateStr: calSelectedDate,
+      timeStr: '',
+      details: '',
+      location: ''
+    });
+    div.innerHTML = `<span>${escapeHtml(ev.text)} <a class="e-gcal" href="${gcalUrl}" target="_blank" rel="noopener">+ Google Agenda</a></span><button type="button" title="Remover">×</button>`;
+    div.querySelector('button').addEventListener('click', ()=>{
+      calEvents[calSelectedDate] = (calEvents[calSelectedDate]||[]).filter(e=>e.id!==ev.id);
+      if(calEvents[calSelectedDate].length === 0) delete calEvents[calSelectedDate];
+      saveCalEvents();
+      renderCalendar();
+      renderCalendarSide();
+    });
+    eventsWrap.appendChild(div);
+  });
+
+  populateVisitaSelect();
+}
+
+/* Preenche o select de imóveis do formulário "+ Visita", agrupado por bairro */
+function populateVisitaSelect(){
+  const sel = document.getElementById('calVisitaImovel');
+  if(!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  getBairros().forEach(b=>{
+    const group = document.createElement('optgroup');
+    group.label = b;
+    allItems().filter(i=>i.bairro===b).sort((a,b2)=>(a.n||9999)-(b2.n||9999)).forEach(item=>{
+      const opt = document.createElement('option');
+      opt.value = item.key;
+      opt.textContent = `${item.end}${item.cod ? ' · '+item.cod : ''}`;
+      group.appendChild(opt);
+    });
+    sel.appendChild(group);
+  });
+  if(currentVal && [...sel.options].some(o=>o.value===currentVal)) sel.value = currentVal;
+}
+
+/* Abas do painel "adicionar": Lembrete / Visita */
+const calTabLembreteBtn = document.getElementById('calTabLembreteBtn');
+const calTabVisitaBtn = document.getElementById('calTabVisitaBtn');
+const calPanelLembrete = document.getElementById('calPanelLembrete');
+const calPanelVisita = document.getElementById('calPanelVisita');
+
+calTabLembreteBtn.addEventListener('click', ()=>{
+  calTabLembreteBtn.classList.add('active');
+  calTabVisitaBtn.classList.remove('active');
+  calPanelLembrete.classList.add('active');
+  calPanelVisita.classList.remove('active');
+});
+calTabVisitaBtn.addEventListener('click', ()=>{
+  calTabVisitaBtn.classList.add('active');
+  calTabLembreteBtn.classList.remove('active');
+  calPanelVisita.classList.add('active');
+  calPanelLembrete.classList.remove('active');
+  populateVisitaSelect();
+});
+
+document.getElementById('calAddVisitaBtn').addEventListener('click', ()=>{
+  if(!calSelectedDate) return;
+  const sel = document.getElementById('calVisitaImovel');
+  const key = sel.value;
+  if(!key){ alert('Selecione um imóvel para agendar a visita.'); return; }
+  const horaInput = document.getElementById('calVisitaHora');
+  const obsInput = document.getElementById('calVisitaObs');
+  const entry = getEntry(key);
+  entry.dataVisita = calSelectedDate;
+  entry.horaVisita = horaInput.value;
+  const obsVal = obsInput.value.trim();
+  if(obsVal){
+    entry.obs = entry.obs ? (entry.obs + '\n' + obsVal) : obsVal;
+  }
+  saveState(state);
+  horaInput.value = '';
+  obsInput.value = '';
+  renderCalendar();
+  renderCalendarSide();
+});
+
+document.getElementById('calPrevBtn').addEventListener('click', ()=>{
+  calViewDate.setMonth(calViewDate.getMonth()-1);
+  renderCalendar();
+});
+document.getElementById('calNextBtn').addEventListener('click', ()=>{
+  calViewDate.setMonth(calViewDate.getMonth()+1);
+  renderCalendar();
+});
+document.getElementById('calTodayBtn').addEventListener('click', ()=>{
+  const t = new Date();
+  calViewDate = new Date(t.getFullYear(), t.getMonth(), 1);
+  calSelectedDate = todayKey();
+  renderCalendar();
+  renderCalendarSide();
+});
+
+document.getElementById('calAddEventBtn').addEventListener('click', ()=>{
+  if(!calSelectedDate) return;
+  const input = document.getElementById('calEventInput');
+  const text = input.value.trim();
+  if(!text) return;
+  if(!calEvents[calSelectedDate]) calEvents[calSelectedDate] = [];
+  calEvents[calSelectedDate].push({id: 'ev-'+Date.now()+'-'+Math.random().toString(36).slice(2,7), text});
+  saveCalEvents();
+  input.value = '';
+  renderCalendar();
+  renderCalendarSide();
+});
+document.getElementById('calEventInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    document.getElementById('calAddEventBtn').click();
+  }
+});
+
+document.getElementById('calExportIcsBtn').addEventListener('click', ()=>{
+  const ics = buildICS();
+  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `agenda-imoveis-${new Date().toISOString().slice(0,10)}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+renderCalendarSide();
 
 /* ---------- Inicialização ---------- */
 rebuildBairroUI();

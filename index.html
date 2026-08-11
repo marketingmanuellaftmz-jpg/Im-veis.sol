@@ -229,7 +229,7 @@
     color:var(--ink-faint);
     margin-bottom:4px;
   }
-  .field input, .field textarea{
+  .field input, .field textarea, .field select{
     width:100%;
     border:1px solid var(--line);
     border-radius:6px;
@@ -243,7 +243,7 @@
   .field-row{display:flex;gap:8px;}
   .field-row .field{flex:1;min-width:0;}
   .field textarea{min-height:48px;}
-  .field input:focus, .field textarea:focus{outline:2px solid var(--accent);outline-offset:0;background:#fff;}
+  .field input:focus, .field textarea:focus, .field select:focus{outline:2px solid var(--accent);outline-offset:0;background:#fff;}
 
   .fotos-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
   .foto-thumb{position:relative;width:44px;height:44px;border-radius:6px;overflow:hidden;border:1px solid var(--line);}
@@ -293,6 +293,15 @@
     padding:0;text-decoration:underline;
   }
   .remove-btn:hover{color:var(--brick);}
+
+  .owners-list{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+  .owner-block{
+    padding:10px;border:1px solid var(--line);border-radius:8px;background:#FBFBFA;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .owner-block .field-row{gap:8px;}
+  .owner-remove-btn{align-self:flex-start;}
+  .owner-add-btn{width:100%;}
 
   /* Modal adicionar imóvel */
   .modal-overlay{
@@ -384,6 +393,86 @@
     .notes-wrap{grid-template-columns:1fr;}
     .notes-list{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:12px;max-height:220px;}
   }
+
+  /* ---- Detalhes ampliados do imóvel ---- */
+  .details-block{
+    border-top:1px dashed var(--line);
+    padding-top:10px;
+    margin-top:2px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .details-section-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--accent);
+    margin:2px 0 0;
+  }
+  .info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+  }
+  .info-grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  .info-grid.cols-4{grid-template-columns:repeat(4,1fr);}
+  @media (max-width:420px){
+    .info-grid.cols-4{grid-template-columns:repeat(2,1fr);}
+  }
+  .chips-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:#FBFBFA;
+    color:var(--ink-soft);
+    cursor:pointer;
+    user-select:none;
+    transition:background .12s ease,border-color .12s ease,color .12s ease;
+  }
+  .chip:hover{border-color:var(--accent);}
+  .chip.on{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--accent);
+    font-weight:600;
+  }
+  .maps-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .maps-row .field{flex:1;min-width:180px;}
+  .maps-link-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;font-weight:600;
+    color:var(--accent);
+    text-decoration:none;
+    border:1px solid var(--accent);
+    padding:8px 12px;border-radius:6px;
+    white-space:nowrap;
+  }
+  .maps-link-btn:hover{background:var(--accent-soft);}
+  .maps-embed{
+    width:100%;height:180px;border:1px solid var(--line);border-radius:8px;
+    overflow:hidden;
+  }
+  .maps-embed iframe{width:100%;height:100%;border:0;display:block;}
+
+  .details-toggle{
+    background:none;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:8px 10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--accent);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+  }
+  .details-toggle:hover{background:var(--accent-soft);}
+  .details-toggle .chev{transition:transform .15s ease;}
+  .details-toggle.open .chev{transform:rotate(180deg);}
+  .details-block{display:none;}
+  .details-block.open{display:flex;}
 </style>
 </head>
 <body>
@@ -619,6 +708,23 @@ const IMOVEIS = [
 /* ---------- Chave única de cada imóvel (fixo usa o código JH) ---------- */
 IMOVEIS.forEach(i=>{ i.key = i.cod; });
 
+/* ---------- Listas de tags prontas para marcar ---------- */
+const TAGS_IMOVEL = [
+  "Área de serviço","Interfone","Infraestrutura para ar-condicionado","Água quente",
+  "Gás encanado","Vista permanente","Churrasqueira","Varanda","Varanda gourmet",
+  "Armários planejados","Piso em porcelanato","Piso laminado","Sacada","Lavabo",
+  "Depósito/Box","Mobiliado","Semimobiliado","Reformado","Sol da manhã"
+];
+const TAGS_CONDOMINIO = [
+  "Academia","Acesso PCD","Área de lazer","Bar","Bicicletário","Brinquedoteca",
+  "Churrasqueira","Espaço pets","Espaço gourmet","Espaço kids","Espaço beleza",
+  "Fitness","Jardim","Hall social privativo","Elevador social","Pet-friendly",
+  "Gerador","Estacionamento 24h","Honest market","Elevador de serviço","Coworking",
+  "Área de carga e descarga","Banheiro masculino/feminino","Deck molhado",
+  "Piscina adulto","Piscina infantil","Vagas de visitante","Zelador",
+  "Segurança 24h","Portaria 24 horas","Salão de festas","Quadra esportiva"
+];
+
 /* ---------- Estado editável (persistido no localStorage) ---------- */
 const STORAGE_KEY = "carteira_imoveis_v1";
 const CUSTOM_KEY = "carteira_imoveis_custom_v1";
@@ -664,6 +770,27 @@ function allItems(){
   return IMOVEIS.concat(customItems);
 }
 
+function blankDetails(){
+  return {
+    descricao:"",
+    condominioNome:"", cep:"",
+    uso:"", tipoImovel:"", face:"", andar:"",
+    areaPrivativa:"", areaTerreno:"", anoConstrucao:"",
+    valorM2:"", condominio:"", iptu:"",
+    quartos:"", suites:"", banheiros:"", salas:"",
+    vagas:"", vagasTipo:"",
+    construtora:"", qtdAndares:"", qtdElevadores:"",
+    topografia:"", mobilia:"",
+    vago:"", chavesQuem:"", chavesObs:"",
+    aceitaPermuta:"", permutaDescricao:"",
+    possuiRenda:"", rendaDescricao:"",
+    telefone2:"",
+    caractImovel:[], caractCondominio:[],
+    locacaoTemporada:"",
+    linkMaps:""
+  };
+}
+
 function getEntry(key){
   if(!state[key]){
     state[key] = {status:"disponivel", nome:"", telefone:"", dataVisita:"", obs:"", fotos:[]};
@@ -676,6 +803,22 @@ function getEntry(key){
   if(state[key].nome === undefined) state[key].nome = "";
   if(state[key].telefone === undefined) state[key].telefone = "";
   if(state[key].dataVisita === undefined) state[key].dataVisita = "";
+  // migração: versões antigas usavam nome/telefone/telefone2 únicos -> lista de proprietários
+  if(state[key].proprietarios === undefined){
+    const props = [];
+    if(state[key].nome || state[key].telefone){
+      props.push({nome: state[key].nome || "", telefone: state[key].telefone || ""});
+    }
+    if(state[key].telefone2){
+      props.push({nome: "", telefone: state[key].telefone2});
+    }
+    state[key].proprietarios = props;
+  }
+  // migração: adiciona campos de detalhes ampliados se ainda não existirem
+  const blank = blankDetails();
+  Object.keys(blank).forEach(k=>{
+    if(state[key][k] === undefined) state[key][k] = blank[k];
+  });
   return state[key];
 }
 
@@ -793,15 +936,10 @@ function renderCard(item){
         <option value="vendido" ${entry.status==='vendido'?'selected':''}>Vendido/Alugado</option>
       </select>
     </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Nome do proprietário</label>
-        <input type="text" class="nome-input" placeholder="Nome" value="${escapeHtml(entry.nome)}">
-      </div>
-      <div class="field">
-        <label>Telefone</label>
-        <input type="text" class="telefone-input" placeholder="(11) 90000-0000" value="${escapeHtml(entry.telefone)}">
-      </div>
+    <div class="field">
+      <label>Proprietários</label>
+      <div class="owners-list" data-role="owners-list"></div>
+      <button type="button" class="btn ghost owner-add-btn" data-role="add-owner">+ Adicionar outro proprietário</button>
     </div>
     <div class="field">
       <label>Data da visita</label>
@@ -815,6 +953,213 @@ function renderCard(item){
       <label>Fotos</label>
       <div class="fotos-row" data-role="fotos-row"></div>
     </div>
+
+    <button type="button" class="details-toggle" data-role="details-toggle">
+      <span data-role="details-toggle-label">Ver detalhes</span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="details-block" data-role="details-block">
+
+      <p class="details-section-title">Sobre o imóvel</p>
+      <div class="field">
+        <textarea class="det-descricao" placeholder="Descrição livre do imóvel...">${escapeHtml(entry.descricao)}</textarea>
+      </div>
+
+      <p class="details-section-title">Informações gerais</p>
+      <div class="info-grid">
+        <div class="field">
+          <label>Condomínio/edifício</label>
+          <input type="text" class="det-condominioNome" placeholder="Nome do condomínio ou edifício" value="${escapeHtml(entry.condominioNome)}">
+        </div>
+        <div class="field">
+          <label>CEP</label>
+          <input type="text" class="det-cep" placeholder="00000-000" value="${escapeHtml(entry.cep)}">
+        </div>
+        <div class="field">
+          <label>Construtora</label>
+          <input type="text" class="det-construtora" value="${escapeHtml(entry.construtora)}">
+        </div>
+        <div class="field">
+          <label>Uso</label>
+          <select class="det-uso">
+            <option value="">—</option>
+            <option value="Residencial" ${entry.uso==='Residencial'?'selected':''}>Residencial</option>
+            <option value="Comercial" ${entry.uso==='Comercial'?'selected':''}>Comercial</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tipo do imóvel</label>
+          <select class="det-tipoImovel">
+            <option value="">—</option>
+            ${["Apartamento","Casa","Cobertura","Sobrado","Studio/Kitnet","Terreno","Sala comercial","Loja"].map(t=>`<option value="${t}" ${entry.tipoImovel===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Face</label>
+          <select class="det-face">
+            <option value="">—</option>
+            ${["Norte","Sul","Leste","Oeste","Nascente","Poente"].map(t=>`<option value="${t}" ${entry.face===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Andar</label>
+          <input type="text" class="det-andar" value="${escapeHtml(entry.andar)}">
+        </div>
+        <div class="field">
+          <label>Área privativa (m²)</label>
+          <input type="text" class="det-areaPrivativa" value="${escapeHtml(entry.areaPrivativa)}">
+        </div>
+        <div class="field">
+          <label>Área terreno (m²)</label>
+          <input type="text" class="det-areaTerreno" value="${escapeHtml(entry.areaTerreno)}">
+        </div>
+        <div class="field">
+          <label>Ano de construção</label>
+          <input type="text" class="det-anoConstrucao" value="${escapeHtml(entry.anoConstrucao)}">
+        </div>
+        <div class="field">
+          <label>Valor por m²</label>
+          <input type="text" class="det-valorM2" placeholder="R$" value="${escapeHtml(entry.valorM2)}">
+        </div>
+        <div class="field">
+          <label>Condomínio</label>
+          <input type="text" class="det-condominio" placeholder="R$" value="${escapeHtml(entry.condominio)}">
+        </div>
+        <div class="field">
+          <label>IPTU (anual)</label>
+          <input type="text" class="det-iptu" placeholder="R$" value="${escapeHtml(entry.iptu)}">
+        </div>
+        <div class="field">
+          <label>Andares do prédio</label>
+          <input type="text" class="det-qtdAndares" value="${escapeHtml(entry.qtdAndares)}">
+        </div>
+        <div class="field">
+          <label>Elevadores</label>
+          <input type="text" class="det-qtdElevadores" value="${escapeHtml(entry.qtdElevadores)}">
+        </div>
+        <div class="field">
+          <label>Topografia</label>
+          <select class="det-topografia">
+            <option value="">—</option>
+            ${["Plana","Aclive","Declive"].map(t=>`<option value="${t}" ${entry.topografia===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Mobília</label>
+          <select class="det-mobilia">
+            <option value="">—</option>
+            ${["Mobiliado","Semimobiliado","Vazio"].map(t=>`<option value="${t}" ${entry.mobilia===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="info-grid cols-4">
+        <div class="field">
+          <label>Quartos</label>
+          <input type="text" class="det-quartos" value="${escapeHtml(entry.quartos)}">
+        </div>
+        <div class="field">
+          <label>Suítes</label>
+          <input type="text" class="det-suites" value="${escapeHtml(entry.suites)}">
+        </div>
+        <div class="field">
+          <label>Banheiros</label>
+          <input type="text" class="det-banheiros" value="${escapeHtml(entry.banheiros)}">
+        </div>
+        <div class="field">
+          <label>Salas</label>
+          <input type="text" class="det-salas" value="${escapeHtml(entry.salas)}">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Vagas</label>
+          <input type="text" class="det-vagas" value="${escapeHtml(entry.vagas)}">
+        </div>
+        <div class="field">
+          <label>Tipo de vaga</label>
+          <select class="det-vagasTipo">
+            <option value="">—</option>
+            ${["Livre","Determinada","Média/Presa"].map(t=>`<option value="${t}" ${entry.vagasTipo===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <p class="details-section-title">Situação e chaves</p>
+      <div class="field-row">
+        <div class="field">
+          <label>Vago?</label>
+          <select class="det-vago">
+            <option value="">Não informado</option>
+            <option value="Sim" ${entry.vago==='Sim'?'selected':''}>Sim</option>
+            <option value="Não" ${entry.vago==='Não'?'selected':''}>Não</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Chaves com</label>
+          <input type="text" class="det-chavesQuem" placeholder="Ex: Direto com a proprietária" value="${escapeHtml(entry.chavesQuem)}">
+        </div>
+      </div>
+      <div class="field">
+        <label>Observação sobre as chaves</label>
+        <input type="text" class="det-chavesObs" value="${escapeHtml(entry.chavesObs)}">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Aceita permuta?</label>
+          <select class="det-aceitaPermuta">
+            <option value="">Não informado</option>
+            <option value="Sim" ${entry.aceitaPermuta==='Sim'?'selected':''}>Sim</option>
+            <option value="Não" ${entry.aceitaPermuta==='Não'?'selected':''}>Não</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Descrição da permuta</label>
+          <input type="text" class="det-permutaDescricao" value="${escapeHtml(entry.permutaDescricao)}">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Possui renda?</label>
+          <select class="det-possuiRenda">
+            <option value="">Não informado</option>
+            <option value="Sim" ${entry.possuiRenda==='Sim'?'selected':''}>Sim</option>
+            <option value="Não" ${entry.possuiRenda==='Não'?'selected':''}>Não</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Descrição da renda</label>
+          <input type="text" class="det-rendaDescricao" value="${escapeHtml(entry.rendaDescricao)}">
+        </div>
+      </div>
+
+      <p class="details-section-title">Características do imóvel</p>
+      <div class="chips-wrap" data-role="chips-imovel"></div>
+
+      <p class="details-section-title">Locação por temporada</p>
+      <div class="field">
+        <select class="det-locacaoTemporada">
+          <option value="">Não informado</option>
+          <option value="Sim" ${entry.locacaoTemporada==='Sim'?'selected':''}>Sim</option>
+          <option value="Não" ${entry.locacaoTemporada==='Não'?'selected':''}>Não</option>
+        </select>
+      </div>
+
+      <p class="details-section-title">Características do condomínio</p>
+      <div class="chips-wrap" data-role="chips-condominio"></div>
+
+      <p class="details-section-title">Localização</p>
+      <div class="maps-row">
+        <div class="field">
+          <label>Endereço / link do Google Maps</label>
+          <input type="text" class="det-linkMaps" placeholder="Cole aqui um link do Google Maps (opcional)" value="${escapeHtml(entry.linkMaps)}">
+        </div>
+        <a class="maps-link-btn" data-role="maps-open" href="#" target="_blank" rel="noopener">Abrir no Maps ↗</a>
+      </div>
+      <div class="maps-embed" data-role="maps-embed"></div>
+
+    </div>
   `;
 
   // status
@@ -826,18 +1171,57 @@ function renderCard(item){
     updateStatLine();
   });
 
-  // nome do proprietário
-  const nomeInput = card.querySelector('.nome-input');
-  nomeInput.addEventListener('input', ()=>{
-    entry.nome = nomeInput.value;
+  // proprietários (lista dinâmica)
+  const ownersListEl = card.querySelector('[data-role="owners-list"]');
+  function renderOwners(){
+    ownersListEl.innerHTML = '';
+    if(entry.proprietarios.length === 0){
+      const empty = document.createElement('p');
+      empty.className = 'notes-empty';
+      empty.style.padding = '0 0 4px';
+      empty.textContent = 'Nenhum proprietário cadastrado.';
+      ownersListEl.appendChild(empty);
+    }
+    entry.proprietarios.forEach((owner, idx)=>{
+      const block = document.createElement('div');
+      block.className = 'owner-block';
+      block.innerHTML = `
+        <div class="field-row">
+          <div class="field">
+            <label>Nome</label>
+            <input type="text" class="owner-nome" placeholder="Nome" value="${escapeHtml(owner.nome)}">
+          </div>
+          <div class="field">
+            <label>Telefone</label>
+            <input type="text" class="owner-telefone" placeholder="(11) 90000-0000" value="${escapeHtml(owner.telefone)}">
+          </div>
+        </div>
+        ${entry.proprietarios.length > 1 ? '<button type="button" class="remove-btn owner-remove-btn">Remover este proprietário</button>' : ''}
+      `;
+      block.querySelector('.owner-nome').addEventListener('input', (e)=>{
+        owner.nome = e.target.value;
+        saveState(state);
+      });
+      block.querySelector('.owner-telefone').addEventListener('input', (e)=>{
+        owner.telefone = e.target.value;
+        saveState(state);
+      });
+      const rmBtn = block.querySelector('.owner-remove-btn');
+      if(rmBtn){
+        rmBtn.addEventListener('click', ()=>{
+          entry.proprietarios.splice(idx,1);
+          saveState(state);
+          renderOwners();
+        });
+      }
+      ownersListEl.appendChild(block);
+    });
+  }
+  renderOwners();
+  card.querySelector('[data-role="add-owner"]').addEventListener('click', ()=>{
+    entry.proprietarios.push({nome:'', telefone:''});
     saveState(state);
-  });
-
-  // telefone
-  const telefoneInput = card.querySelector('.telefone-input');
-  telefoneInput.addEventListener('input', ()=>{
-    entry.telefone = telefoneInput.value;
-    saveState(state);
+    renderOwners();
   });
 
   // data da visita
@@ -888,6 +1272,120 @@ function renderCard(item){
   }
   renderFotos();
 
+  /* ---- Campos de detalhes ampliados: liga cada input/select ao entry ---- */
+  const detFieldMap = [
+    ['.det-descricao','descricao'],
+    ['.det-condominioNome','condominioNome'],
+    ['.det-cep','cep'],
+    ['.det-construtora','construtora'],
+    ['.det-uso','uso'],
+    ['.det-tipoImovel','tipoImovel'],
+    ['.det-face','face'],
+    ['.det-andar','andar'],
+    ['.det-areaPrivativa','areaPrivativa'],
+    ['.det-areaTerreno','areaTerreno'],
+    ['.det-anoConstrucao','anoConstrucao'],
+    ['.det-valorM2','valorM2'],
+    ['.det-condominio','condominio'],
+    ['.det-iptu','iptu'],
+    ['.det-qtdAndares','qtdAndares'],
+    ['.det-qtdElevadores','qtdElevadores'],
+    ['.det-topografia','topografia'],
+    ['.det-mobilia','mobilia'],
+    ['.det-quartos','quartos'],
+    ['.det-suites','suites'],
+    ['.det-banheiros','banheiros'],
+    ['.det-salas','salas'],
+    ['.det-vagas','vagas'],
+    ['.det-vagasTipo','vagasTipo'],
+    ['.det-vago','vago'],
+    ['.det-chavesQuem','chavesQuem'],
+    ['.det-chavesObs','chavesObs'],
+    ['.det-aceitaPermuta','aceitaPermuta'],
+    ['.det-permutaDescricao','permutaDescricao'],
+    ['.det-possuiRenda','possuiRenda'],
+    ['.det-rendaDescricao','rendaDescricao'],
+    ['.det-locacaoTemporada','locacaoTemporada'],
+  ];
+  detFieldMap.forEach(([sel, key])=>{
+    const el = card.querySelector(sel);
+    if(!el) return;
+    const evt = (el.tagName === 'SELECT') ? 'change' : 'input';
+    el.addEventListener(evt, ()=>{
+      entry[key] = el.value;
+      saveState(state);
+    });
+  });
+
+  // link do maps: input livre
+  const linkMapsInput = card.querySelector('.det-linkMaps');
+  linkMapsInput.addEventListener('input', ()=>{
+    entry.linkMaps = linkMapsInput.value;
+    saveState(state);
+    renderMaps();
+  });
+
+  function mapsQuery(){
+    if(entry.linkMaps && entry.linkMaps.trim()){
+      return entry.linkMaps.trim();
+    }
+    return `${item.end}, ${item.bairro}, São Paulo, SP`;
+  }
+  function renderMaps(){
+    const q = mapsQuery();
+    const isUrl = /^https?:\/\//i.test(q);
+    const openHref = isUrl ? q : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+    const openBtn = card.querySelector('[data-role="maps-open"]');
+    openBtn.href = openHref;
+
+    const embedWrap = card.querySelector('[data-role="maps-embed"]');
+    const embedSrc = `https://www.google.com/maps?q=${encodeURIComponent(isUrl ? (item.end+', '+item.bairro+', São Paulo, SP') : q)}&output=embed`;
+    embedWrap.innerHTML = `<iframe src="${embedSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+  }
+  renderMaps();
+
+  // chips: características do imóvel
+  const chipsImovelWrap = card.querySelector('[data-role="chips-imovel"]');
+  TAGS_IMOVEL.forEach(tag=>{
+    const chip = document.createElement('span');
+    chip.className = 'chip' + (entry.caractImovel.includes(tag) ? ' on' : '');
+    chip.textContent = tag;
+    chip.addEventListener('click', ()=>{
+      const idx = entry.caractImovel.indexOf(tag);
+      if(idx === -1) entry.caractImovel.push(tag);
+      else entry.caractImovel.splice(idx,1);
+      chip.classList.toggle('on');
+      saveState(state);
+    });
+    chipsImovelWrap.appendChild(chip);
+  });
+
+  // chips: características do condomínio
+  const chipsCondWrap = card.querySelector('[data-role="chips-condominio"]');
+  TAGS_CONDOMINIO.forEach(tag=>{
+    const chip = document.createElement('span');
+    chip.className = 'chip' + (entry.caractCondominio.includes(tag) ? ' on' : '');
+    chip.textContent = tag;
+    chip.addEventListener('click', ()=>{
+      const idx = entry.caractCondominio.indexOf(tag);
+      if(idx === -1) entry.caractCondominio.push(tag);
+      else entry.caractCondominio.splice(idx,1);
+      chip.classList.toggle('on');
+      saveState(state);
+    });
+    chipsCondWrap.appendChild(chip);
+  });
+
+  // recolher/expandir detalhes extras
+  const detailsToggle = card.querySelector('[data-role="details-toggle"]');
+  const detailsBlock = card.querySelector('[data-role="details-block"]');
+  const detailsToggleLabel = card.querySelector('[data-role="details-toggle-label"]');
+  detailsToggle.addEventListener('click', ()=>{
+    const isOpen = detailsBlock.classList.toggle('open');
+    detailsToggle.classList.toggle('open', isOpen);
+    detailsToggleLabel.textContent = isOpen ? 'Ocultar detalhes' : 'Ver detalhes';
+  });
+
   // remover (apenas itens adicionados manualmente)
   const removeBtn = card.querySelector('[data-role="remove"]');
   if(removeBtn){
@@ -928,7 +1426,8 @@ function matches(item, f){
   if(f.tipo && item.tipo !== f.tipo) return false;
   if(f.status && entry.status !== f.status) return false;
   if(f.q){
-    const hay = `${item.end} ${item.cod||''} ${item.bairro} ${entry.nome} ${entry.telefone} ${entry.obs} ${item.n||''}`.toLowerCase();
+    const proprietariosStr = entry.proprietarios.map(p=>`${p.nome} ${p.telefone}`).join(' ');
+    const hay = `${item.end} ${item.cod||''} ${item.bairro} ${proprietariosStr} ${entry.obs} ${item.n||''}`.toLowerCase();
     if(!hay.includes(f.q)) return false;
   }
   return true;
@@ -1059,8 +1558,9 @@ addForm.addEventListener('submit', (e)=>{
   customItems.push(newItem);
 
   const entry = getEntry(newItem.key);
-  entry.nome = nome;
-  entry.telefone = telefone;
+  if(nome || telefone){
+    entry.proprietarios.push({nome: nome, telefone: telefone});
+  }
   entry.dataVisita = dataVisita;
   saveState(state);
   saveCustom();

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Imóveis · Carteira de Leads</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F6F5;
+    --surface:#FFFFFF;
+    --ink:#1B2B29;
+    --ink-soft:#5D6B68;
+    --ink-faint:#8B9794;
+    --accent:#1F6F5C;
+    --accent-soft:#E3EFEC;
+    --gold:#B8842E;
+    --gold-soft:#F5EBDA;
+    --brick:#A54A3A;
+    --brick-soft:#F3E4E0;
+    --line:#DFE4E2;
+    --shadow: 0 1px 2px rgba(27,43,41,0.04), 0 4px 16px rgba(27,43,41,0.05);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px 100px;}
+
+  /* Header */
+  header.top{
+    padding:56px 28px 36px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#EEF3F1 0%, var(--bg) 100%);
+  }
+  .top-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(32px,4.5vw,52px);
+    line-height:1.05;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .count-badge{
+    text-align:right;
+  }
+  .count-badge .num{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:56px;
+    line-height:1;
+    color:var(--accent);
+  }
+  .count-badge .lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  /* Bairro index strip — signature element */
+  .index-strip{
+    max-width:1180px;margin:26px auto 0;
+    display:flex;flex-wrap:wrap;gap:0;
+    border-top:1px solid var(--line);
+  }
+  .index-item{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    padding:10px 14px;
+    border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s ease, color .15s ease;
+  }
+  .index-item:hover{background:var(--accent-soft);color:var(--accent);}
+  .index-item b{color:var(--ink);font-weight:600;}
+  .index-item:hover b{color:var(--accent);}
+
+  /* Controls */
+  .controls{
+    position:sticky;top:0;z-index:20;
+    background:rgba(244,246,245,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding:16px 28px;
+  }
+  .controls-inner{max-width:1180px;margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+  .search-box{
+    flex:1 1 240px;
+    position:relative;
+  }
+  .search-box input{
+    width:100%;
+    padding:11px 14px 11px 38px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .search-box input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+  .search-box::before{
+    content:"⌕";
+    position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    color:var(--ink-faint);font-size:16px;
+  }
+  select, .btn{
+    padding:10px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  select:focus, .btn:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .btn{font-weight:600;}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{background:#195949;}
+  .btn.ghost:hover{background:var(--accent-soft);}
+  .stat-line{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    padding:10px 28px 0;
+    max-width:1180px;margin:0 auto;
+  }
+
+  /* Bairro sections */
+  .bairro-section{margin-top:44px;}
+  .bairro-head{
+    display:flex;align-items:baseline;gap:12px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;margin-bottom:18px;
+  }
+  .bairro-head h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:24px;
+    margin:0;
+  }
+  .bairro-head .bairro-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:14px;
+  }
+
+  /* Card */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 16px 14px;
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .card-id{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-faint);
+  }
+  .card-id b{color:var(--ink-soft);}
+  .tipo-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .tipo-venda{background:var(--accent-soft);color:var(--accent);}
+  .tipo-locacao{background:var(--gold-soft);color:var(--gold);}
+  .tipo-ambos{background:#EAE7F5;color:#5A4E9E;}
+
+  .endereco{
+    font-family:'Fraunces',serif;
+    font-size:16px;
+    font-weight:500;
+    line-height:1.3;
+    margin:0;
+  }
+
+  .status-row select{
+    width:100%;
+    font-weight:600;
+    font-size:12.5px;
+    padding:7px 10px;
+  }
+  .status-disponivel{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+  .status-negociando{background:var(--gold-soft);color:var(--gold);border-color:var(--gold);}
+  .status-vendido{background:var(--brick-soft);color:var(--brick);border-color:var(--brick);}
+
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:4px;
+  }
+  .field input, .field textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:7px 9px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    color:var(--ink);
+    background:#FBFBFA;
+    resize:vertical;
+  }
+  .field-row{display:flex;gap:8px;}
+  .field-row .field{flex:1;min-width:0;}
+  .field textarea{min-height:48px;}
+  .field input:focus, .field textarea:focus{outline:2px solid var(--accent);outline-offset:0;background:#fff;}
+
+  .fotos-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .foto-thumb{position:relative;width:44px;height:44px;border-radius:6px;overflow:hidden;border:1px solid var(--line);}
+  .foto-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .foto-thumb button{
+    position:absolute;top:0;right:0;background:rgba(27,43,41,.75);color:#fff;border:none;
+    width:16px;height:16px;font-size:10px;line-height:16px;cursor:pointer;border-radius:0 0 0 6px;
+  }
+  .foto-add{
+    width:44px;height:44px;border-radius:6px;border:1px dashed var(--ink-faint);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-faint);
+    cursor:pointer;font-size:18px;background:#FBFBFA;
+  }
+  .foto-add:hover{border-color:var(--accent);color:var(--accent);}
+  .foto-add input{display:none;}
+
+  .empty{
+    text-align:center;padding:80px 20px;color:var(--ink-soft);
+    font-family:'Fraunces',serif;font-size:18px;
+  }
+
+  footer{
+    max-width:1180px;margin:60px auto 0;padding:20px 28px 0;
+    border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  @media (max-width:640px){
+    .top-inner{align-items:flex-start;}
+    .count-badge{text-align:left;}
+    .controls-inner{gap:8px;}
+  }
+
+  /* Item adicionado manualmente */
+  .custom-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+  .remove-btn{
+    background:none;border:none;cursor:pointer;
+    color:var(--ink-faint);font-size:12px;
+    font-family:'IBM Plex Mono',monospace;
+    padding:0;text-decoration:underline;
+  }
+  .remove-btn:hover{color:var(--brick);}
+
+  /* Modal adicionar imóvel */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(27,43,41,0.45);
+    display:none;align-items:center;justify-content:center;
+    z-index:100;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);border-radius:12px;
+    max-width:440px;width:100%;
+    padding:26px 26px 22px;
+    box-shadow:0 12px 40px rgba(27,43,41,0.25);
+    max-height:88vh;overflow-y:auto;
+  }
+  .modal h3{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:22px;margin:0 0 18px;
+  }
+  .modal .field{margin-bottom:14px;}
+  .modal-actions{
+    display:flex;justify-content:flex-end;gap:10px;margin-top:18px;
+  }
+
+  /* Abas principais */
+  .main-tabs{
+    max-width:1180px;margin:0 auto;padding:22px 28px 0;
+    display:flex;gap:6px;
+  }
+  .main-tab{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;
+    padding:10px 18px;border:1px solid var(--line);border-bottom:none;
+    border-radius:8px 8px 0 0;background:var(--surface);color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .main-tab.active{color:var(--accent);background:var(--bg);border-color:var(--line);position:relative;}
+  .main-tab.active::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);
+  }
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* Bloco de notas */
+  .notes-wrap{
+    max-width:1180px;margin:0 auto;padding:0 28px 100px;
+    display:grid;grid-template-columns:260px 1fr;gap:20px;
+  }
+  .notes-list{
+    border-right:1px solid var(--line);
+    padding-right:16px;
+    display:flex;flex-direction:column;gap:6px;
+    max-height:70vh;overflow-y:auto;
+  }
+  .notes-list-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .notes-list-head h3{
+    font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin:0;
+  }
+  .note-item{
+    padding:10px 10px;border-radius:8px;cursor:pointer;
+    border:1px solid transparent;
+  }
+  .note-item:hover{background:var(--surface);}
+  .note-item.active{background:var(--accent-soft);border-color:var(--accent);}
+  .note-item .n-title{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .note-item .n-date{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-faint);
+  }
+  .notes-empty{
+    font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-faint);padding:8px 10px;
+  }
+  .note-editor{display:flex;flex-direction:column;gap:10px;}
+  .note-editor textarea{
+    width:100%;min-height:52vh;
+    border:1px solid var(--line);border-radius:10px;
+    padding:16px;background:var(--surface);
+    font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.6;color:var(--ink);
+    resize:vertical;
+  }
+  .note-editor textarea:focus{outline:2px solid var(--accent);outline-offset:0;}
+  .note-editor-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .note-status{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+  }
+  @media (max-width:720px){
+    .notes-wrap{grid-template-columns:1fr;}
+    .notes-list{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:12px;max-height:220px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div>
+      <p class="eyebrow">Carteira privada de imóveis</p>
+      <h1>Meus Imóveis</h1>
+    </div>
+    <div class="count-badge">
+      <div class="num" id="totalCount">71</div>
+      <div class="lbl">imóveis na carteira</div>
+    </div>
+  </div>
+  <nav class="index-strip" id="indexStrip" aria-label="Índice de bairros"></nav>
+</header>
+
+<nav class="main-tabs">
+  <button class="main-tab active" id="tabImoveisBtn">Imóveis</button>
+  <button class="main-tab" id="tabNotasBtn">Bloco de notas</button>
+</nav>
+
+<div class="tab-panel active" id="panelImoveis">
+
+<div class="controls">
+  <div class="controls-inner">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Buscar por endereço, código JH, bairro ou contato...">
+    </div>
+    <select id="filterBairro"><option value="">Todos os bairros</option></select>
+    <select id="filterTipo">
+      <option value="">Venda ou locação</option>
+      <option value="Venda">Venda</option>
+      <option value="Locação">Locação</option>
+      <option value="Venda e Locação">Venda e Locação</option>
+    </select>
+    <select id="filterStatus">
+      <option value="">Todos os status</option>
+      <option value="disponivel">Disponível</option>
+      <option value="negociando">Negociando</option>
+      <option value="vendido">Vendido/Alugado</option>
+    </select>
+    <button class="btn primary" id="addBtn">+ Adicionar imóvel</button>
+    <button class="btn ghost" id="exportBtn" title="Baixar backup em JSON">Exportar backup</button>
+    <label class="btn ghost" style="margin:0;">
+      Importar backup
+      <input type="file" id="importInput" accept="application/json" style="display:none;">
+    </label>
+  </div>
+</div>
+
+<p class="stat-line" id="statLine"></p>
+
+<div class="wrap">
+  <div id="results"></div>
+</div>
+
+</div>
+
+<div class="tab-panel" id="panelNotas">
+  <div class="notes-wrap">
+    <div class="notes-list" id="notesList">
+      <div class="notes-list-head">
+        <h3>Suas notas</h3>
+        <button class="btn ghost" id="newNoteBtn" style="padding:6px 10px;font-size:12px;">+ Nova</button>
+      </div>
+      <div id="notesListItems"></div>
+    </div>
+    <div class="note-editor">
+      <textarea id="noteContent" placeholder="Escreva aqui suas ideias, lembretes, planos de negociação..."></textarea>
+      <div class="note-editor-actions">
+        <button class="btn primary" id="saveNoteBtn">Salvar como novo arquivo</button>
+        <button class="btn ghost" id="updateNoteBtn">Salvar alterações</button>
+        <button class="btn ghost" id="downloadNoteBtn">Baixar .txt</button>
+        <button class="btn ghost" id="deleteNoteBtn">Excluir</button>
+        <span class="note-status" id="noteStatus"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Adicionar imóvel</h3>
+    <form id="addForm">
+      <div class="field">
+        <label>Bairro</label>
+        <input type="text" id="newBairro" list="bairroList" placeholder="Ex: Perdizes" required>
+        <datalist id="bairroList"></datalist>
+      </div>
+      <div class="field">
+        <label>Endereço</label>
+        <input type="text" id="newEndereco" placeholder="Rua, número, unidade..." required>
+      </div>
+      <div class="field">
+        <label>Código JH (opcional)</label>
+        <input type="text" id="newCodigo" placeholder="Ex: JH1234">
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="newTipo">
+          <option value="Venda">Venda</option>
+          <option value="Locação">Locação</option>
+          <option value="Venda e Locação">Venda e Locação</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Nome do proprietário</label>
+          <input type="text" id="newNome" placeholder="Nome">
+        </div>
+        <div class="field">
+          <label>Telefone</label>
+          <input type="text" id="newTelefone" placeholder="(11) 90000-0000">
+        </div>
+      </div>
+      <div class="field">
+        <label>Data da visita</label>
+        <input type="date" id="newVisita">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" id="cancelAdd">Cancelar</button>
+        <button type="submit" class="btn primary">Adicionar imóvel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <span>Dados salvos automaticamente neste navegador.</span>
+  <span>Faça backup (Exportar) sempre que atualizar muitos imóveis.</span>
+</footer>
+
+<script>
+/* ---------- Dados base (fixos) ---------- */
+const IMOVEIS = [
+  {n:4, cod:"JH3116", bairro:"Água Branca", end:"R Clélia, 2145 - Und. 41", tipo:"Venda"},
+  {n:28, cod:"JH3785", bairro:"Água Branca", end:"R Iporanga, 250 - Und. 27 (D)", tipo:"Venda"},
+  {n:51, cod:"JH3109", bairro:"Água Branca", end:"R Faustolo, 218 - Und. 2", tipo:"Venda"},
+
+  {n:10, cod:"JH3117", bairro:"Alto da Lapa", end:"R Presidente Antônio Cândido, 330 - Und. 182", tipo:"Locação"},
+  {n:16, cod:"JH3783", bairro:"Alto da Lapa", end:"R Sales Júnior, 285 - Und. 221", tipo:"Venda"},
+
+  {n:3, cod:"JH3623", bairro:"Barra Funda", end:"R Do Bosque, 980 - Und. 131 (C)", tipo:"Venda"},
+  {n:45, cod:"JH1335", bairro:"Barra Funda", end:"AV Mofarrej, 275 - Und. 62", tipo:"Venda"},
+  {n:54, cod:"JH3128", bairro:"Barra Funda", end:"AL Olga, 180 - Und. 10", tipo:"Venda"},
+  {n:56, cod:"JH2049", bairro:"Barra Funda", end:"R Barra Funda, 101 - Und. 44", tipo:"Locação"},
+
+  {n:18, cod:"JH2717", bairro:"Bela Vista", end:"R Apinajés, 271 - Und. 201", tipo:"Venda"},
+
+  {n:39, cod:"JH1849", bairro:"Cerqueira César", end:"R Augusta, 2435", tipo:"Locação"},
+  {n:63, cod:"JH3230", bairro:"Cerqueira César", end:"R Da Consolação, 2586 - Und. 3", tipo:"Locação"},
+
+  {n:1, cod:"JH3232", bairro:"Consolação", end:"AV Angélica, 1996 - Und. 904", tipo:"Locação"},
+  {n:27, cod:"JH3784", bairro:"Consolação", end:"R Bela Cintra, 1903 - Und. 12", tipo:"Venda e Locação"},
+  {n:31, cod:"JH99", bairro:"Consolação", end:"R Da Consolação, 328 - Und. 1616 - Bl. 1", tipo:"Venda"},
+  {n:33, cod:"JH78", bairro:"Consolação", end:"AV Angélica, 1968 - Bl. 1 (101 ao 106)", tipo:"Venda"},
+  {n:35, cod:"JH1455", bairro:"Consolação", end:"R Frei Caneca, 91 - Und. 41", tipo:"Venda"},
+  {n:53, cod:"JH2840", bairro:"Consolação", end:"R Frei Caneca, 485 - Und. 116 (B)", tipo:"Locação"},
+  {n:70, cod:"JH3790", bairro:"Consolação", end:"R Dona Antônia de Queirós, 567", tipo:"Locação"},
+
+  {n:58, cod:"JH2401", bairro:"Jardim das Bandeiras", end:"R Luís Murat, 386", tipo:"Venda"},
+
+  {n:55, cod:"JH3135", bairro:"Jardim Paulista", end:"AL Lorena, 289 - Und. 52", tipo:"Venda e Locação"},
+  {n:71, cod:"JH3171", bairro:"Jardim Paulista", end:"AL Casa Branca, 978 - Und. 111", tipo:"Locação"},
+
+  {n:9, cod:"JH3095", bairro:"Lapa", end:"R Monteiro de Melo, 406 - Und. 4", tipo:"Locação"},
+  {n:11, cod:"JH2872", bairro:"Lapa", end:"R Monteiro de Melo, 414", tipo:"Locação"},
+  {n:15, cod:"JH3782", bairro:"Lapa", end:"R Monteiro de Melo, 412 - Und. 3", tipo:"Locação"},
+  {n:21, cod:"JH3257", bairro:"Lapa", end:"R Marina Ciufuli Zanfelice, 280", tipo:"Locação"},
+  {n:47, cod:"JH1612", bairro:"Lapa", end:"R Faustolo, 645 - Und. 184", tipo:"Venda"},
+
+  {n:6, cod:"JH3752", bairro:"Perdizes", end:"R Monte Alegre, 61 - Und. 32", tipo:"Locação"},
+  {n:17, cod:"JH1088", bairro:"Perdizes", end:"R Apinajés, 919 - Und. 94", tipo:"Venda"},
+  {n:19, cod:"JH2744", bairro:"Perdizes", end:"R Apinajés, 35 - Und. 32 (B)", tipo:"Locação"},
+  {n:23, cod:"JH2754", bairro:"Perdizes", end:"R Tucuna, 132 - Und. 42", tipo:"Venda"},
+  {n:24, cod:"JH2880", bairro:"Perdizes", end:"R Aimberê, 457 - Und. 2", tipo:"Locação"},
+  {n:25, cod:"JH2396", bairro:"Perdizes", end:"R Aimberê, 1317", tipo:"Venda e Locação"},
+  {n:26, cod:"JH2237", bairro:"Perdizes", end:"R Aimberê, 210", tipo:"Venda"},
+  {n:34, cod:"JH811", bairro:"Perdizes", end:"R Diana, 899 - Und. 91", tipo:"Venda"},
+  {n:38, cod:"JH2917", bairro:"Perdizes", end:"R Cotoxó, 888", tipo:"Locação"},
+  {n:64, cod:"JH3235", bairro:"Perdizes", end:"R Coronel Melo Oliveira, 426", tipo:"Venda"},
+  {n:66, cod:"JH2096", bairro:"Perdizes", end:"R Apiacás, 351 - Und. 181", tipo:"Locação"},
+  {n:68, cod:"JH2241", bairro:"Perdizes", end:"R Iperóig, 554 - Und. 92", tipo:"Venda"},
+
+  {n:12, cod:"JH3495", bairro:"Pinheiros", end:"R Padre João Gonçalves, 58 - Und. 213", tipo:"Locação"},
+  {n:49, cod:"JH3087", bairro:"Pinheiros", end:"R Fernão Dias, 323 - Und. 261", tipo:"Venda e Locação"},
+  {n:57, cod:"JH3152", bairro:"Pinheiros", end:"R Capote Valente, 1300 - Und. 122", tipo:"Locação"},
+  {n:59, cod:"JH3175", bairro:"Pinheiros", end:"R Paes Leme, 215 - Und. 33", tipo:"Locação"},
+  {n:60, cod:"JH742", bairro:"Pinheiros", end:"R Mourato Coelho, 83 - Und. 41", tipo:"Venda"},
+  {n:67, cod:"JH2144", bairro:"Pinheiros", end:"AV Rebouças, 2636 - Und. 1203", tipo:"Venda"},
+
+  {n:42, cod:"JH2992", bairro:"Santa Cecília", end:"R Doutor Albuquerque Lins, 268 - Und. 23", tipo:"Venda"},
+  {n:62, cod:"JH2948", bairro:"Santa Cecília", end:"R Doutor Albuquerque Lins, 268 - Und. 3", tipo:"Venda"},
+
+  {n:8, cod:"JH3776", bairro:"Sumaré", end:"R Valdir Niemeyer, 79 - Und. 604", tipo:"Venda"},
+  {n:20, cod:"JH2773", bairro:"Sumaré", end:"R Paracuê, 162 - Und. 101", tipo:"Venda"},
+  {n:22, cod:"JH2742", bairro:"Sumaré", end:"R Catalão, 72", tipo:"Venda e Locação"},
+  {n:32, cod:"JH2893", bairro:"Sumaré", end:"R Paris, 123 - Und. 606", tipo:"Locação"},
+  {n:40, cod:"JH1965", bairro:"Sumaré", end:"R Capital Federal, 43", tipo:"Venda e Locação"},
+  {n:61, cod:"JH2371", bairro:"Sumaré", end:"AV Professor Alfonso Bovero, 288", tipo:"Locação"},
+
+  {n:37, cod:"JH2735", bairro:"Sumarezinho", end:"R Harmonia, 1323 - Und. 163", tipo:"Venda e Locação"},
+  {n:52, cod:"JH3105", bairro:"Sumarezinho", end:"R Heitor Penteado, 2010", tipo:"Locação"},
+
+  {n:14, cod:"JH3778", bairro:"Vila Anastácio", end:"AV Raimundo Pereira de Magalhães, 817 - Und. 224 (Bloco A)", tipo:"Venda e Locação"},
+  {n:29, cod:"JH3786", bairro:"Vila Anastácio", end:"AV Raimundo Pereira de Magalhães, 555 - Und. 64 (A)", tipo:"Venda"},
+
+  {n:48, cod:"JH3080", bairro:"Vila Anglo Brasileira", end:"R Doutor Miranda de Azevedo, 1285 - Und. 74", tipo:"Venda"},
+
+  {n:2, cod:"JH1659", bairro:"Vila Buarque", end:"R Maria Borba, 43 - Und. 54", tipo:"Venda"},
+  {n:41, cod:"JH1956", bairro:"Vila Buarque", end:"R Santa Isabel, 62 - Und. 41", tipo:"Venda"},
+
+  {n:43, cod:"JH2335", bairro:"Vila Hamburguesa", end:"R Brentano, 340 - Und. 51", tipo:"Venda"},
+
+  {n:65, cod:"JH2999", bairro:"Vila Ipojuca", end:"R Rumaica, 86", tipo:"Venda e Locação"},
+
+  {n:7, cod:"MI3542", bairro:"Vila Leopoldina", end:"R Carlos Weber, 253 - Und. 32", tipo:"Locação"},
+  {n:30, cod:"JH3747", bairro:"Vila Leopoldina", end:"R Guaipá, 1236", tipo:"Venda e Locação"},
+  {n:36, cod:"JH2345", bairro:"Vila Leopoldina", end:"R Schilling, 84 - Und. 32", tipo:"Venda"},
+  {n:44, cod:"JH2264", bairro:"Vila Leopoldina", end:"R Hayden, 51 - Und. 1202", tipo:"Venda"},
+  {n:46, cod:"JH3050", bairro:"Vila Leopoldina", end:"R Mário de Andrade, 100 - Und. 161", tipo:"Venda"},
+
+  {n:5, cod:"JH3745", bairro:"Vila Madalena", end:"PÇ Japuba, 35 - Und. 32 (B)", tipo:"Venda"},
+  {n:13, cod:"JH3632", bairro:"Vila Madalena", end:"R Sebastião Caleiro, 55", tipo:"Locação"},
+
+  {n:50, cod:"JH3103", bairro:"Vila Pompéia", end:"AV Pompéia, 1034 - Und. 21", tipo:"Venda"},
+
+  {n:69, cod:"JH3791", bairro:"Vila Sônia", end:"AV Professor Francisco Morato, 4923 - Und. 254", tipo:"Locação"},
+];
+
+/* ---------- Chave única de cada imóvel (fixo usa o código JH) ---------- */
+IMOVEIS.forEach(i=>{ i.key = i.cod; });
+
+/* ---------- Estado editável (persistido no localStorage) ---------- */
+const STORAGE_KEY = "carteira_imoveis_v1";
+const CUSTOM_KEY = "carteira_imoveis_custom_v1";
+
+let storageAvisoMostrado = false;
+function safeStorageSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+    return true;
+  }catch(e){
+    if(!storageAvisoMostrado){
+      storageAvisoMostrado = true;
+      alert('Este navegador está bloqueando o salvamento automático (comum em navegadores dentro de apps como Instagram/WhatsApp, ou no modo anônimo). O que você adicionar vai continuar funcionando nesta visita, mas não vai ficar salvo ao fechar a página. Abra o arquivo direto no Chrome ou Safari para salvar normalmente.');
+    }
+    return false;
+  }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+function saveState(state){
+  safeStorageSet(STORAGE_KEY, JSON.stringify(state));
+}
+let state = loadState();
+
+function loadCustom(){
+  try{
+    const raw = localStorage.getItem(CUSTOM_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){ return []; }
+}
+function saveCustom(){
+  safeStorageSet(CUSTOM_KEY, JSON.stringify(customItems));
+}
+let customItems = loadCustom();
+
+function allItems(){
+  return IMOVEIS.concat(customItems);
+}
+
+function getEntry(key){
+  if(!state[key]){
+    state[key] = {status:"disponivel", nome:"", telefone:"", dataVisita:"", obs:"", fotos:[]};
+  }
+  // migração: versões antigas usavam um único campo "contato"
+  if(state[key].contato !== undefined && !state[key].nome && !state[key].telefone){
+    state[key].nome = state[key].contato;
+    state[key].telefone = "";
+  }
+  if(state[key].nome === undefined) state[key].nome = "";
+  if(state[key].telefone === undefined) state[key].telefone = "";
+  if(state[key].dataVisita === undefined) state[key].dataVisita = "";
+  return state[key];
+}
+
+/* ---------- Construção da UI ---------- */
+function getBairros(){
+  return [...new Set(allItems().map(i=>i.bairro))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+
+/* Lista ampla de bairros de São Paulo para sugestão (além dos já cadastrados) */
+const BAIRROS_SUGERIDOS_SP = [
+  "Água Branca","Alto da Lapa","Alto de Pinheiros","Anhanguera","Aricanduva","Artur Alvim",
+  "Barra Funda","Bela Vista","Belém","Bom Retiro","Brás","Brooklin","Butantã",
+  "Cambuci","Campo Belo","Campo Limpo","Cangaíba","Casa Verde","Cerqueira César",
+  "Chácara Klabin","Cidade Ademar","Cidade Jardim","Consolação","Cursino",
+  "Freguesia do Ó","Grajaú","Higienópolis","Ipiranga","Itaim Bibi","Itaquera",
+  "Jabaquara","Jaçanã","Jaguaré","Jardim América","Jardim das Bandeiras",
+  "Jardim Europa","Jardim Paulista","Jardim Paulistano","Jardins","Lapa",
+  "Liberdade","Limão","Mandaqui","Mooca","Morumbi","Moema","Nazaré Paulista",
+  "Panamby","Parque do Carmo","Perdizes","Perus","Pinheiros",
+  "Pirituba","Pompéia","República","Santa Cecília","Santana","Santo Amaro",
+  "São Domingos","Saúde","Sé","Sumaré","Sumarezinho","Tatuapé","Tremembé",
+  "Tucuruvi","Vila Andrade","Vila Anastácio","Vila Anglo Brasileira",
+  "Vila Buarque","Vila Clementino","Vila Formosa","Vila Guilherme",
+  "Vila Hamburguesa","Vila Ipojuca","Vila Leopoldina","Vila Madalena",
+  "Vila Mariana","Vila Matilde","Vila Olímpia","Vila Pompéia","Vila Prudente",
+  "Vila Romana","Vila Sônia"
+];
+
+function rebuildBairroUI(){
+  const bairros = getBairros();
+  const bairrosSugestao = [...new Set([...bairros, ...BAIRROS_SUGERIDOS_SP])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+
+  // index strip
+  const indexStrip = document.getElementById('indexStrip');
+  indexStrip.innerHTML = '';
+  bairros.forEach(b=>{
+    const count = allItems().filter(i=>i.bairro===b).length;
+    const el = document.createElement('div');
+    el.className = 'index-item';
+    el.innerHTML = `${b} <b>${count}</b>`;
+    el.addEventListener('click', ()=>{
+      const target = document.getElementById('sec-'+slug(b));
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+    indexStrip.appendChild(el);
+  });
+
+  // filtro bairro select (preserva seleção atual se ainda existir)
+  const filterBairro = document.getElementById('filterBairro');
+  const current = filterBairro.value;
+  filterBairro.innerHTML = '<option value="">Todos os bairros</option>';
+  bairros.forEach(b=>{
+    const opt = document.createElement('option');
+    opt.value = b; opt.textContent = b;
+    filterBairro.appendChild(opt);
+  });
+  if(bairros.includes(current)) filterBairro.value = current;
+
+  // datalist do formulário de adicionar
+  const bairroList = document.getElementById('bairroList');
+  bairroList.innerHTML = '';
+  bairrosSugestao.forEach(b=>{
+    const opt = document.createElement('option');
+    opt.value = b;
+    bairroList.appendChild(opt);
+  });
+}
+
+function slug(s){
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-');
+}
+
+function tipoClass(tipo){
+  if(tipo==="Venda") return "tipo-venda";
+  if(tipo==="Locação") return "tipo-locacao";
+  return "tipo-ambos";
+}
+function statusClass(status){
+  return "status-"+status;
+}
+function statusLabel(status){
+  return {disponivel:"Disponível", negociando:"Negociando", vendido:"Vendido/Alugado"}[status] || status;
+}
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r = new FileReader();
+    r.onload = ()=>resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function renderCard(item){
+  const entry = getEntry(item.key);
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.key = item.key;
+
+  const idLine = item.custom
+    ? `<div class="card-id">${item.cod ? item.cod+' · ' : ''}<span class="custom-tag">adicionado por você</span></div>`
+    : `<div class="card-id">Nº <b>${item.n}</b> · ${item.cod}</div>`;
+
+  card.innerHTML = `
+    <div class="card-top">
+      ${idLine}
+      <span class="tipo-tag ${tipoClass(item.tipo)}">${item.tipo}</span>
+    </div>
+    <p class="endereco">${item.end}</p>
+    ${item.custom ? '<button class="remove-btn" data-role="remove">Remover este imóvel</button>' : ''}
+    <div class="status-row">
+      <select class="status-select ${statusClass(entry.status)}">
+        <option value="disponivel" ${entry.status==='disponivel'?'selected':''}>Disponível</option>
+        <option value="negociando" ${entry.status==='negociando'?'selected':''}>Negociando</option>
+        <option value="vendido" ${entry.status==='vendido'?'selected':''}>Vendido/Alugado</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Nome do proprietário</label>
+        <input type="text" class="nome-input" placeholder="Nome" value="${escapeHtml(entry.nome)}">
+      </div>
+      <div class="field">
+        <label>Telefone</label>
+        <input type="text" class="telefone-input" placeholder="(11) 90000-0000" value="${escapeHtml(entry.telefone)}">
+      </div>
+    </div>
+    <div class="field">
+      <label>Data da visita</label>
+      <input type="date" class="visita-input" value="${escapeHtml(entry.dataVisita)}">
+    </div>
+    <div class="field">
+      <label>Observações</label>
+      <textarea class="obs-input" placeholder="Anotações sobre o imóvel, negociação, chaves...">${escapeHtml(entry.obs)}</textarea>
+    </div>
+    <div class="field">
+      <label>Fotos</label>
+      <div class="fotos-row" data-role="fotos-row"></div>
+    </div>
+  `;
+
+  // status
+  const statusSel = card.querySelector('.status-select');
+  statusSel.addEventListener('change', ()=>{
+    entry.status = statusSel.value;
+    statusSel.className = 'status-select ' + statusClass(entry.status);
+    saveState(state);
+    updateStatLine();
+  });
+
+  // nome do proprietário
+  const nomeInput = card.querySelector('.nome-input');
+  nomeInput.addEventListener('input', ()=>{
+    entry.nome = nomeInput.value;
+    saveState(state);
+  });
+
+  // telefone
+  const telefoneInput = card.querySelector('.telefone-input');
+  telefoneInput.addEventListener('input', ()=>{
+    entry.telefone = telefoneInput.value;
+    saveState(state);
+  });
+
+  // data da visita
+  const visitaInput = card.querySelector('.visita-input');
+  visitaInput.addEventListener('input', ()=>{
+    entry.dataVisita = visitaInput.value;
+    saveState(state);
+  });
+
+  // obs
+  const obsInput = card.querySelector('.obs-input');
+  obsInput.addEventListener('input', ()=>{
+    entry.obs = obsInput.value;
+    saveState(state);
+  });
+
+  // fotos
+  const fotosRow = card.querySelector('[data-role="fotos-row"]');
+  function renderFotos(){
+    fotosRow.innerHTML = '';
+    entry.fotos.forEach((src, idx)=>{
+      const thumb = document.createElement('div');
+      thumb.className = 'foto-thumb';
+      thumb.innerHTML = `<img src="${src}" alt="Foto do imóvel ${item.cod}"><button title="Remover">×</button>`;
+      thumb.querySelector('button').addEventListener('click', ()=>{
+        entry.fotos.splice(idx,1);
+        saveState(state);
+        renderFotos();
+      });
+      fotosRow.appendChild(thumb);
+    });
+    const addBtn = document.createElement('label');
+    addBtn.className = 'foto-add';
+    addBtn.title = 'Adicionar foto';
+    addBtn.innerHTML = `+<input type="file" accept="image/*" multiple>`;
+    addBtn.querySelector('input').addEventListener('change', async (e)=>{
+      const files = Array.from(e.target.files);
+      for(const f of files){
+        try{
+          const b64 = await fileToBase64(f);
+          entry.fotos.push(b64);
+        }catch(err){}
+      }
+      saveState(state);
+      renderFotos();
+    });
+    fotosRow.appendChild(addBtn);
+  }
+  renderFotos();
+
+  // remover (apenas itens adicionados manualmente)
+  const removeBtn = card.querySelector('[data-role="remove"]');
+  if(removeBtn){
+    removeBtn.addEventListener('click', ()=>{
+      if(!confirm('Remover este imóvel da carteira?')) return;
+      customItems = customItems.filter(i=>i.key !== item.key);
+      delete state[item.key];
+      saveCustom();
+      saveState(state);
+      rebuildBairroUI();
+      render();
+    });
+  }
+
+  return card;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+const resultsEl = document.getElementById('results');
+
+function currentFilters(){
+  return {
+    q: document.getElementById('searchInput').value.trim().toLowerCase(),
+    bairro: document.getElementById('filterBairro').value,
+    tipo: document.getElementById('filterTipo').value,
+    status: document.getElementById('filterStatus').value,
+  };
+}
+
+function matches(item, f){
+  const entry = getEntry(item.key);
+  if(f.bairro && item.bairro !== f.bairro) return false;
+  if(f.tipo && item.tipo !== f.tipo) return false;
+  if(f.status && entry.status !== f.status) return false;
+  if(f.q){
+    const hay = `${item.end} ${item.cod||''} ${item.bairro} ${entry.nome} ${entry.telefone} ${entry.obs} ${item.n||''}`.toLowerCase();
+    if(!hay.includes(f.q)) return false;
+  }
+  return true;
+}
+
+function render(){
+  const f = currentFilters();
+  resultsEl.innerHTML = '';
+  let shown = 0;
+  const items = allItems();
+
+  getBairros().forEach(bairro=>{
+    const bairroItems = items.filter(i=>i.bairro===bairro && matches(i,f));
+    if(bairroItems.length === 0) return;
+    shown += bairroItems.length;
+
+    const section = document.createElement('section');
+    section.className = 'bairro-section';
+    section.id = 'sec-' + slug(bairro);
+
+    const head = document.createElement('div');
+    head.className = 'bairro-head';
+    head.innerHTML = `<h2>${bairro}</h2><span class="bairro-count">${bairroItems.length} ${bairroItems.length===1?'imóvel':'imóveis'}</span>`;
+    section.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    bairroItems.sort((a,b)=>(a.n||9999)-(b.n||9999)).forEach(item=> grid.appendChild(renderCard(item)));
+    section.appendChild(grid);
+
+    resultsEl.appendChild(section);
+  });
+
+  if(shown === 0){
+    resultsEl.innerHTML = '<div class="empty">Nenhum imóvel encontrado com esses filtros.</div>';
+  }
+  document.getElementById('totalCount').textContent = items.length;
+  updateStatLine(shown);
+}
+
+function updateStatLine(shownCount){
+  const items = allItems();
+  const total = items.length;
+  const disp = items.filter(i=>getEntry(i.key).status==='disponivel').length;
+  const neg = items.filter(i=>getEntry(i.key).status==='negociando').length;
+  const vend = items.filter(i=>getEntry(i.key).status==='vendido').length;
+  const shown = shownCount !== undefined ? shownCount : items.filter(i=>matches(i,currentFilters())).length;
+  document.getElementById('statLine').textContent =
+    `Mostrando ${shown} de ${total} · Disponíveis: ${disp} · Negociando: ${neg} · Vendidos/Alugados: ${vend}`;
+}
+
+['searchInput'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+});
+['filterBairro','filterTipo','filterStatus'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', render);
+});
+
+/* ---------- Backup (exportar / importar) ---------- */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `backup-imoveis-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const imported = JSON.parse(reader.result);
+      state = imported;
+      saveState(state);
+      render();
+      alert('Backup importado com sucesso.');
+    }catch(err){
+      alert('Não foi possível ler esse arquivo. Verifique se é um backup exportado por este site.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* ---------- Modal: adicionar imóvel ---------- */
+const modalOverlay = document.getElementById('modalOverlay');
+const addForm = document.getElementById('addForm');
+
+function openModal(){
+  modalOverlay.classList.add('open');
+  document.getElementById('newBairro').focus();
+}
+function closeModal(){
+  modalOverlay.classList.remove('open');
+  addForm.reset();
+}
+
+document.getElementById('addBtn').addEventListener('click', openModal);
+document.getElementById('cancelAdd').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e)=>{ if(e.target === modalOverlay) closeModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal(); });
+
+addForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const bairro = document.getElementById('newBairro').value.trim();
+  const end = document.getElementById('newEndereco').value.trim();
+  const cod = document.getElementById('newCodigo').value.trim();
+  const tipo = document.getElementById('newTipo').value;
+  const nome = document.getElementById('newNome').value.trim();
+  const telefone = document.getElementById('newTelefone').value.trim();
+  const dataVisita = document.getElementById('newVisita').value;
+  if(!bairro || !end) return;
+
+  const maxN = Math.max(0, ...IMOVEIS.map(i=>i.n));
+  const newItem = {
+    n: maxN + customItems.length + 1,
+    cod: cod,
+    bairro: bairro,
+    end: end,
+    tipo: tipo,
+    custom: true,
+    key: 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2,7)
+  };
+  customItems.push(newItem);
+
+  const entry = getEntry(newItem.key);
+  entry.nome = nome;
+  entry.telefone = telefone;
+  entry.dataVisita = dataVisita;
+  saveState(state);
+  saveCustom();
+  closeModal();
+  rebuildBairroUI();
+  render();
+
+  const target = document.getElementById('sec-'+slug(bairro));
+  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+/* ---------- Abas principais ---------- */
+const tabImoveisBtn = document.getElementById('tabImoveisBtn');
+const tabNotasBtn = document.getElementById('tabNotasBtn');
+const panelImoveis = document.getElementById('panelImoveis');
+const panelNotas = document.getElementById('panelNotas');
+
+tabImoveisBtn.addEventListener('click', ()=>{
+  tabImoveisBtn.classList.add('active');
+  tabNotasBtn.classList.remove('active');
+  panelImoveis.classList.add('active');
+  panelNotas.classList.remove('active');
+});
+tabNotasBtn.addEventListener('click', ()=>{
+  tabNotasBtn.classList.add('active');
+  tabImoveisBtn.classList.remove('active');
+  panelNotas.classList.add('active');
+  panelImoveis.classList.remove('active');
+});
+
+/* ---------- Bloco de notas ---------- */
+const NOTES_KEY = "carteira_imoveis_notas_v1";
+
+function loadNotes(){
+  try{
+    const raw = localStorage.getItem(NOTES_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){ return []; }
+}
+function saveNotes(){
+  safeStorageSet(NOTES_KEY, JSON.stringify(notes));
+}
+let notes = loadNotes();
+let currentNoteId = null;
+
+function noteTitle(note){
+  const firstLine = (note.content || '').split('\n')[0].trim();
+  return firstLine ? firstLine.slice(0,40) : 'Nota sem título';
+}
+function formatDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+const notesListItems = document.getElementById('notesListItems');
+const noteContent = document.getElementById('noteContent');
+const noteStatus = document.getElementById('noteStatus');
+
+function renderNotesList(){
+  notesListItems.innerHTML = '';
+  if(notes.length === 0){
+    notesListItems.innerHTML = '<div class="notes-empty">Nenhuma nota salva ainda.</div>';
+    return;
+  }
+  [...notes].sort((a,b)=> new Date(b.updatedAt) - new Date(a.updatedAt)).forEach(note=>{
+    const el = document.createElement('div');
+    el.className = 'note-item' + (note.id === currentNoteId ? ' active' : '');
+    el.innerHTML = `<div class="n-title">${escapeHtml(noteTitle(note))}</div><div class="n-date">${formatDate(note.updatedAt)}</div>`;
+    el.addEventListener('click', ()=> openNote(note.id));
+    notesListItems.appendChild(el);
+  });
+}
+
+function openNote(id){
+  const note = notes.find(n=>n.id===id);
+  if(!note) return;
+  currentNoteId = id;
+  noteContent.value = note.content;
+  noteStatus.textContent = 'Editando: ' + noteTitle(note);
+  renderNotesList();
+}
+
+function newNoteDraft(){
+  currentNoteId = null;
+  noteContent.value = '';
+  noteStatus.textContent = 'Nova nota (ainda não salva)';
+  renderNotesList();
+  noteContent.focus();
+}
+
+document.getElementById('newNoteBtn').addEventListener('click', newNoteDraft);
+
+document.getElementById('saveNoteBtn').addEventListener('click', ()=>{
+  const content = noteContent.value;
+  if(!content.trim()){ noteStatus.textContent = 'Escreva algo antes de salvar.'; return; }
+  const note = {
+    id: 'note-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    content: content,
+    updatedAt: new Date().toISOString()
+  };
+  notes.push(note);
+  saveNotes();
+  currentNoteId = note.id;
+  noteStatus.textContent = 'Salvo como novo arquivo: ' + noteTitle(note);
+  renderNotesList();
+});
+
+document.getElementById('updateNoteBtn').addEventListener('click', ()=>{
+  if(!currentNoteId){ noteStatus.textContent = 'Nenhuma nota aberta para atualizar — use "Salvar como novo arquivo".'; return; }
+  const note = notes.find(n=>n.id===currentNoteId);
+  if(!note) return;
+  note.content = noteContent.value;
+  note.updatedAt = new Date().toISOString();
+  saveNotes();
+  noteStatus.textContent = 'Alterações salvas: ' + noteTitle(note);
+  renderNotesList();
+});
+
+document.getElementById('deleteNoteBtn').addEventListener('click', ()=>{
+  if(!currentNoteId){ noteStatus.textContent = 'Nenhuma nota aberta para excluir.'; return; }
+  if(!confirm('Excluir esta nota?')) return;
+  notes = notes.filter(n=>n.id!==currentNoteId);
+  saveNotes();
+  newNoteDraft();
+});
+
+document.getElementById('downloadNoteBtn').addEventListener('click', ()=>{
+  const content = noteContent.value;
+  if(!content.trim()){ noteStatus.textContent = 'Escreva algo antes de baixar.'; return; }
+  const title = currentNoteId
+    ? noteTitle(notes.find(n=>n.id===currentNoteId) || {content})
+    : noteTitle({content});
+  const safeTitle = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').slice(0,40);
+  const blob = new Blob([content], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `nota-${safeTitle || 'sem-titulo'}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+renderNotesList();
+
+/* ---------- Inicialização ---------- */
+rebuildBairroUI();
+render();
+</script>
+</body>
+</html>

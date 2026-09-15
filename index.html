@@ -202,7 +202,11 @@
     display:flex;flex-direction:column;gap:10px;
     transition:box-shadow .18s ease, transform .18s ease, border-color .18s ease;
   }
-  .card:hover{box-shadow:var(--shadow-lg);border-color:#D7DCE8;transform:translateY(-2px);}
+  .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+  .card:not(.card-contato-verde):not(.card-contato-cinza):not(.card-contato-vermelho):hover{border-color:#D7DCE8;}
+  .card.card-contato-verde{background:var(--green-soft);border:2px solid var(--green);}
+  .card.card-contato-cinza{background:var(--gray-soft);border:2px solid var(--gray);}
+  .card.card-contato-vermelho{background:var(--brick-soft);border:2px solid var(--brick);}
   .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
   .card-id{
     font-family:'IBM Plex Mono',monospace;
@@ -1808,6 +1812,12 @@ function statusClass(status){
 function statusLabel(status){
   return {disponivel:"Disponível", negociando:"Negociando", vendido:"Vendido/Alugado"}[status] || status;
 }
+function contatoCardClass(contatoStatus){
+  if(contatoStatus==='ligou') return 'card-contato-verde';
+  if(contatoStatus==='sem_retorno') return 'card-contato-cinza';
+  if(contatoStatus==='indisponivel') return 'card-contato-vermelho';
+  return '';
+}
 
 function fileToBase64(file){
   return new Promise((resolve,reject)=>{
@@ -1821,7 +1831,7 @@ function fileToBase64(file){
 function renderCard(item){
   const entry = getEntry(item.key);
   const card = document.createElement('div');
-  card.className = 'card';
+  card.className = ('card ' + contatoCardClass(entry.contatoStatus)).trim();
   card.dataset.key = item.key;
 
   const idLine = item.custom
@@ -2108,6 +2118,9 @@ function renderCard(item){
       const valor = btn.dataset.valor;
       entry.contatoStatus = (entry.contatoStatus === valor) ? '' : valor;
       contatoBtns.forEach(b=> b.classList.toggle('on', b.dataset.valor === entry.contatoStatus));
+      card.classList.remove('card-contato-verde','card-contato-cinza','card-contato-vermelho');
+      const corCard = contatoCardClass(entry.contatoStatus);
+      if(corCard) card.classList.add(corCard);
       saveState(state);
     });
   });

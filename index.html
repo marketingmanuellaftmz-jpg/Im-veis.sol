@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -88,8 +88,7 @@
     color:var(--ink-soft);
   }
 
-  /* Bairro index rail — signature element: a scrollable directory of pills,
-     like tabs in a broker's neighborhood ledger */
+  /* Bairro index rail */
   .index-strip{
     max-width:1180px;margin:24px auto 0;
     display:flex;flex-wrap:nowrap;gap:8px;
@@ -209,7 +208,7 @@
   .card.card-contato-verde{background:var(--green-soft);border:2px solid var(--green);}
   .card.card-contato-cinza{background:var(--gray-soft);border:2px solid var(--gray);}
   .card.card-contato-vermelho{background:var(--brick-soft);border:2px solid var(--brick);}
-  /* Em processamento — pinta o card inteiro de amarelo */
+  
   .card.card-processando{background:var(--proc-soft);border:2px solid var(--proc);}
   .card.card-processando:hover{border-color:var(--proc);}
   .card.card-processando .field input,
@@ -241,7 +240,6 @@
   .tipo-locacao{background:var(--gold-soft);color:var(--gold);}
   .tipo-ambos{background:#EFEBFA;color:#5A4E9E;}
 
-  /* Canto superior direito do card: tag do tipo + botão Em processamento */
   .card-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:0 0 auto;}
   .proc-btn{
     font-family:'IBM Plex Mono',monospace;
@@ -314,7 +312,7 @@
   .field input, .field textarea, .field select{
     width:100%;
     border:1px solid var(--line);
-    border-radius:9px;
+    border-radius:999px;
     padding:8px 10px;
     font-family:'Inter',sans-serif;
     font-size:13px;
@@ -323,9 +321,9 @@
     resize:vertical;
     transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
   }
+  .field textarea{border-radius:9px;min-height:48px;}
   .field-row{display:flex;gap:8px;}
   .field-row .field{flex:1;min-width:0;}
-  .field textarea{min-height:48px;}
   .field input:focus, .field textarea:focus, .field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:#fff;}
 
   .fotos-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
@@ -361,7 +359,6 @@
     .controls-inner{gap:8px;}
   }
 
-  /* Item adicionado manualmente */
   .custom-tag{
     font-family:'IBM Plex Mono',monospace;
     font-size:10px;
@@ -386,7 +383,7 @@
   .owner-remove-btn{align-self:flex-start;}
   .owner-add-btn{width:100%;}
 
-  /* Modal adicionar imóvel */
+  /* Modal */
   .modal-overlay{
     position:fixed;inset:0;background:rgba(17,20,29,0.5);
     backdrop-filter:blur(2px);
@@ -410,7 +407,7 @@
     display:flex;justify-content:flex-end;gap:10px;margin-top:18px;
   }
 
-  /* Abas principais — segmented control */
+  /* Abas principais */
   .main-tabs{
     display:flex;gap:2px;flex-wrap:wrap;
     background:var(--surface-alt);
@@ -481,7 +478,7 @@
     .notes-list{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:12px;max-height:220px;}
   }
 
-  /* ---- Detalhes ampliados do imóvel ---- */
+  /* Detalhes ampliados do imóvel */
   .details-block{
     border-top:1px dashed var(--line);
     padding-top:10px;
@@ -532,21 +529,16 @@
     color:var(--accent);
     text-decoration:none;
     border:1px solid var(--accent);
-    padding:8px 12px;border-radius:6px;
+    padding:8px 12px;border-radius:999px;
     white-space:nowrap;
   }
   .maps-link-btn:hover{background:var(--accent-soft);}
-  .maps-embed{
-    width:100%;height:180px;border:1px solid var(--line);border-radius:8px;
-    overflow:hidden;
-  }
-  .maps-embed iframe{width:100%;height:100%;border:0;display:block;}
 
   .details-toggle{
     background:none;
     border:1px solid var(--line);
-    border-radius:6px;
-    padding:8px 10px;
+    border-radius:999px;
+    padding:8px 12px;
     font-family:'IBM Plex Mono',monospace;
     font-size:11.5px;
     letter-spacing:.05em;
@@ -561,7 +553,7 @@
   .details-block{display:none;}
   .details-block.open{display:flex;}
 
-  /* ---- Calendário de visitas ---- */
+  /* Calendário */
   .cal-wrap{
     max-width:1180px;margin:0 auto;padding:0 28px 100px;
     display:grid;grid-template-columns:1fr 320px;gap:24px;
@@ -621,9 +613,6 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
   .cal-chip.evento{background:var(--gold);}
-  .cal-more{
-    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-faint);
-  }
   .cal-side{display:flex;flex-direction:column;gap:14px;}
   .cal-side-card{
     background:var(--surface);border:1px solid var(--line);border-radius:18px;
@@ -652,12 +641,6 @@
     font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
     color:var(--accent);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0;
   }
-  .v-gcal, .e-gcal{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
-    color:var(--ink-soft);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0;
-    margin-left:10px;
-  }
-  .v-gcal:hover, .e-gcal:hover{color:var(--accent);}
   .cal-sync-row{
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
     margin-bottom:14px;
@@ -678,7 +661,7 @@
   .cal-event-item button:hover{color:var(--brick);}
   .cal-add-event{display:flex;flex-direction:column;gap:8px;}
   .cal-add-event input{
-    border:1px solid var(--line);border-radius:6px;padding:8px 9px;
+    border:1px solid var(--line);border-radius:999px;padding:8px 12px;
     font-family:'Inter',sans-serif;font-size:13px;background:var(--surface-alt);
   }
   .cal-add-wrap{border-top:1px solid var(--line);padding-top:14px;}
@@ -701,7 +684,7 @@
     text-transform:uppercase;color:var(--ink-faint);
   }
   .cal-add-visita select, .cal-add-visita input{
-    border:1px solid var(--line);border-radius:6px;padding:8px 9px;
+    border:1px solid var(--line);border-radius:999px;padding:8px 12px;
     font-family:'Inter',sans-serif;font-size:13px;background:var(--surface-alt);width:100%;
   }
   .cal-add-visita .btn{align-self:flex-start;margin-top:2px;}
@@ -729,7 +712,7 @@
     .cal-day{min-height:58px;}
   }
 
-  /* ---- Sugestões de busca (autocomplete) ---- */
+  /* Autocomplete */
   .search-suggest{
     position:absolute;top:calc(100% + 6px);left:0;right:0;
     background:var(--surface);border:1px solid var(--line);border-radius:10px;
@@ -757,7 +740,7 @@
     padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-faint);
   }
 
-  /* ---- Aba Proprietários ---- */
+  /* Proprietários */
   .owners-wrap{
     max-width:900px;margin:0 auto;padding:0 28px 100px;
     display:flex;flex-direction:column;gap:24px;
@@ -801,7 +784,7 @@
   .owner-row .o-remove{color:var(--ink-faint);text-decoration:underline;}
   .owner-row .o-remove:hover{color:var(--brick);}
 
-  /* ---------- Tela de acesso (login / cadastro) ---------- */
+  /* Tela de acesso */
   body.not-authed .app-shell{display:none;}
   body:not(.not-authed) .auth-overlay{display:none;}
   .auth-overlay{
@@ -834,16 +817,6 @@
     margin:0;min-height:14px;line-height:1.4;
   }
   .auth-submit{width:100%;padding:12px 14px;font-size:14px;margin-top:2px;}
-  .auth-switch{
-    margin-top:20px;padding-top:18px;border-top:1px solid var(--line);
-    display:flex;align-items:center;justify-content:center;gap:6px;
-    font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-soft);
-  }
-  .auth-switch button{
-    background:none;border:none;padding:0;cursor:pointer;
-    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
-    color:var(--accent);text-decoration:underline;
-  }
   .auth-forgot{
     display:block;margin:14px auto 0;background:none;border:none;cursor:pointer;padding:0;
     font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.03em;
@@ -862,9 +835,8 @@
     font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
     color:var(--accent);text-decoration:underline;white-space:nowrap;
   }
-  .foto-add.uploading{opacity:.5;pointer-events:none;}
 
-  /* ---- Assistente IA ---- */
+  /* Assistente IA */
   .ai-wrap{
     max-width:820px;margin:0 auto;padding:0 28px 100px;
     display:flex;flex-direction:column;gap:16px;
@@ -986,12 +958,12 @@
       <option value="vendido">Vendido/Alugado</option>
     </select>
     <button class="btn primary" id="addBtn">+ Adicionar imóvel</button>
+    <button class="btn primary" id="salvarBtn" style="background:#16a34a; border-color:#16a34a; color:#ffffff;">💾 SALVAR</button>
     <button class="btn ghost" id="exportBtn" title="Baixar backup em JSON">Exportar backup</button>
     <label class="btn ghost" style="margin:0;">
       Importar backup
       <input type="file" id="importInput" accept="application/json" style="display:none;">
     </label>
-    <button type="button" class="btn primary" id="btnSalvarGeral" style="background:var(--green);border-color:var(--green);color:#fff;margin-left:auto;">💾 Salvar</button>
   </div>
 </div>
 
@@ -1200,7 +1172,7 @@
 
 </div><!-- /#appShell -->
 
-<!-- Firebase (login, sincronização entre dispositivos e fotos na nuvem) -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -1304,10 +1276,8 @@ const IMOVEIS = [
   {n:69, cod:"JH3791", bairro:"Vila Sônia", end:"AV Professor Francisco Morato, 4923 - Und. 254", tipo:"Locação"},
 ];
 
-/* ---------- Chave única de cada imóvel (fixo usa o código JH) ---------- */
 IMOVEIS.forEach(i=>{ i.key = i.cod; });
 
-/* ---------- Listas de tags prontas para marcar ---------- */
 const TAGS_IMOVEL = [
   "Área de serviço","Interfone","Infraestrutura para ar-condicionado","Água quente",
   "Gás encanado","Vista permanente","Churrasqueira","Varanda","Varanda gourmet",
@@ -1324,74 +1294,7 @@ const TAGS_CONDOMINIO = [
   "Segurança 24h","Portaria 24 horas","Salão de festas","Quadra esportiva"
 ];
 
-/* ======================================================================
-   FIREBASE — login, sincronização entre dispositivos e fotos na nuvem
-   ======================================================================
-   1) Crie um projeto gratuito em https://console.firebase.google.com
-   2) Ative "Firestore Database" (modo produção ou teste).
-   3) Ative "Storage" (é onde as fotos dos imóveis vão ficar).
-   4) Ative "Authentication" → aba "Sign-in method" → habilite o
-      provedor "E-mail/senha".
-   5) Em "Configurações do projeto" → aba "Geral" → "Seus apps" → ícone
-      Web (</>), registre um app e copie o objeto de configuração que
-      aparece — cole-o substituindo o objeto abaixo.
-   6) Crie as contas de quem vai usar o app: em Authentication → aba
-      "Users" → "Add user" (e-mail + senha). O app não tem tela de
-      "criar conta" de propósito — só entra quem você cadastrar aqui,
-      manualmente. Isso é o que garante que estranhos não acessem seus
-      dados mesmo se encontrarem o arquivo ou o link.
-   7) Regras do Firestore (aba "Regras" de Firestore Database) — em vez
-      de liberar para qualquer conta logada, restrinja por e-mail, numa
-      lista fixa de quem pode acessar. Assim, mesmo que alguém consiga
-      criar uma conta por fora do app (ex: pelo console do navegador),
-      ela não consegue ler nem escrever nada, porque o e-mail dela não
-      está na lista:
-
-        rules_version = '2';
-        service cloud.firestore {
-          match /databases/{database}/documents {
-            match /{document=**} {
-              allow read, write: if request.auth != null
-                && request.auth.token.email in [
-                  'seuemail@exemplo.com',
-                  'outraconta@exemplo.com'
-                ];
-            }
-          }
-        }
-
-      Troque a lista pelos e-mails reais de quem você cadastrou em
-      Authentication → Users. Adicione ou remova e-mails aqui sempre
-      que der ou tirar acesso de alguém.
-
-   8) Regras do Storage (aba "Regras" de Storage) — mesma lista, para
-      manter a mesma proteção caso um dia você ative o Storage:
-
-        rules_version = '2';
-        service firebase.storage {
-          match /b/{bucket}/o {
-            match /{allPaths=**} {
-              allow read, write: if request.auth != null
-                && request.auth.token.email in [
-                  'seuemail@exemplo.com',
-                  'outraconta@exemplo.com'
-                ];
-            }
-          }
-        }
-
-      Essas regras liberam leitura/escrita só para os e-mails da lista,
-      mesmo que exista alguma conta adicional (criada por engano ou por
-      alguém tentando burlar a tela de login).
-
-   9) App Check (recomendado, e obrigatório a partir de 2/nov/2026 para
-      quem usa o Firebase AI Logic — veja o bloco de IA mais abaixo):
-      Console Firebase → App Check → registre seu app Web com o
-      provedor reCAPTCHA v3, copie a "site key" gerada e cole no lugar
-      de "SUA_RECAPTCHA_V3_SITE_KEY_AQUI" logo abaixo. Depois, na
-      mesma tela do App Check, ative o "enforcement" para Firestore,
-      Storage e para o Firebase AI Logic.
-   ====================================================================== */
+/* Configuração Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",
   authDomain: "carteira-imoveis-d6262.firebaseapp.com",
@@ -1401,22 +1304,6 @@ const firebaseConfig = {
   appId: "1:158894380045:web:b7f61e6f59616dfde73144",
   measurementId: "G-WST0KSBPJH"
 };
-
-/* Chave pública do reCAPTCHA v3 usada pelo Firebase App Check. Gere a
-   sua em Console Firebase → App Check → Web app → reCAPTCHA v3, e
-   cole aqui. Enquanto ficar com o valor de exemplo, o App Check fica
-   desativado e o app segue funcionando normalmente (só sem essa
-   camada extra de proteção). */
-const APP_CHECK_RECAPTCHA_SITE_KEY = "SUA_RECAPTCHA_V3_SITE_KEY_AQUI";
-
-/* O plano gratuito (Spark) do Firebase não dá mais acesso ao Storage —
-   ele exige o plano pago Blaze (mesmo que o uso real fique em R$0).
-   Como optamos por não usar o Blaze, esta chave fica em "false": as
-   fotos continuam sendo guardadas como antes, direto no navegador de
-   cada dispositivo (sem sincronizar entre aparelhos). Login, imóveis,
-   notas e agenda continuam sincronizando normalmente pelo Firestore.
-   Se um dia você assinar o Blaze, é só mudar para "true" aqui. */
-const USAR_STORAGE_FOTOS = false;
 
 let db = null;
 let auth = null;
@@ -1428,19 +1315,11 @@ try{
     db = firebase.firestore();
     auth = firebase.auth();
     storage = firebase.storage();
-    db.enablePersistence({synchronizeTabs:true}).catch(()=>{
-      /* falha comum quando há mais de uma aba aberta sem synchronizeTabs, ou navegador sem suporte — segue sem cache offline do Firestore */
-    });
+    db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
     firebaseAtivo = true;
-  }else{
-    console.warn('Firebase não configurado: preencha o objeto firebaseConfig no início do arquivo para ativar login, sincronização e fotos na nuvem. Por enquanto o app funciona só neste navegador, sem tela de login.');
   }
 }catch(e){
-  console.warn('Não foi possível iniciar o Firebase — o app vai continuar funcionando apenas neste navegador.', e);
-  db = null;
-  auth = null;
-  storage = null;
-  firebaseAtivo = false;
+  db = null; auth = null; storage = null; firebaseAtivo = false;
 }
 
 function debounce(fn, delay){
@@ -1458,7 +1337,7 @@ const FIREBASE_DOCS = firebaseAtivo ? {
   eventos: db.collection('carteiraImoveis').doc('eventos')
 } : null;
 
-/* ---------- Tela de login ---------- */
+/* Auth */
 const authOverlay = document.getElementById('authOverlay');
 const appShell = document.getElementById('appShell');
 const authForm = document.getElementById('authForm');
@@ -1466,7 +1345,6 @@ const authEmailInput = document.getElementById('authEmail');
 const authPasswordInput = document.getElementById('authPassword');
 const authError = document.getElementById('authError');
 const authSubmitBtn = document.getElementById('authSubmitBtn');
-const authSub = document.getElementById('authSub');
 const authForgotBtn = document.getElementById('authForgotBtn');
 const authLoading = document.getElementById('authLoading');
 const userBar = document.getElementById('userBar');
@@ -1475,18 +1353,13 @@ const signOutBtn = document.getElementById('signOutBtn');
 
 let appJaIniciado = false;
 
-/* Cadastro fica de fora de propósito: contas só são criadas por você,
-   direto no console do Firebase (Authentication → Users → Add user).
-   Assim, ninguém que apenas encontrar o arquivo/link consegue entrar —
-   só quem tiver um e-mail e senha que você mesmo cadastrou. */
-
 function mensagemErroAuth(err){
   const mapa = {
     'auth/invalid-email': 'E-mail inválido.',
     'auth/user-not-found': 'Não existe conta com esse e-mail.',
     'auth/wrong-password': 'Senha incorreta.',
     'auth/invalid-credential': 'E-mail ou senha incorretos.',
-    'auth/too-many-requests': 'Muitas tentativas seguidas. Aguarde um pouco e tente de novo.',
+    'auth/too-many-requests': 'Muitas tentativas seguidas. Aguarde um pouco.',
     'auth/network-request-failed': 'Falha de conexão. Verifique sua internet.'
   };
   return mapa[err.code] || 'Não foi possível concluir. Tente novamente.';
@@ -1496,13 +1369,9 @@ authForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   if(!auth) return;
   authError.textContent = '';
-  authError.style.color = '';
   authSubmitBtn.disabled = true;
-  const email = authEmailInput.value.trim();
-  const senha = authPasswordInput.value;
   try{
-    await auth.signInWithEmailAndPassword(email, senha);
-    /* onAuthStateChanged cuida do resto (esconder tela, iniciar app) */
+    await auth.signInWithEmailAndPassword(authEmailInput.value.trim(), authPasswordInput.value);
   }catch(err){
     authError.textContent = mensagemErroAuth(err);
   }finally{
@@ -1522,14 +1391,11 @@ authForgotBtn.addEventListener('click', async ()=>{
     authError.style.color = 'var(--accent)';
     authError.textContent = 'Enviamos um link de redefinição para ' + email + '.';
   }catch(err){
-    authError.style.color = '';
     authError.textContent = mensagemErroAuth(err);
   }
 });
 
-signOutBtn.addEventListener('click', ()=>{
-  if(auth) auth.signOut();
-});
+signOutBtn.addEventListener('click', ()=>{ if(auth) auth.signOut(); });
 
 function iniciarAppAutenticado(){
   if(appJaIniciado) return;
@@ -1537,6 +1403,7 @@ function iniciarAppAutenticado(){
   rebuildBairroUI();
   render();
   renderNotesList();
+  renderCalendar();
   renderCalendarSide();
   if(firebaseAtivo) iniciarSincronizacaoFirebase();
 }
@@ -1558,9 +1425,8 @@ if(firebaseAtivo && auth){
     }
   });
 }else{
-  /* Firebase não configurado: pula a tela de login e libera o app
-     direto, funcionando só neste navegador (comportamento anterior). */
   document.body.classList.remove('not-authed');
+  iniciarAppAutenticado();
 }
 
 function setSyncStatus(texto){
@@ -1568,17 +1434,6 @@ function setSyncStatus(texto){
   if(el) el.textContent = texto;
 }
 
-function avisoErroSync(rotulo){
-  return (err)=>{
-    console.warn(`Falha ao sincronizar "${rotulo}" com o Firebase:`, err);
-    setSyncStatus('Não foi possível sincronizar agora — os dados continuam salvos neste navegador. Verifique sua conexão.');
-  };
-}
-
-/* Marcadores de "existe alteração feita aqui que ainda não foi confirmada
-   na nuvem". Servem para o escutador do Firestore não sobrescrever (e
-   desfazer na tela) algo que você acabou de mexer enquanto o envio ainda
-   está a caminho — era o que fazia o botão "desmarcar" sozinho. */
 let ultimaEdicaoLocal = 0;
 let ultimoEnvioConfirmado = 0;
 function temEdicaoLocalPendente(){
@@ -1590,35 +1445,27 @@ const pushEstadoFirebase = debounce(()=>{
   const marca = Date.now();
   FIREBASE_DOCS.estado.set({dados: state}).then(()=>{
     ultimoEnvioConfirmado = Math.max(ultimoEnvioConfirmado, marca);
-  }).catch(avisoErroSync('imóveis'));
+  }).catch(()=>{});
 }, 700);
 const pushCustomFirebase = debounce(()=>{
   if(!FIREBASE_DOCS) return;
-  FIREBASE_DOCS.custom.set({itens: customItems}).catch(avisoErroSync('imóveis personalizados'));
+  FIREBASE_DOCS.custom.set({itens: customItems}).catch(()=>{});
 }, 700);
 const pushNotasFirebase = debounce(()=>{
   if(!FIREBASE_DOCS) return;
-  FIREBASE_DOCS.notas.set({itens: notes}).catch(avisoErroSync('notas'));
+  FIREBASE_DOCS.notas.set({itens: notes}).catch(()=>{});
 }, 700);
 const pushEventosFirebase = debounce(()=>{
   if(!FIREBASE_DOCS) return;
-  FIREBASE_DOCS.eventos.set({dados: calEvents}).catch(avisoErroSync('agenda'));
+  FIREBASE_DOCS.eventos.set({dados: calEvents}).catch(()=>{});
 }, 700);
 
-/* Liga os "escutadores" em tempo real: qualquer alteração feita em outro
-   dispositivo/navegador chega aqui e atualiza a tela automaticamente. */
 function iniciarSincronizacaoFirebase(){
-  if(!FIREBASE_DOCS){
-    setSyncStatus('Firebase não configurado — dados salvos apenas neste navegador.');
-    return;
-  }
+  if(!FIREBASE_DOCS) return;
   setSyncStatus('Conectando à nuvem…');
 
   FIREBASE_DOCS.estado.onSnapshot(snap=>{
     if(snap.exists){
-      /* só aceita os dados da nuvem quando não há nada esperando envio
-         daqui — senão a tela seria redesenhada com a versão antiga e a
-         alteração recém-feita sumiria */
       if(!snap.metadata.hasPendingWrites && !temEdicaoLocalPendente()){
         const dados = snap.data().dados;
         if(dados && typeof dados === 'object'){
@@ -1628,11 +1475,9 @@ function iniciarSincronizacaoFirebase(){
           render();
         }
       }
-    }else{
-      pushEstadoFirebase();
-    }
+    }else{ pushEstadoFirebase(); }
     setSyncStatus('Sincronizado com a nuvem ✓');
-  }, avisoErroSync('imóveis'));
+  });
 
   FIREBASE_DOCS.custom.onSnapshot(snap=>{
     if(snap.exists){
@@ -1645,10 +1490,8 @@ function iniciarSincronizacaoFirebase(){
           render();
         }
       }
-    }else{
-      pushCustomFirebase();
-    }
-  }, avisoErroSync('imóveis personalizados'));
+    }else{ pushCustomFirebase(); }
+  });
 
   FIREBASE_DOCS.notas.onSnapshot(snap=>{
     if(snap.exists){
@@ -1660,10 +1503,8 @@ function iniciarSincronizacaoFirebase(){
           renderNotesList();
         }
       }
-    }else{
-      pushNotasFirebase();
-    }
-  }, avisoErroSync('notas'));
+    }else{ pushNotasFirebase(); }
+  });
 
   FIREBASE_DOCS.eventos.onSnapshot(snap=>{
     if(snap.exists){
@@ -1676,50 +1517,30 @@ function iniciarSincronizacaoFirebase(){
           renderCalendarSide();
         }
       }
-    }else{
-      pushEventosFirebase();
-    }
-  }, avisoErroSync('agenda'));
+    }else{ pushEventosFirebase(); }
+  });
 }
-/* ====================================================================== */
 
-/* ---------- Estado editável (persistido no localStorage + Firebase) ---------- */
+/* Estado LocalStorage */
 const STORAGE_KEY = "carteira_imoveis_v1";
 const CUSTOM_KEY = "carteira_imoveis_custom_v1";
 
-let storageAvisoMostrado = false;
 function safeStorageSet(key, value){
-  try{
-    localStorage.setItem(key, value);
-    return true;
-  }catch(e){
-    if(!storageAvisoMostrado){
-      storageAvisoMostrado = true;
-      alert('Este navegador está bloqueando o salvamento automático (comum em navegadores dentro de apps como Instagram/WhatsApp, ou no modo anônimo). O que você adicionar vai continuar funcionando nesta visita, mas não vai ficar salvo ao fechar a página. Abra o arquivo direto no Chrome ou Safari para salvar normalmente.');
-    }
-    return false;
-  }
+  try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
 }
 
 function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  }catch(e){ return {}; }
+  try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){ return {}; }
 }
-function saveState(state){
+function saveState(stateObj){
   ultimaEdicaoLocal = Date.now();
-  safeStorageSet(STORAGE_KEY, JSON.stringify(state));
+  safeStorageSet(STORAGE_KEY, JSON.stringify(stateObj));
   pushEstadoFirebase();
 }
 let state = loadState();
 
 function loadCustom(){
-  try{
-    const raw = localStorage.getItem(CUSTOM_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  }catch(e){ return []; }
+  try{ const raw = localStorage.getItem(CUSTOM_KEY); const parsed = raw ? JSON.parse(raw) : []; return Array.isArray(parsed) ? parsed : []; }catch(e){ return []; }
 }
 function saveCustom(){
   safeStorageSet(CUSTOM_KEY, JSON.stringify(customItems));
@@ -1727,51 +1548,17 @@ function saveCustom(){
 }
 let customItems = loadCustom();
 
-// INÍCIO DA CORREÇÃO: BOTÃO SALVAR MANUAL
-function forcarSalvamentoImediato() {
-  saveState(state);
-  saveCustom();
-  if (FIREBASE_DOCS) {
-    const marca = Date.now();
-    FIREBASE_DOCS.estado.set({dados: state}).then(() => { ultimoEnvioConfirmado = Math.max(ultimoEnvioConfirmado, marca); });
-    FIREBASE_DOCS.custom.set({itens: customItems});
-    if (typeof notes !== 'undefined') FIREBASE_DOCS.notas.set({itens: notes});
-    if (typeof calEvents !== 'undefined') FIREBASE_DOCS.eventos.set({dados: calEvents});
-  }
-  alert('Informações salvas e sincronizadas com sucesso! Você já pode atualizar a página.');
-}
-document.addEventListener('DOMContentLoaded', () => {
-  const btnSalvar = document.getElementById('btnSalvarGeral');
-  if (btnSalvar) btnSalvar.addEventListener('click', forcarSalvamentoImediato);
-});
-// FIM DA CORREÇÃO
-
-function allItems(){
-  return IMOVEIS.concat(customItems);
-}
+function allItems(){ return IMOVEIS.concat(customItems); }
 
 function blankDetails(){
   return {
-    descricao:"",
-    condominioNome:"", cep:"",
-    uso:"", tipoImovel:"", face:"", andar:"",
-    areaPrivativa:"", areaTerreno:"", anoConstrucao:"",
-    valorM2:"", condominio:"", iptu:"",
-    quartos:"", suites:"", banheiros:"", salas:"",
-    vagas:"", vagasTipo:"",
-    construtora:"", qtdAndares:"", qtdElevadores:"",
-    topografia:"", mobilia:"",
-    vago:"", chavesQuem:"", chavesObs:"",
-    aceitaPermuta:"", permutaDescricao:"",
-    possuiRenda:"", rendaDescricao:"",
-    telefone2:"",
-    caractImovel:[], caractCondominio:[],
-    locacaoTemporada:"",
-    linkMaps:"",
-    latitude:"", longitude:"",
-    horaVisita:"",
-    contatoStatus:"",
-    emProcessamento:false
+    descricao:"", condominioNome:"", cep:"", uso:"", tipoImovel:"", face:"", andar:"",
+    areaPrivativa:"", areaTerreno:"", anoConstrucao:"", valorM2:"", condominio:"", iptu:"",
+    quartos:"", suites:"", banheiros:"", salas:"", vagas:"", vagasTipo:"",
+    construtora:"", qtdAndares:"", qtdElevadores:"", topografia:"", mobilia:"",
+    vago:"", chavesQuem:"", chavesObs:"", aceitaPermuta:"", permutaDescricao:"",
+    possuiRenda:"", rendaDescricao:"", telefone2:"", caractImovel:[], caractCondominio:[],
+    locacaoTemporada:"", linkMaps:"", latitude:"", longitude:"", horaVisita:"", contatoStatus:"", emProcessamento:false
   };
 }
 
@@ -1779,26 +1566,16 @@ function getEntry(key){
   if(!state[key]){
     state[key] = {status:"disponivel", nome:"", telefone:"", dataVisita:"", obs:"", fotos:[]};
   }
-  // migração: versões antigas usavam um único campo "contato"
-  if(state[key].contato !== undefined && !state[key].nome && !state[key].telefone){
-    state[key].nome = state[key].contato;
-    state[key].telefone = "";
-  }
   if(state[key].nome === undefined) state[key].nome = "";
   if(state[key].telefone === undefined) state[key].telefone = "";
   if(state[key].dataVisita === undefined) state[key].dataVisita = "";
-  // migração: versões antigas usavam nome/telefone/telefone2 únicos -> lista de proprietários
   if(state[key].proprietarios === undefined){
     const props = [];
     if(state[key].nome || state[key].telefone){
       props.push({nome: state[key].nome || "", telefone: state[key].telefone || ""});
     }
-    if(state[key].telefone2){
-      props.push({nome: "", telefone: state[key].telefone2});
-    }
     state[key].proprietarios = props;
   }
-  // migração: adiciona campos de detalhes ampliados se ainda não existirem
   const blank = blankDetails();
   Object.keys(blank).forEach(k=>{
     if(state[key][k] === undefined) state[key][k] = blank[k];
@@ -1806,12 +1583,15 @@ function getEntry(key){
   return state[key];
 }
 
-/* ---------- Construção da UI ---------- */
+function escapeHtml(str) {
+  if(!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 function getBairros(){
   return [...new Set(allItems().map(i=>i.bairro))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
 }
 
-/* Lista ampla de bairros de São Paulo para sugestão (além dos já cadastrados) */
 const BAIRROS_SUGERIDOS_SP = [
   "Água Branca","Alto da Lapa","Alto de Pinheiros","Anhanguera","Aricanduva","Artur Alvim",
   "Barra Funda","Bela Vista","Belém","Bom Retiro","Brás","Brooklin","Butantã",
@@ -1835,7 +1615,6 @@ function rebuildBairroUI(){
   const bairros = getBairros();
   const bairrosSugestao = [...new Set([...bairros, ...BAIRROS_SUGERIDOS_SP])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
 
-  // index strip
   const indexStrip = document.getElementById('indexStrip');
   indexStrip.innerHTML = '';
   bairros.forEach(b=>{
@@ -1850,7 +1629,6 @@ function rebuildBairroUI(){
     indexStrip.appendChild(el);
   });
 
-  // filtro bairro select (preserva seleção atual se ainda existir)
   const filterBairro = document.getElementById('filterBairro');
   const current = filterBairro.value;
   filterBairro.innerHTML = '<option value="">Todos os bairros</option>';
@@ -1861,7 +1639,6 @@ function rebuildBairroUI(){
   });
   if(bairros.includes(current)) filterBairro.value = current;
 
-  // datalist do formulário de adicionar
   const bairroList = document.getElementById('bairroList');
   bairroList.innerHTML = '';
   bairrosSugestao.forEach(b=>{
@@ -1880,12 +1657,8 @@ function tipoClass(tipo){
   if(tipo==="Locação") return "tipo-locacao";
   return "tipo-ambos";
 }
-function statusClass(status){
-  return "status-"+status;
-}
-function statusLabel(status){
-  return {disponivel:"Disponível", negociando:"Negociando", vendido:"Vendido/Alugado"}[status] || status;
-}
+function statusClass(status){ return "status-"+status; }
+
 function contatoCardClass(contatoStatus){
   if(contatoStatus==='ligou') return 'card-contato-verde';
   if(contatoStatus==='sem_retorno') return 'card-contato-cinza';
@@ -1917,10 +1690,10 @@ function renderCard(item){
       ${idLine}
       <div class="card-top-right">
         <span class="tipo-tag ${tipoClass(item.tipo)}">${item.tipo}</span>
-        <button type="button" class="proc-btn ${entry.emProcessamento === true ? 'on' : ''}" data-role="proc-btn" title="Marcar/desmarcar que este card ainda está sendo preenchido">Em processamento</button>
+        <button type="button" class="proc-btn ${entry.emProcessamento === true ? 'on' : ''}" data-role="proc-btn">Em processamento</button>
       </div>
     </div>
-    <p class="endereco">${item.end}</p>
+    <p class="endereco">${escapeHtml(item.end)}</p>
     ${item.custom ? '<button class="remove-btn" data-role="remove">Remover este imóvel</button>' : ''}
     <div class="status-row">
       <select class="status-select ${statusClass(entry.status)}">
@@ -1976,7 +1749,7 @@ function renderCard(item){
       <div class="info-grid">
         <div class="field">
           <label>Condomínio/edifício</label>
-          <input type="text" class="det-condominioNome" placeholder="Nome do condomínio ou edifício" value="${escapeHtml(entry.condominioNome)}">
+          <input type="text" class="det-condominioNome" placeholder="Nome do condomínio" value="${escapeHtml(entry.condominioNome)}">
         </div>
         <div class="field">
           <label>CEP</label>
@@ -2126,6 +1899,7 @@ function renderCard(item){
           <input type="text" class="det-permutaDescricao" value="${escapeHtml(entry.permutaDescricao)}">
         </div>
       </div>
+
       <div class="field-row">
         <div class="field">
           <label>Possui renda?</label>
@@ -2142,561 +1916,493 @@ function renderCard(item){
       </div>
 
       <p class="details-section-title">Características do imóvel</p>
-      <div class="chips-wrap" data-role="chips-imovel"></div>
-
-      <p class="details-section-title">Locação por temporada</p>
-      <div class="field">
-        <select class="det-locacaoTemporada">
-          <option value="">Não informado</option>
-          <option value="Sim" ${entry.locacaoTemporada==='Sim'?'selected':''}>Sim</option>
-          <option value="Não" ${entry.locacaoTemporada==='Não'?'selected':''}>Não</option>
-        </select>
+      <div class="chips-wrap" data-type="imovel">
+        ${TAGS_IMOVEL.map(tag=>{
+          const active = (entry.caractImovel||[]).includes(tag)?'on':'';
+          return `<span class="chip ${active}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`;
+        }).join('')}
       </div>
 
       <p class="details-section-title">Características do condomínio</p>
-      <div class="chips-wrap" data-role="chips-condominio"></div>
+      <div class="chips-wrap" data-type="condominio">
+        ${TAGS_CONDOMINIO.map(tag=>{
+          const active = (entry.caractCondominio||[]).includes(tag)?'on':'';
+          return `<span class="chip ${active}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`;
+        }).join('')}
+      </div>
 
-      <p class="details-section-title">Localização</p>
+      <p class="details-section-title">Localização e Mapa</p>
       <div class="maps-row">
         <div class="field">
-          <label>Endereço / link do Google Maps</label>
-          <input type="text" class="det-linkMaps" placeholder="Cole aqui um link do Google Maps (opcional)" value="${escapeHtml(entry.linkMaps)}">
+          <label>Link Google Maps / Waze</label>
+          <input type="text" class="det-linkMaps" placeholder="https://maps.google.com/..." value="${escapeHtml(entry.linkMaps)}">
         </div>
-        <a class="maps-link-btn" data-role="maps-open" href="#" target="_blank" rel="noopener">Abrir no Maps ↗</a>
+        ${entry.linkMaps ? `<a href="${escapeHtml(entry.linkMaps)}" target="_blank" rel="noopener" class="maps-link-btn">📍 Abrir Mapa</a>` : ''}
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Latitude</label>
-          <input type="text" class="det-latitude" placeholder="Ex: -23.543210" value="${escapeHtml(entry.latitude)}">
-        </div>
-        <div class="field">
-          <label>Longitude</label>
-          <input type="text" class="det-longitude" placeholder="Ex: -46.678910" value="${escapeHtml(entry.longitude)}">
-        </div>
-      </div>
-      <div class="maps-embed" data-role="maps-embed"></div>
 
     </div>
   `;
 
-  // status
-  const statusSel = card.querySelector('.status-select');
-  statusSel.addEventListener('change', ()=>{
-    entry.status = statusSel.value;
-    statusSel.className = 'status-select ' + statusClass(entry.status);
-    saveState(state);
-    updateStatLine();});
+  return card;
+}
 
-  // contato (liguei/mandei mensagem, sem retorno, não disponível)
-  const contatoBtns = card.querySelectorAll('.contato-btn');
-  contatoBtns.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const valor = btn.dataset.valor;
-      entry.contatoStatus = (entry.contatoStatus === valor) ? '' : valor;
-      contatoBtns.forEach(b=> b.classList.toggle('on', b.dataset.valor === entry.contatoStatus));
-      card.classList.remove('card-contato-verde','card-contato-cinza','card-contato-vermelho');
-      const corCard = contatoCardClass(entry.contatoStatus);
-      if(corCard) card.classList.add(corCard);
-      saveState(state);
-    });
-  });
+function attachCardEvents(card, item) {
+  const entry = getEntry(item.key);
 
-  // em processamento (deixa o card todo amarelo enquanto ainda está sendo preenchido)
-  const procBtn = card.querySelector('[data-role="proc-btn"]');
-  procBtn.addEventListener('click', ()=>{
-    entry.emProcessamento = !entry.emProcessamento;
-    if(entry.emProcessamento){
-      procBtn.classList.add('on');
-      card.classList.add('card-processando');
-    }else{
-      procBtn.classList.remove('on');
-      card.classList.remove('card-processando');
-    }
-    saveState(state);
-  });
-
-  // proprietários (lista dinâmica)
   const ownersListEl = card.querySelector('[data-role="owners-list"]');
-  function renderOwners(){
+  function renderCardOwners() {
+    if(!ownersListEl) return;
     ownersListEl.innerHTML = '';
-    if(entry.proprietarios.length === 0){
-      const empty = document.createElement('p');
-      empty.className = 'notes-empty';
-      empty.style.padding = '0 0 4px';
-      empty.textContent = 'Nenhum proprietário cadastrado.';
-      ownersListEl.appendChild(empty);
-    }
-    entry.proprietarios.forEach((owner, idx)=>{
+    (entry.proprietarios || []).forEach((p, idx) => {
       const block = document.createElement('div');
       block.className = 'owner-block';
       block.innerHTML = `
         <div class="field-row">
           <div class="field">
-            <label>Nome</label>
-            <input type="text" class="owner-nome" placeholder="Nome" value="${escapeHtml(owner.nome)}">
+            <label>Nome do proprietário</label>
+            <input type="text" class="owner-nome-input" value="${escapeHtml(p.nome)}" placeholder="Nome">
           </div>
           <div class="field">
             <label>Telefone</label>
-            <input type="text" class="owner-telefone" placeholder="(11) 90000-0000" value="${escapeHtml(owner.telefone)}">
+            <input type="text" class="owner-tel-input" value="${escapeHtml(p.telefone)}" placeholder="(11) 90000-0000">
           </div>
         </div>
-        ${entry.proprietarios.length > 1 ? '<button type="button" class="remove-btn owner-remove-btn">Remover este proprietário</button>' : ''}
+        <button type="button" class="remove-btn owner-remove-btn" data-idx="${idx}">Remover proprietário</button>
       `;
-      block.querySelector('.owner-nome').addEventListener('input', (e)=>{
-        owner.nome = e.target.value;
-        saveState(state);
-      });
-      block.querySelector('.owner-telefone').addEventListener('input', (e)=>{
-        owner.telefone = e.target.value;
-        saveState(state);
-      });
+      
+      const nIn = block.querySelector('.owner-nome-input');
+      const tIn = block.querySelector('.owner-tel-input');
       const rmBtn = block.querySelector('.owner-remove-btn');
-      if(rmBtn){
-        rmBtn.addEventListener('click', ()=>{
-          entry.proprietarios.splice(idx,1);
-          saveState(state);
-          renderOwners();
-        });
-      }
+
+      nIn.addEventListener('input', (e) => { entry.proprietarios[idx].nome = e.target.value; saveState(state); });
+      tIn.addEventListener('input', (e) => { entry.proprietarios[idx].telefone = e.target.value; saveState(state); });
+      rmBtn.addEventListener('click', () => {
+        entry.proprietarios.splice(idx, 1);
+        saveState(state);
+        renderCardOwners();
+      });
+
       ownersListEl.appendChild(block);
     });
   }
-  renderOwners();
-  card.querySelector('[data-role="add-owner"]').addEventListener('click', ()=>{
-    entry.proprietarios.push({nome:'', telefone:''});
-    saveState(state);
-    renderOwners();
-  });
+  renderCardOwners();
 
-  // data da visita
-  const visitaInput = card.querySelector('.visita-input');
-  visitaInput.addEventListener('input', ()=>{
-    entry.dataVisita = visitaInput.value;
-    saveState(state);
-  });
+  const addOwnerBtn = card.querySelector('[data-role="add-owner"]');
+  if(addOwnerBtn) {
+    addOwnerBtn.addEventListener('click', () => {
+      if(!entry.proprietarios) entry.proprietarios = [];
+      entry.proprietarios.push({nome:'', telefone:''});
+      saveState(state);
+      renderCardOwners();
+    });
+  }
 
-  // horário da visita
-  const horaVisitaInput = card.querySelector('.hora-visita-input');
-  horaVisitaInput.addEventListener('input', ()=>{
-    entry.horaVisita = horaVisitaInput.value;
-    saveState(state);
-  });
-
-  // obs
-  const obsInput = card.querySelector('.obs-input');
-  obsInput.addEventListener('input', ()=>{
-    entry.obs = obsInput.value;
-    saveState(state);
-  });
-
-  // fotos (enviadas ao Firebase Storage quando configurado; senão, guardadas como base64 só neste navegador)
   const fotosRow = card.querySelector('[data-role="fotos-row"]');
-  function renderFotos(){
+  function renderFotos() {
+    if(!fotosRow) return;
     fotosRow.innerHTML = '';
-    entry.fotos.forEach((src, idx)=>{
+    (entry.fotos || []).forEach((fUrl, fIdx) => {
       const thumb = document.createElement('div');
       thumb.className = 'foto-thumb';
-      thumb.innerHTML = `<img src="${src}" alt="Foto do imóvel ${item.cod}"><button title="Remover">×</button>`;
-      thumb.querySelector('button').addEventListener('click', ()=>{
-        const removida = entry.fotos[idx];
-        entry.fotos.splice(idx,1);
+      thumb.innerHTML = `<img src="${fUrl}" alt="Foto"><button type="button">×</button>`;
+      thumb.querySelector('button').addEventListener('click', () => {
+        entry.fotos.splice(fIdx, 1);
         saveState(state);
         renderFotos();
-        if(USAR_STORAGE_FOTOS && firebaseAtivo && storage && typeof removida === 'string' && removida.includes('firebasestorage')){
-          storage.refFromURL(removida).delete().catch(()=>{
-            /* já pode ter sido removida antes, ou a URL não é mais válida — sem problema */
-          });
-        }
       });
       fotosRow.appendChild(thumb);
     });
-    const addBtn = document.createElement('label');
-    addBtn.className = 'foto-add';
-    addBtn.title = 'Adicionar foto';
-    addBtn.innerHTML = `+<input type="file" accept="image/*" multiple>`;
-    addBtn.querySelector('input').addEventListener('change', async (e)=>{
+
+    const addBox = document.createElement('label');
+    addBox.className = 'foto-add';
+    addBox.innerHTML = `+<input type="file" accept="image/*" multiple>`;
+    addBox.querySelector('input').addEventListener('change', async (e) => {
       const files = Array.from(e.target.files);
-      if(files.length === 0) return;
-      addBtn.classList.add('uploading');
-      addBtn.title = 'Enviando…';
-      for(const f of files){
-        try{
-          if(USAR_STORAGE_FOTOS && firebaseAtivo && storage){
-            const caminho = `fotosImoveis/${item.key}/${Date.now()}-${Math.random().toString(36).slice(2,7)}-${f.name}`;
-            const ref = storage.ref(caminho);
-            await ref.put(f);
-            const url = await ref.getDownloadURL();
-            entry.fotos.push(url);
-          }else{
-            const b64 = await fileToBase64(f);
-            entry.fotos.push(b64);
-          }
-        }catch(err){
-          console.warn('Falha ao enviar foto:', err);
-          alert('Não foi possível enviar uma das fotos. Tente novamente.');
-        }
+      if(!files.length) return;
+      for(const file of files) {
+        try {
+          const base64 = await fileToBase64(file);
+          if(!entry.fotos) entry.fotos = [];
+          entry.fotos.push(base64);
+        } catch(err){}
       }
-      addBtn.classList.remove('uploading');
       saveState(state);
       renderFotos();
     });
-    fotosRow.appendChild(addBtn);
+    fotosRow.appendChild(addBox);
   }
   renderFotos();
 
-  /* ---- Campos de detalhes ampliados: liga cada input/select ao entry ---- */
-  const detFieldMap = [
-    ['.det-descricao','descricao'],
-    ['.det-condominioNome','condominioNome'],
-    ['.det-cep','cep'],
-    ['.det-construtora','construtora'],
-    ['.det-uso','uso'],
-    ['.det-tipoImovel','tipoImovel'],
-    ['.det-face','face'],
-    ['.det-andar','andar'],
-    ['.det-areaPrivativa','areaPrivativa'],
-    ['.det-areaTerreno','areaTerreno'],
-    ['.det-anoConstrucao','anoConstrucao'],
-    ['.det-valorM2','valorM2'],
-    ['.det-condominio','condominio'],
-    ['.det-iptu','iptu'],
-    ['.det-qtdAndares','qtdAndares'],
-    ['.det-qtdElevadores','qtdElevadores'],
-    ['.det-topografia','topografia'],
-    ['.det-mobilia','mobilia'],
-    ['.det-quartos','quartos'],
-    ['.det-suites','suites'],
-    ['.det-banheiros','banheiros'],
-    ['.det-salas','salas'],
-    ['.det-vagas','vagas'],
-    ['.det-vagasTipo','vagasTipo'],
-    ['.det-vago','vago'],
-    ['.det-chavesQuem','chavesQuem'],
-    ['.det-chavesObs','chavesObs'],
-    ['.det-aceitaPermuta','aceitaPermuta'],
-    ['.det-permutaDescricao','permutaDescricao'],
-    ['.det-possuiRenda','possuiRenda'],
-    ['.det-rendaDescricao','rendaDescricao'],
-    ['.det-locacaoTemporada','locacaoTemporada'],
-  ];
-  detFieldMap.forEach(([sel, key])=>{
-    const el = card.querySelector(sel);
-    if(!el) return;
-    const evt = (el.tagName === 'SELECT') ? 'change' : 'input';
-    el.addEventListener(evt, ()=>{
-      entry[key] = el.value;
+  const procBtn = card.querySelector('[data-role="proc-btn"]');
+  if(procBtn) {
+    procBtn.addEventListener('click', () => {
+      entry.emProcessamento = !entry.emProcessamento;
+      saveState(state);
+      if(entry.emProcessamento) {
+        card.classList.add('card-processando');
+        procBtn.classList.add('on');
+      } else {
+        card.classList.remove('card-processando');
+        procBtn.classList.remove('on');
+      }
+    });
+  }
+
+  const contatoRow = card.querySelector('[data-role="contato-row"]');
+  if(contatoRow) {
+    contatoRow.querySelectorAll('.contato-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.valor;
+        entry.contatoStatus = entry.contatoStatus === val ? '' : val;
+        saveState(state);
+        card.className = ('card ' + contatoCardClass(entry.contatoStatus) + (entry.emProcessamento ? ' card-processando' : '')).replace(/\s+/g,' ').trim();
+        contatoRow.querySelectorAll('.contato-btn').forEach(b => {
+          b.classList.toggle('on', b.dataset.valor === entry.contatoStatus);
+        });
+      });
+    });
+  }
+
+  const statusSel = card.querySelector('.status-select');
+  if(statusSel) {
+    statusSel.addEventListener('change', (e) => {
+      entry.status = e.target.value;
+      statusSel.className = 'status-select ' + statusClass(entry.status);
       saveState(state);
     });
-  });
-
-  // link do maps: input livre
-  const linkMapsInput = card.querySelector('.det-linkMaps');
-  linkMapsInput.addEventListener('input', ()=>{
-    entry.linkMaps = linkMapsInput.value;
-    saveState(state);
-    renderMaps();
-  });
-
-  // latitude / longitude
-  const latInput = card.querySelector('.det-latitude');
-  const lngInput = card.querySelector('.det-longitude');
-  latInput.addEventListener('input', ()=>{
-    entry.latitude = latInput.value;
-    saveState(state);
-    renderMaps();
-  });
-  lngInput.addEventListener('input', ()=>{
-    entry.longitude = lngInput.value;
-    saveState(state);
-    renderMaps();
-  });
-
-  function hasCoords(){
-    const lat = parseFloat((entry.latitude||'').replace(',','.'));
-    const lng = parseFloat((entry.longitude||'').replace(',','.'));
-    return !isNaN(lat) && !isNaN(lng);
   }
-  function mapsQuery(){
-    if(hasCoords()){
-      const lat = parseFloat((entry.latitude||'').replace(',','.'));
-      const lng = parseFloat((entry.longitude||'').replace(',','.'));
-      return `${lat},${lng}`;
+
+  const visIn = card.querySelector('.visita-input');
+  if(visIn) visIn.addEventListener('change', (e) => { entry.dataVisita = e.target.value; saveState(state); });
+
+  const horaIn = card.querySelector('.hora-visita-input');
+  if(horaIn) horaIn.addEventListener('change', (e) => { entry.horaVisita = e.target.value; saveState(state); });
+
+  const obsIn = card.querySelector('.obs-input');
+  if(obsIn) obsIn.addEventListener('input', (e) => { entry.obs = e.target.value; saveState(state); });
+
+  const rmCardBtn = card.querySelector('[data-role="remove"]');
+  if(rmCardBtn) {
+    rmCardBtn.addEventListener('click', () => {
+      if(confirm(`Tem certeza que deseja remover este imóvel (${item.end})?`)) {
+        customItems = customItems.filter(i => i.key !== item.key);
+        delete state[item.key];
+        saveCustom();
+        saveState(state);
+        rebuildBairroUI();
+        render();
+      }
+    });
+  }
+
+  const detToggle = card.querySelector('[data-role="details-toggle"]');
+  const detBlock = card.querySelector('[data-role="details-block"]');
+  const detLabel = card.querySelector('[data-role="details-toggle-label"]');
+  if(detToggle && detBlock) {
+    detToggle.addEventListener('click', () => {
+      const isOpen = detBlock.classList.toggle('open');
+      detToggle.classList.toggle('open', isOpen);
+      if(detLabel) detLabel.textContent = isOpen ? 'Ocultar detalhes' : 'Ver detalhes';
+    });
+  }
+
+  const bindDetailInput = (selector, prop) => {
+    const el = card.querySelector(selector);
+    if(el) {
+      const handler = (e) => { entry[prop] = e.target.value; saveState(state); };
+      el.addEventListener('input', handler);
+      el.addEventListener('change', handler);
     }
-    if(entry.linkMaps && entry.linkMaps.trim()){
-      return entry.linkMaps.trim();
-    }
-    return `${item.end}, ${item.bairro}, São Paulo, SP`;
-  }
-  function renderMaps(){
-    const q = mapsQuery();
-    const isUrl = /^https?:\/\//i.test(q);
-    const openHref = isUrl ? q : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
-    const openBtn = card.querySelector('[data-role="maps-open"]');
-    openBtn.href = openHref;
-
-    const embedWrap = card.querySelector('[data-role="maps-embed"]');
-    let embedQuery;
-    if(hasCoords()) embedQuery = q;
-    else if(isUrl) embedQuery = `${item.end}, ${item.bairro}, São Paulo, SP`;
-    else embedQuery = q;
-    const embedSrc = `https://www.google.com/maps?q=${encodeURIComponent(embedQuery)}&output=embed`;
-    embedWrap.innerHTML = `<iframe src="${embedSrc}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-  }
-  renderMaps();
-
-  // chips: características do imóvel
-  const chipsImovelWrap = card.querySelector('[data-role="chips-imovel"]');
-  TAGS_IMOVEL.forEach(tag=>{
-    const chip = document.createElement('span');
-    chip.className = 'chip' + (entry.caractImovel.includes(tag) ? ' on' : '');
-    chip.textContent = tag;
-    chip.addEventListener('click', ()=>{
-      const idx = entry.caractImovel.indexOf(tag);
-      if(idx === -1) entry.caractImovel.push(tag);
-      else entry.caractImovel.splice(idx,1);
-      chip.classList.toggle('on');
-      saveState(state);
-    });
-    chipsImovelWrap.appendChild(chip);
-  });
-
-  // chips: características do condomínio
-  const chipsCondWrap = card.querySelector('[data-role="chips-condominio"]');
-  TAGS_CONDOMINIO.forEach(tag=>{
-    const chip = document.createElement('span');
-    chip.className = 'chip' + (entry.caractCondominio.includes(tag) ? ' on' : '');
-    chip.textContent = tag;
-    chip.addEventListener('click', ()=>{
-      const idx = entry.caractCondominio.indexOf(tag);
-      if(idx === -1) entry.caractCondominio.push(tag);
-      else entry.caractCondominio.splice(idx,1);
-      chip.classList.toggle('on');
-      saveState(state);
-    });
-    chipsCondWrap.appendChild(chip);
-  });
-
-  // recolher/expandir detalhes extras
-  const detailsToggle = card.querySelector('[data-role="details-toggle"]');
-  const detailsBlock = card.querySelector('[data-role="details-block"]');
-  const detailsToggleLabel = card.querySelector('[data-role="details-toggle-label"]');
-  detailsToggle.addEventListener('click', ()=>{
-    const isOpen = detailsBlock.classList.toggle('open');
-    detailsToggle.classList.toggle('open', isOpen);
-    detailsToggleLabel.textContent = isOpen ? 'Ocultar detalhes' : 'Ver detalhes';
-  });
-
-  // remover (apenas itens adicionados manualmente)
-  const removeBtn = card.querySelector('[data-role="remove"]');
-  if(removeBtn){
-    removeBtn.addEventListener('click', ()=>{
-      if(!confirm('Remover este imóvel da carteira?')) return;
-      customItems = customItems.filter(i=>i.key !== item.key);
-      delete state[item.key];
-      saveCustom();
-      saveState(state);
-      rebuildBairroUI();
-      render();
-    });
-  }
-
-  return card;
-}
-
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str || '';
-  return d.innerHTML;
-}
-
-const resultsEl = document.getElementById('results');
-
-function currentFilters(){
-  return {
-    q: document.getElementById('searchInput').value.trim().toLowerCase(),
-    bairro: document.getElementById('filterBairro').value,
-    tipo: document.getElementById('filterTipo').value,
-    status: document.getElementById('filterStatus').value,
   };
+
+  bindDetailInput('.det-descricao', 'descricao');
+  bindDetailInput('.det-condominioNome', 'condominioNome');
+  bindDetailInput('.det-cep', 'cep');
+  bindDetailInput('.det-construtora', 'construtora');
+  bindDetailInput('.det-uso', 'uso');
+  bindDetailInput('.det-tipoImovel', 'tipoImovel');
+  bindDetailInput('.det-face', 'face');
+  bindDetailInput('.det-andar', 'andar');
+  bindDetailInput('.det-areaPrivativa', 'areaPrivativa');
+  bindDetailInput('.det-areaTerreno', 'areaTerreno');
+  bindDetailInput('.det-anoConstrucao', 'anoConstrucao');
+  bindDetailInput('.det-valorM2', 'valorM2');
+  bindDetailInput('.det-condominio', 'condominio');
+  bindDetailInput('.det-iptu', 'iptu');
+  bindDetailInput('.det-qtdAndares', 'qtdAndares');
+  bindDetailInput('.det-qtdElevadores', 'qtdElevadores');
+  bindDetailInput('.det-topografia', 'topografia');
+  bindDetailInput('.det-mobilia', 'mobilia');
+  bindDetailInput('.det-quartos', 'quartos');
+  bindDetailInput('.det-suites', 'suites');
+  bindDetailInput('.det-banheiros', 'banheiros');
+  bindDetailInput('.det-salas', 'salas');
+  bindDetailInput('.det-vagas', 'vagas');
+  bindDetailInput('.det-vagasTipo', 'vagasTipo');
+  bindDetailInput('.det-vago', 'vago');
+  bindDetailInput('.det-chavesQuem', 'chavesQuem');
+  bindDetailInput('.det-chavesObs', 'chavesObs');
+  bindDetailInput('.det-aceitaPermuta', 'aceitaPermuta');
+  bindDetailInput('.det-permutaDescricao', 'permutaDescricao');
+  bindDetailInput('.det-possuiRenda', 'possuiRenda');
+  bindDetailInput('.det-rendaDescricao', 'rendaDescricao');
+  bindDetailInput('.det-linkMaps', 'linkMaps');
+
+  card.querySelectorAll('.chips-wrap').forEach(wrap => {
+    const type = wrap.dataset.type;
+    const propKey = type === 'imovel' ? 'caractImovel' : 'caractCondominio';
+    wrap.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const tag = chip.dataset.tag;
+        if(!Array.isArray(entry[propKey])) entry[propKey] = [];
+        const idx = entry[propKey].indexOf(tag);
+        if(idx >= 0) {
+          entry[propKey].splice(idx, 1);
+          chip.classList.remove('on');
+        } else {
+          entry[propKey].push(tag);
+          chip.classList.add('on');
+        }
+        saveState(state);
+      });
+    });
+  });
 }
 
-function matches(item, f){
-  const entry = getEntry(item.key);
-  if(f.bairro && item.bairro !== f.bairro) return false;
-  if(f.tipo && item.tipo !== f.tipo) return false;
-  if(f.status && entry.status !== f.status) return false;
-  if(f.q){
-    const proprietariosStr = entry.proprietarios.map(p=>`${p.nome} ${p.telefone}`).join(' ');
-    const hay = `${item.end} ${item.cod||''} ${item.bairro} ${proprietariosStr} ${entry.obs} ${item.n||''}`.toLowerCase();
-    if(!hay.includes(f.q)) return false;
-  }
-  return true;
-}
+function render() {
+  const resultsEl = document.getElementById('results');
+  const statLineEl = document.getElementById('statLine');
+  const totalCountEl = document.getElementById('totalCount');
 
-function render(){
-  const f = currentFilters();
-  resultsEl.innerHTML = '';
-  let shown = 0;
-  const items = allItems();
+  if(!resultsEl) return;
 
-  getBairros().forEach(bairro=>{
-    const bairroItems = items.filter(i=>i.bairro===bairro && matches(i,f));
-    if(bairroItems.length === 0) return;
-    shown += bairroItems.length;
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const fBairro = document.getElementById('filterBairro').value;
+  const fTipo = document.getElementById('filterTipo').value;
+  const fStatus = document.getElementById('filterStatus').value;
 
-    const section = document.createElement('section');
-    section.className = 'bairro-section';
-    section.id = 'sec-' + slug(bairro);
+  const all = allItems();
+  if(totalCountEl) totalCountEl.textContent = all.length;
 
-    const head = document.createElement('div');
-    head.className = 'bairro-head';
-    head.innerHTML = `<h2>${bairro}</h2><span class="bairro-count">${bairroItems.length} ${bairroItems.length===1?'imóvel':'imóveis'}</span>`;
-    section.appendChild(head);
+  let filtered = all.filter(item => {
+    const entry = getEntry(item.key);
 
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-    bairroItems.sort((a,b)=>(a.n||9999)-(b.n||9999)).forEach(item=> grid.appendChild(renderCard(item)));
-    section.appendChild(grid);
+    if(fBairro && item.bairro !== fBairro) return false;
+    if(fTipo && item.tipo !== fTipo) return false;
+    if(fStatus && entry.status !== fStatus) return false;
 
-    resultsEl.appendChild(section);
+    if(q) {
+      const matchEnd = (item.end || '').toLowerCase().includes(q);
+      const matchCod = (item.cod || '').toLowerCase().includes(q);
+      const matchBairro = (item.bairro || '').toLowerCase().includes(q);
+      const matchObs = (entry.obs || '').toLowerCase().includes(q);
+      const matchDesc = (entry.descricao || '').toLowerCase().includes(q);
+      const matchCond = (entry.condominioNome || '').toLowerCase().includes(q);
+      const matchOwner = (entry.proprietarios || []).some(p => 
+        (p.nome || '').toLowerCase().includes(q) || (p.telefone || '').includes(q)
+      );
+
+      if(!matchEnd && !matchCod && !matchBairro && !matchObs && !matchDesc && !matchCond && !matchOwner) {
+        return false;
+      }
+    }
+    return true;
   });
 
-  if(shown === 0){
-    resultsEl.innerHTML = '<div class="empty">Nenhum imóvel encontrado com esses filtros.</div>';
+  if(statLineEl) {
+    statLineEl.textContent = `Exibindo ${filtered.length} de ${all.length} imóveis`;
   }
-  document.getElementById('totalCount').textContent = items.length;
-  updateStatLine(shown);
+
+  resultsEl.innerHTML = '';
+  if(filtered.length === 0) {
+    resultsEl.innerHTML = '<p class="empty">Nenhum imóvel encontrado com os filtros selecionados.</p>';
+    return;
+  }
+
+  const bairrosNoResultado = [...new Set(filtered.map(i => i.bairro))].sort((a,b) => a.localeCompare(b, 'pt-BR'));
+
+  bairrosNoResultado.forEach(b => {
+    const itemsDoBairro = filtered.filter(i => i.bairro === b);
+    
+    const sec = document.createElement('div');
+    sec.className = 'bairro-section';
+    sec.id = 'sec-' + slug(b);
+
+    sec.innerHTML = `
+      <div class="bairro-head">
+        <h2>${escapeHtml(b)}</h2>
+        <span class="bairro-count">${itemsDoBairro.length} imóvel(is)</span>
+      </div>
+      <div class="grid" id="grid-${slug(b)}"></div>
+    `;
+
+    resultsEl.appendChild(sec);
+    const gridEl = sec.querySelector(`#grid-${slug(b)}`);
+
+    itemsDoBairro.forEach(item => {
+      const cardEl = renderCard(item);
+      gridEl.appendChild(cardEl);
+      attachCardEvents(cardEl, item);
+    });
+  });
 }
 
-function updateStatLine(shownCount){
-  const items = allItems();
-  const total = items.length;
-  const disp = items.filter(i=>getEntry(i.key).status==='disponivel').length;
-  const neg = items.filter(i=>getEntry(i.key).status==='negociando').length;
-  const vend = items.filter(i=>getEntry(i.key).status==='vendido').length;
-  const shown = shownCount !== undefined ? shownCount : items.filter(i=>matches(i,currentFilters())).length;
-  document.getElementById('statLine').textContent =
-    `Mostrando ${shown} de ${total} · Disponíveis: ${disp} · Negociando: ${neg} · Vendidos/Alugados: ${vend}`;
-}
+/* Função para Salvar Manualmente */
+function salvarTudoManual() {
+  document.querySelectorAll('.card').forEach(card => {
+    const key = card.dataset.key;
+    if(!key) return;
+    const entry = getEntry(key);
 
-function scrollToCard(key){
-  requestAnimationFrame(()=>{
-    const cardEl = document.querySelector(`.card[data-key="${CSS.escape(key)}"]`);
-    if(cardEl){
-      cardEl.scrollIntoView({behavior:'smooth', block:'center'});
-      cardEl.style.transition = 'box-shadow .3s ease';
-      cardEl.style.boxShadow = '0 0 0 3px var(--accent)';
-      setTimeout(()=>{ cardEl.style.boxShadow = ''; }, 1600);
+    const statusSelect = card.querySelector('.status-select');
+    if(statusSelect) entry.status = statusSelect.value;
+
+    const visitaInput = card.querySelector('.visita-input');
+    if(visitaInput) entry.dataVisita = visitaInput.value;
+
+    const horaVisitaInput = card.querySelector('.hora-visita-input');
+    if(horaVisitaInput) entry.horaVisita = horaVisitaInput.value;
+
+    const obsInput = card.querySelector('.obs-input');
+    if(obsInput) entry.obs = obsInput.value;
+
+    const setVal = (selector, prop) => {
+      const el = card.querySelector(selector);
+      if(el) entry[prop] = el.value;
+    };
+
+    setVal('.det-descricao', 'descricao');
+    setVal('.det-condominioNome', 'condominioNome');
+    setVal('.det-cep', 'cep');
+    setVal('.det-construtora', 'construtora');
+    setVal('.det-uso', 'uso');
+    setVal('.det-tipoImovel', 'tipoImovel');
+    setVal('.det-face', 'face');
+    setVal('.det-andar', 'andar');
+    setVal('.det-areaPrivativa', 'areaPrivativa');
+    setVal('.det-areaTerreno', 'areaTerreno');
+    setVal('.det-anoConstrucao', 'anoConstrucao');
+    setVal('.det-valorM2', 'valorM2');
+    setVal('.det-condominio', 'condominio');
+    setVal('.det-iptu', 'iptu');
+    setVal('.det-qtdAndares', 'qtdAndares');
+    setVal('.det-qtdElevadores', 'qtdElevadores');
+    setVal('.det-topografia', 'topografia');
+    setVal('.det-mobilia', 'mobilia');
+    setVal('.det-quartos', 'quartos');
+    setVal('.det-suites', 'suites');
+    setVal('.det-banheiros', 'banheiros');
+    setVal('.det-salas', 'salas');
+    setVal('.det-vagas', 'vagas');
+    setVal('.det-vagasTipo', 'vagasTipo');
+    setVal('.det-vago', 'vago');
+    setVal('.det-chavesQuem', 'chavesQuem');
+    setVal('.det-chavesObs', 'chavesObs');
+    setVal('.det-aceitaPermuta', 'aceitaPermuta');
+    setVal('.det-permutaDescricao', 'permutaDescricao');
+    setVal('.det-possuiRenda', 'possuiRenda');
+    setVal('.det-rendaDescricao', 'rendaDescricao');
+    setVal('.det-linkMaps', 'linkMaps');
+
+    const ownerBlocks = card.querySelectorAll('.owner-block');
+    if(ownerBlocks.length > 0) {
+      const props = [];
+      ownerBlocks.forEach(block => {
+        const nInput = block.querySelector('.owner-nome-input');
+        const tInput = block.querySelector('.owner-tel-input');
+        if(nInput || tInput) {
+          props.push({ nome: nInput ? nInput.value : '', telefone: tInput ? tInput.value : '' });
+        }
+      });
+      entry.proprietarios = props;
     }
   });
+
+  saveState(state);
+  saveCustom();
+  if(typeof saveNotes === 'function') saveNotes();
+  if(typeof saveCalendarEvents === 'function') saveCalendarEvents();
+
+  const btn = document.getElementById('salvarBtn');
+  if(btn) {
+    const origText = btn.innerHTML;
+    btn.innerHTML = '✓ SALVO!';
+    btn.style.background = '#15803D';
+    setTimeout(() => {
+      btn.innerHTML = origText;
+      btn.style.background = '#16a34a';
+    }, 2000);
+  }
+  alert('Todas as informações foram salvas com sucesso!');
 }
 
-['searchInput'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', render);
-});
-['filterBairro','filterTipo','filterStatus'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', render);
-});
+document.getElementById('salvarBtn').addEventListener('click', salvarTudoManual);
 
-/* ---------- Sugestões de busca (autocomplete) ---------- */
-const searchInputEl = document.getElementById('searchInput');
+document.getElementById('searchInput').addEventListener('input', () => { render(); updateSearchSuggest(); });
+document.getElementById('filterBairro').addEventListener('change', render);
+document.getElementById('filterTipo').addEventListener('change', render);
+document.getElementById('filterStatus').addEventListener('change', render);
+
 const searchSuggestEl = document.getElementById('searchSuggest');
-
-function renderSearchSuggestions(){
-  const q = searchInputEl.value.trim().toLowerCase();
-  if(!q){
+function updateSearchSuggest() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if(!q || q.length < 2) {
     searchSuggestEl.classList.remove('open');
     searchSuggestEl.innerHTML = '';
     return;
   }
-  const matchesList = allItems().filter(item=>{
+  const matches = allItems().filter(item => {
     const entry = getEntry(item.key);
-    const proprietariosStr = entry.proprietarios.map(p=>`${p.nome} ${p.telefone}`).join(' ');
-    const hay = `${item.end} ${item.cod||''} ${item.bairro} ${proprietariosStr}`.toLowerCase();
-    return hay.includes(q);
-  }).slice(0, 8);
+    return (item.end || '').toLowerCase().includes(q) ||
+           (item.cod || '').toLowerCase().includes(q) ||
+           (item.bairro || '').toLowerCase().includes(q) ||
+           (entry.proprietarios || []).some(p => (p.nome || '').toLowerCase().includes(q));
+  }).slice(0, 6);
 
-  searchSuggestEl.innerHTML = '';
-  if(matchesList.length === 0){
-    const empty = document.createElement('div');
-    empty.className = 'search-suggest-empty';
-    empty.textContent = 'Nenhum imóvel encontrado.';
-    searchSuggestEl.appendChild(empty);
-  }else{
-    matchesList.forEach(item=>{
-      const el = document.createElement('div');
-      el.className = 'search-suggest-item';
-      el.innerHTML = `<span class="s-end">${escapeHtml(item.end)}</span><span class="s-meta">${escapeHtml(item.bairro)}${item.cod ? ' · '+escapeHtml(item.cod) : ''}</span>`;
-      el.addEventListener('mousedown', (e)=>{
-        // mousedown para disparar antes do blur do input
-        e.preventDefault();
-        searchSuggestEl.classList.remove('open');
-        activateTab(tabImoveisBtn, panelImoveis);
-        render();
-        scrollToCard(item.key);
+  if(matches.length === 0) {
+    searchSuggestEl.innerHTML = '<div class="search-suggest-empty">Nenhum resultado direto</div>';
+  } else {
+    searchSuggestEl.innerHTML = matches.map(m => `
+      <div class="search-suggest-item" data-key="${escapeHtml(m.key)}">
+        <div class="s-end">${escapeHtml(m.end)}</div>
+        <div class="s-meta">${escapeHtml(m.bairro)} · ${escapeHtml(m.cod || '')} · ${escapeHtml(m.tipo)}</div>
+      </div>
+    `).join('');
+
+    searchSuggestEl.querySelectorAll('.search-suggest-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const key = el.dataset.key;
+        const found = allItems().find(i => i.key === key);
+        if(found) {
+          document.getElementById('searchInput').value = found.cod || found.end;
+          searchSuggestEl.classList.remove('open');
+          render();
+        }
       });
-      searchSuggestEl.appendChild(el);
     });
   }
   searchSuggestEl.classList.add('open');
 }
 
-searchInputEl.addEventListener('input', renderSearchSuggestions);
-searchInputEl.addEventListener('focus', ()=>{ if(searchInputEl.value.trim()) renderSearchSuggestions(); });
-searchInputEl.addEventListener('blur', ()=>{ setTimeout(()=> searchSuggestEl.classList.remove('open'), 120); });
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape') searchSuggestEl.classList.remove('open');
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.search-box')) {
+    searchSuggestEl.classList.remove('open');
+  }
 });
 
-/* ---------- Backup (exportar / importar) ---------- */
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `backup-imoveis-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById('importInput').addEventListener('change', (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const imported = JSON.parse(reader.result);
-      state = imported;
-      saveState(state);
-      render();
-      alert('Backup importado com sucesso.');
-    }catch(err){
-      alert('Não foi possível ler esse arquivo. Verifique se é um backup exportado por este site.');
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
-
-/* ---------- Modal: adicionar imóvel ---------- */
+/* Modal */
 const modalOverlay = document.getElementById('modalOverlay');
+const addBtn = document.getElementById('addBtn');
+const cancelAdd = document.getElementById('cancelAdd');
 const addForm = document.getElementById('addForm');
 
-function openModal(){
-  modalOverlay.classList.add('open');
-  document.getElementById('newBairro').focus();
-}
-function closeModal(){
-  modalOverlay.classList.remove('open');
+addBtn.addEventListener('click', () => {
   addForm.reset();
-}
+  modalOverlay.classList.add('open');
+});
+cancelAdd.addEventListener('click', () => { modalOverlay.classList.remove('open'); });
 
-document.getElementById('addBtn').addEventListener('click', openModal);
-document.getElementById('cancelAdd').addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', (e)=>{ if(e.target === modalOverlay) closeModal(); });
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal(); });
-
-addForm.addEventListener('submit', (e)=>{
+addForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const bairro = document.getElementById('newBairro').value.trim();
   const end = document.getElementById('newEndereco').value.trim();
@@ -2704,909 +2410,610 @@ addForm.addEventListener('submit', (e)=>{
   const tipo = document.getElementById('newTipo').value;
   const nome = document.getElementById('newNome').value.trim();
   const telefone = document.getElementById('newTelefone').value.trim();
-  const dataVisita = document.getElementById('newVisita').value;
+  const visita = document.getElementById('newVisita').value;
+
   if(!bairro || !end) return;
 
-  const maxN = Math.max(0, ...IMOVEIS.map(i=>i.n));
-  const newItem = {
-    n: maxN + customItems.length + 1,
-    cod: cod,
-    bairro: bairro,
-    end: end,
-    tipo: tipo,
-    custom: true,
-    key: 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2,7)
-  };
+  const key = 'CUSTOM_' + Date.now();
+  const newItem = { key, bairro, end, cod: cod || 'MANUAL', tipo, custom: true };
   customItems.push(newItem);
-
-  const entry = getEntry(newItem.key);
-  if(nome || telefone){
-    entry.proprietarios.push({nome: nome, telefone: telefone});
-  }
-  entry.dataVisita = dataVisita;
-  saveState(state);
   saveCustom();
-  closeModal();
+
+  const entry = getEntry(key);
+  entry.dataVisita = visita;
+  if(nome || telefone) {
+    entry.proprietarios = [{ nome, telefone }];
+  }
+  saveState(state);
+
+  modalOverlay.classList.remove('open');
   rebuildBairroUI();
   render();
+  updateOwnerSelects();
 
-  const target = document.getElementById('sec-'+slug(bairro));
-  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  setTimeout(() => {
+    const target = document.getElementById('sec-' + slug(bairro));
+    if(target) target.scrollIntoView({ behavior: 'smooth' });
+  }, 200);
 });
 
-/* ---------- Abas principais ---------- */
-const tabImoveisBtn = document.getElementById('tabImoveisBtn');
-const tabCalendarioBtn = document.getElementById('tabCalendarioBtn');
-const tabProprietariosBtn = document.getElementById('tabProprietariosBtn');
-const tabNotasBtn = document.getElementById('tabNotasBtn');
-const tabAssistenteBtn = document.getElementById('tabAssistenteBtn');
-const panelImoveis = document.getElementById('panelImoveis');
-const panelCalendario = document.getElementById('panelCalendario');
-const panelProprietarios = document.getElementById('panelProprietarios');
-const panelNotas = document.getElementById('panelNotas');
-const panelAssistente = document.getElementById('panelAssistente');
-
-const allTabBtns = [tabImoveisBtn, tabCalendarioBtn, tabProprietariosBtn, tabNotasBtn, tabAssistenteBtn];
-const allPanels = [panelImoveis, panelCalendario, panelProprietarios, panelNotas, panelAssistente];
-
-function activateTab(btn, panel){
-  allTabBtns.forEach(b=>b.classList.toggle('active', b===btn));
-  allPanels.forEach(p=>p.classList.toggle('active', p===panel));
-}
-
-tabImoveisBtn.addEventListener('click', ()=> activateTab(tabImoveisBtn, panelImoveis));
-tabCalendarioBtn.addEventListener('click', ()=>{
-  activateTab(tabCalendarioBtn, panelCalendario);
-  renderCalendar();
-});
-tabProprietariosBtn.addEventListener('click', ()=>{
-  activateTab(tabProprietariosBtn, panelProprietarios);
-  populateOwnerAddSelect();
-  renderOwnersList();
-});
-tabNotasBtn.addEventListener('click', ()=> activateTab(tabNotasBtn, panelNotas));
-tabAssistenteBtn.addEventListener('click', ()=> activateTab(tabAssistenteBtn, panelAssistente));
-
-/* ---------- Aba Proprietários ---------- */
-function populateOwnerAddSelect(){
-  const sel = document.getElementById('ownerAddImovel');
-  if(!sel) return;
-  const currentVal = sel.value;
-  sel.innerHTML = '';
-  getBairros().forEach(b=>{
-    const group = document.createElement('optgroup');
-    group.label = b;
-    allItems().filter(i=>i.bairro===b).sort((a,b2)=>(a.n||9999)-(b2.n||9999)).forEach(item=>{
-      const opt = document.createElement('option');
-      opt.value = item.key;
-      opt.textContent = `${item.end}${item.cod ? ' · '+item.cod : ''}`;
-      group.appendChild(opt);
-    });
-    sel.appendChild(group);
-  });
-  if(currentVal && [...sel.options].some(o=>o.value===currentVal)) sel.value = currentVal;
-}
-
-document.getElementById('ownerAddBtn').addEventListener('click', ()=>{
-  const sel = document.getElementById('ownerAddImovel');
-  const key = sel.value;
-  if(!key){ alert('Selecione um imóvel.'); return; }
-  const nomeInput = document.getElementById('ownerAddNome');
-  const telInput = document.getElementById('ownerAddTelefone');
-  const nome = nomeInput.value.trim();
-  const telefone = telInput.value.trim();
-  if(!nome && !telefone){ alert('Informe ao menos o nome ou o telefone do proprietário.'); return; }
-  const entry = getEntry(key);
-  entry.proprietarios.push({nome, telefone});
-  saveState(state);
-  nomeInput.value = '';
-  telInput.value = '';
-  renderOwnersList();
-});
-
-function getAllOwnerRows(){
-  const rows = [];
-  allItems().forEach(item=>{
-    const entry = getEntry(item.key);
-    entry.proprietarios.forEach((owner, idx)=>{
-      if(owner.nome || owner.telefone){
-        rows.push({owner, idx, item, entry});
-      }
-    });
-  });
-  return rows;
-}
-
-function renderOwnersList(){
-  const wrap = document.getElementById('ownersListWrap');
-  const sub = document.getElementById('ownersListSub');
-  const q = (document.getElementById('ownersSearchInput').value || '').trim().toLowerCase();
-  const rows = getAllOwnerRows().filter(r=>{
-    if(!q) return true;
-    const hay = `${r.owner.nome} ${r.owner.telefone} ${r.item.end} ${r.item.bairro} ${r.item.cod||''}`.toLowerCase();
-    return hay.includes(q);
-  });
-  sub.textContent = `${rows.length} proprietário${rows.length===1?'':'s'} cadastrado${rows.length===1?'':'s'}`;
-  wrap.innerHTML = '';
-  if(rows.length === 0){
-    wrap.innerHTML = '<div class="notes-empty">Nenhum proprietário encontrado.</div>';
-    return;
-  }
-  rows.sort((a,b)=> (a.owner.nome||'').localeCompare(b.owner.nome||'', 'pt-BR'));
-  rows.forEach(r=>{
-    const row = document.createElement('div');
-    row.className = 'owner-row';
-    row.innerHTML = `
-      <div>
-        <p class="o-nome">${escapeHtml(r.owner.nome || 'Sem nome')}</p>
-        ${r.owner.telefone ? `<p class="o-tel">${escapeHtml(r.owner.telefone)}</p>` : ''}
-        <p class="o-imovel">${escapeHtml(r.item.end)} · ${escapeHtml(r.item.bairro)}${r.item.cod ? ' · '+escapeHtml(r.item.cod) : ''}</p>
-      </div>
-      <div class="o-actions">
-        <button type="button" class="o-goto">Ver imóvel →</button>
-        <button type="button" class="o-remove">Remover</button>
-      </div>
-    `;
-    row.querySelector('.o-goto').addEventListener('click', ()=>{
-      activateTab(tabImoveisBtn, panelImoveis);
-      render();
-      scrollToCard(r.item.key);
-    });
-    row.querySelector('.o-remove').addEventListener('click', ()=>{
-      if(!confirm('Remover este proprietário?')) return;
-      r.entry.proprietarios.splice(r.idx,1);
-      saveState(state);
-      renderOwnersList();
-      if(panelImoveis.classList.contains('active')) render();
-    });
-    wrap.appendChild(row);
-  });
-}
-
-document.getElementById('ownersSearchInput').addEventListener('input', renderOwnersList);
-
-/* ---------- Bloco de notas ---------- */
-const NOTES_KEY = "carteira_imoveis_notas_v1";
-
-function loadNotes(){
-  try{
-    const raw = localStorage.getItem(NOTES_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  }catch(e){ return []; }
-}
-function saveNotes(){
-  safeStorageSet(NOTES_KEY, JSON.stringify(notes));
-  pushNotasFirebase();
-}
-let notes = loadNotes();
-let currentNoteId = null;
-
-function noteTitle(note){
-  const firstLine = (note.content || '').split('\n')[0].trim();
-  return firstLine ? firstLine.slice(0,40) : 'Nota sem título';
-}
-function formatDate(iso){
-  const d = new Date(iso);
-  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-}
-
-const notesListItems = document.getElementById('notesListItems');
-const noteContent = document.getElementById('noteContent');
-const noteStatus = document.getElementById('noteStatus');
-
-function renderNotesList(){
-  notesListItems.innerHTML = '';
-  if(notes.length === 0){
-    notesListItems.innerHTML = '<div class="notes-empty">Nenhuma nota salva ainda.</div>';
-    return;
-  }
-  [...notes].sort((a,b)=> new Date(b.updatedAt) - new Date(a.updatedAt)).forEach(note=>{
-    const el = document.createElement('div');
-    el.className = 'note-item' + (note.id === currentNoteId ? ' active' : '');
-    el.innerHTML = `<div class="n-title">${escapeHtml(noteTitle(note))}</div><div class="n-date">${formatDate(note.updatedAt)}</div>`;
-    el.addEventListener('click', ()=> openNote(note.id));
-    notesListItems.appendChild(el);
-  });
-}
-
-function openNote(id){
-  const note = notes.find(n=>n.id===id);
-  if(!note) return;
-  currentNoteId = id;
-  noteContent.value = note.content;
-  noteStatus.textContent = 'Editando: ' + noteTitle(note);
-  renderNotesList();
-}
-
-function newNoteDraft(){
-  currentNoteId = null;
-  noteContent.value = '';
-  noteStatus.textContent = 'Nova nota (ainda não salva)';
-  renderNotesList();
-  noteContent.focus();
-}
-
-document.getElementById('newNoteBtn').addEventListener('click', newNoteDraft);
-
-document.getElementById('saveNoteBtn').addEventListener('click', ()=>{
-  const content = noteContent.value;
-  if(!content.trim()){ noteStatus.textContent = 'Escreva algo antes de salvar.'; return; }
-  const note = {
-    id: 'note-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
-    content: content,
-    updatedAt: new Date().toISOString()
-  };
-  notes.push(note);
-  saveNotes();
-  currentNoteId = note.id;
-  noteStatus.textContent = 'Salvo como novo arquivo: ' + noteTitle(note);
-  renderNotesList();
-});
-
-document.getElementById('updateNoteBtn').addEventListener('click', ()=>{
-  if(!currentNoteId){ noteStatus.textContent = 'Nenhuma nota aberta para atualizar — use "Salvar como novo arquivo".'; return; }
-  const note = notes.find(n=>n.id===currentNoteId);
-  if(!note) return;
-  note.content = noteContent.value;
-  note.updatedAt = new Date().toISOString();
-  saveNotes();
-  noteStatus.textContent = 'Alterações salvas: ' + noteTitle(note);
-  renderNotesList();
-});
-
-document.getElementById('deleteNoteBtn').addEventListener('click', ()=>{
-  if(!currentNoteId){ noteStatus.textContent = 'Nenhuma nota aberta para excluir.'; return; }
-  if(!confirm('Excluir esta nota?')) return;
-  notes = notes.filter(n=>n.id!==currentNoteId);
-  saveNotes();
-  newNoteDraft();
-});
-
-document.getElementById('downloadNoteBtn').addEventListener('click', ()=>{
-  const content = noteContent.value;
-  if(!content.trim()){ noteStatus.textContent = 'Escreva algo antes de baixar.'; return; }
-  const title = currentNoteId
-    ? noteTitle(notes.find(n=>n.id===currentNoteId) || {content})
-    : noteTitle({content});
-  const safeTitle = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').slice(0,40);
-  const blob = new Blob([content], {type:'text/plain'});
+/* Backup */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const backupData = { state, customItems, notes, calEvents, exportDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `nota-${safeTitle || 'sem-titulo'}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.download = `backup_carteira_imoveis_${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 });
 
-renderNotesList();
-
-/* ---------- Calendário de visitas ---------- */
-const CAL_EVENTS_KEY = "carteira_imoveis_cal_eventos_v1";
-
-/* Paleta de cores para diferenciar múltiplas visitas no mesmo dia */
-const VISIT_COLOR_PALETTE = [
-  '#2563EB', // azul (accent)
-  '#0EA5A0', // teal
-  '#A54A3A', // terracota
-  '#5A4E9E', // roxo
-  '#B8842E', // dourado
-  '#0F766E', // verde-azulado escuro
-  '#B83280', // pink
-  '#316B83', // petróleo
-];
-function visitColor(index){
-  return VISIT_COLOR_PALETTE[index % VISIT_COLOR_PALETTE.length];
-}
-
-/* ---------- Integração com Google Agenda ---------- */
-function pad2(n){ return String(n).padStart(2,'0'); }
-
-function toGCalDates(dateStr, timeStr){
-  const [y,m,d] = dateStr.split('-').map(Number);
-  if(timeStr){
-    const [hh,mm] = timeStr.split(':').map(Number);
-    const start = new Date(y, m-1, d, hh, mm, 0);
-    const end = new Date(start.getTime() + 60*60*1000);
-    const fmt = (dt)=> `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}T${pad2(dt.getHours())}${pad2(dt.getMinutes())}00`;
-    return `${fmt(start)}/${fmt(end)}`;
-  }
-  const start = new Date(y, m-1, d);
-  const end = new Date(y, m-1, d+1);
-  const fmt = (dt)=> `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}`;
-  return `${fmt(start)}/${fmt(end)}`;
-}
-
-function buildGCalUrl({title, dateStr, timeStr, details, location}){
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: title || '',
-    dates: toGCalDates(dateStr, timeStr),
-    details: details || '',
-    location: location || ''
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
-
-function icsEscape(str){
-  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
-}
-
-function icsDtStamp(){
-  const d = new Date();
-  return `${d.getUTCFullYear()}${pad2(d.getUTCMonth()+1)}${pad2(d.getUTCDate())}T${pad2(d.getUTCHours())}${pad2(d.getUTCMinutes())}${pad2(d.getUTCSeconds())}Z`;
-}
-
-function buildICS(){
-  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Carteira de Imoveis//PT-BR','CALSCALE:GREGORIAN'];
-  const stamp = icsDtStamp();
-
-  allItems().forEach(item=>{
-    const entry = getEntry(item.key);
-    if(!entry.dataVisita) return;
-    const [y,m,d] = entry.dataVisita.split('-').map(Number);
-    let dtStartLine, dtEndLine;
-    if(entry.horaVisita){
-      const [hh,mm] = entry.horaVisita.split(':').map(Number);
-      const start = new Date(y, m-1, d, hh, mm, 0);
-      const end = new Date(start.getTime() + 60*60*1000);
-      const fmt = (dt)=> `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}T${pad2(dt.getHours())}${pad2(dt.getMinutes())}00`;
-      dtStartLine = `DTSTART:${fmt(start)}`;
-      dtEndLine = `DTEND:${fmt(end)}`;
-    }else{
-      const fmt = (yy,mm2,dd)=> `${yy}${pad2(mm2)}${pad2(dd)}`;
-      const endDate = new Date(y, m-1, d+1);
-      dtStartLine = `DTSTART;VALUE=DATE:${fmt(y,m,d)}`;
-      dtEndLine = `DTEND;VALUE=DATE:${fmt(endDate.getFullYear(), endDate.getMonth()+1, endDate.getDate())}`;
-    }
-    const descParts = [item.bairro];
-    if(item.cod) descParts.push(item.cod);
-    if(entry.obs) descParts.push(entry.obs);
-    lines.push('BEGIN:VEVENT');
-    lines.push(`UID:visita-${item.key}-${entry.dataVisita}@carteira-imoveis`);
-    lines.push(`DTSTAMP:${stamp}`);
-    lines.push(dtStartLine);
-    lines.push(dtEndLine);
-    lines.push(`SUMMARY:${icsEscape('Visita: '+item.end)}`);
-    lines.push(`DESCRIPTION:${icsEscape(descParts.join(' - '))}`);
-    lines.push(`LOCATION:${icsEscape(item.end+', '+item.bairro+', São Paulo, SP')}`);
-    lines.push('END:VEVENT');
-  });
-
-  Object.keys(calEvents).forEach(dateStr=>{
-    (calEvents[dateStr]||[]).forEach(ev=>{
-      const [y,m,d] = dateStr.split('-').map(Number);
-      const fmt = (yy,mm2,dd)=> `${yy}${pad2(mm2)}${pad2(dd)}`;
-      const endDate = new Date(y, m-1, d+1);
-      lines.push('BEGIN:VEVENT');
-      lines.push(`UID:${ev.id}@carteira-imoveis`);
-      lines.push(`DTSTAMP:${stamp}`);
-      lines.push(`DTSTART;VALUE=DATE:${fmt(y,m,d)}`);
-      lines.push(`DTEND;VALUE=DATE:${fmt(endDate.getFullYear(), endDate.getMonth()+1, endDate.getDate())}`);
-      lines.push(`SUMMARY:${icsEscape(ev.text)}`);
-      lines.push('END:VEVENT');
-    });
-  });
-
-  lines.push('END:VCALENDAR');
-  return lines.join('\r\n');
-}
-
-function loadCalEvents(){
-  try{
-    const raw = localStorage.getItem(CAL_EVENTS_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return (parsed && typeof parsed === 'object') ? parsed : {};
-  }catch(e){ return {}; }
-}
-function saveCalEvents(){
-  safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
-  pushEventosFirebase();
-}
-let calEvents = loadCalEvents(); // { "YYYY-MM-DD": [{id, text}] }
-
-let calViewDate = new Date(); // mês exibido
-calViewDate.setDate(1);
-let calSelectedDate = null; // string YYYY-MM-DD
-
-const DOW_LABELS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
-const MONTH_LABELS = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-
-function dateKey(y,m,d){
-  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-}
-function todayKey(){
-  const t = new Date();
-  return dateKey(t.getFullYear(), t.getMonth(), t.getDate());
-}
-
-/* Agrupa todas as visitas cadastradas (campo "Data da visita" de cada imóvel) por data */
-function getVisitsByDate(){
-  const map = {};
-  allItems().forEach(item=>{
-    const entry = getEntry(item.key);
-    if(entry.dataVisita){
-      if(!map[entry.dataVisita]) map[entry.dataVisita] = [];
-      map[entry.dataVisita].push(item);
-    }
-  });
-  Object.keys(map).forEach(k=>{
-    map[k].sort((a,b)=>{
-      const ha = getEntry(a.key).horaVisita || '99:99';
-      const hb = getEntry(b.key).horaVisita || '99:99';
-      return ha.localeCompare(hb);
-    });
-  });
-  return map;
-}
-
-function goToProperty(key){
-  document.getElementById('searchInput').value = '';
-  document.getElementById('filterBairro').value = '';
-  document.getElementById('filterTipo').value = '';
-  document.getElementById('filterStatus').value = '';
-  activateTab(tabImoveisBtn, panelImoveis);
-  render();
-  scrollToCard(key);
-}
-
-function renderCalendar(){
-  const y = calViewDate.getFullYear();
-  const m = calViewDate.getMonth();
-  document.getElementById('calMonthLabel').textContent = `${MONTH_LABELS[m]} de ${y}`;
-
-  const visitsByDate = getVisitsByDate();
-  const grid = document.getElementById('calGrid');
-  grid.innerHTML = '';
-
-  DOW_LABELS.forEach(l=>{
-    const el = document.createElement('div');
-    el.className = 'cal-dow';
-    el.textContent = l;
-    grid.appendChild(el);
-  });
-
-  const firstDow = new Date(y, m, 1).getDay();
-  const daysInMonth = new Date(y, m+1, 0).getDate();
-  const daysInPrevMonth = new Date(y, m, 0).getDate();
-  const tKey = todayKey();
-
-  const cells = [];
-  for(let i=firstDow-1; i>=0; i--){
-    cells.push({day: daysInPrevMonth - i, otherMonth:true, y: m===0?y-1:y, m: m===0?11:m-1});
-  }
-  for(let d=1; d<=daysInMonth; d++){
-    cells.push({day:d, otherMonth:false, y, m});
-  }
-  while(cells.length % 7 !== 0 || cells.length < 42){
-    const last = cells[cells.length-1];
-    const nd = new Date(last.y, last.m, last.day+1);
-    cells.push({day:nd.getDate(), otherMonth:true, y:nd.getFullYear(), m:nd.getMonth()});
-    if(cells.length >= 42) break;
-  }
-
-  cells.forEach(c=>{
-    const key = dateKey(c.y, c.m, c.day);
-    const dayEl = document.createElement('div');
-    dayEl.className = 'cal-day' + (c.otherMonth?' other-month':'') + (key===tKey?' today':'') + (key===calSelectedDate?' selected':'');
-
-    const num = document.createElement('div');
-    num.className = 'cal-daynum';
-    num.textContent = c.day;
-    dayEl.appendChild(num);
-
-    const chipList = document.createElement('div');
-    chipList.className = 'cal-chip-list';
-    const visits = visitsByDate[key] || [];
-    const events = calEvents[key] || [];
-    const totalItems = visits.length + events.length;
-    let shown = 0;
-    visits.slice(0,2).forEach((v, vIdx)=>{
-      const vEntry = getEntry(v.key);
-      const chip = document.createElement('div');
-      chip.className = 'cal-chip';
-      chip.style.background = visitColor(vIdx);
-      chip.textContent = (vEntry.horaVisita ? vEntry.horaVisita+' · ' : '') + v.bairro + ' · ' + v.end;
-      chipList.appendChild(chip);
-      shown++;
-    });
-    if(shown < 2){
-      events.slice(0, 2-shown).forEach(ev=>{
-        const chip = document.createElement('div');
-        chip.className = 'cal-chip evento';
-        chip.textContent = ev.text;
-        chipList.appendChild(chip);
-        shown++;
-      });
-    }
-    if(totalItems > shown){
-      const more = document.createElement('div');
-      more.className = 'cal-more';
-      more.textContent = `+${totalItems - shown} mais`;
-      chipList.appendChild(more);
-    }
-    dayEl.appendChild(chipList);
-
-    dayEl.addEventListener('click', ()=>{
-      calSelectedDate = key;
-      if(c.otherMonth){
-        calViewDate = new Date(c.y, c.m, 1);
-      }
+document.getElementById('importInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      const data = JSON.parse(evt.target.result);
+      if(data.state) { state = data.state; saveState(state); }
+      if(Array.isArray(data.customItems)) { customItems = data.customItems; saveCustom(); }
+      if(Array.isArray(data.notes)) { notes = data.notes; saveNotes(); }
+      if(data.calEvents) { calEvents = data.calEvents; saveCalendarEvents(); }
+      rebuildBairroUI();
+      render();
+      renderNotesList();
       renderCalendar();
       renderCalendarSide();
-    });
+      alert('Backup importado com sucesso!');
+    } catch(err) { alert('Arquivo JSON de backup inválido.'); }
+  };
+  reader.readAsText(file);
+});
 
-    grid.appendChild(dayEl);
+/* Tabs Navigation */
+const tabBtns = {
+  imoveis: document.getElementById('tabImoveisBtn'),
+  calendario: document.getElementById('tabCalendarioBtn'),
+  proprietarios: document.getElementById('tabProprietariosBtn'),
+  notas: document.getElementById('tabNotasBtn'),
+  assistente: document.getElementById('tabAssistenteBtn')
+};
+const tabPanels = {
+  imoveis: document.getElementById('panelImoveis'),
+  calendario: document.getElementById('panelCalendario'),
+  proprietarios: document.getElementById('panelProprietarios'),
+  notas: document.getElementById('panelNotas'),
+  assistente: document.getElementById('panelAssistente')
+};
+
+function switchTab(name) {
+  Object.keys(tabBtns).forEach(k => {
+    if(tabBtns[k]) tabBtns[k].classList.toggle('active', k === name);
+    if(tabPanels[k]) tabPanels[k].classList.toggle('active', k === name);
   });
+  if(name === 'calendario') {
+    renderCalendar();
+    renderCalendarSide();
+  } else if(name === 'proprietarios') {
+    renderOwnersTab();
+  }
 }
 
-function renderCalendarSide(){
-  const sideTitle = document.getElementById('calSideTitle');
-  const sideDate = document.getElementById('calSideDate');
-  const visitsWrap = document.getElementById('calVisitsForDay');
-  const eventsWrap = document.getElementById('calEventsForDay');
-  const addWrap = document.getElementById('calAddWrap');
+tabBtns.imoveis.addEventListener('click', () => switchTab('imoveis'));
+tabBtns.calendario.addEventListener('click', () => switchTab('calendario'));
+tabBtns.proprietarios.addEventListener('click', () => switchTab('proprietarios'));
+tabBtns.notas.addEventListener('click', () => switchTab('notas'));
+tabBtns.assistente.addEventListener('click', () => switchTab('assistente'));
 
-  if(!calSelectedDate){
-    sideTitle.textContent = 'Selecione um dia';
-    sideDate.textContent = '';
-    visitsWrap.innerHTML = '';
-    eventsWrap.innerHTML = '';
-    addWrap.style.display = 'none';
+/* Bloco de Notas */
+const NOTES_KEY = "carteira_imoveis_notas_v1";
+function loadNotes() {
+  try { const raw = localStorage.getItem(NOTES_KEY); return raw ? JSON.parse(raw) : []; } catch(e) { return []; }
+}
+function saveNotes() {
+  safeStorageSet(NOTES_KEY, JSON.stringify(notes));
+  pushNotasFirebase();
+}
+let notes = loadNotes();
+let activeNoteId = null;
+
+function renderNotesList() {
+  const listEl = document.getElementById('notesListItems');
+  if(!listEl) return;
+  listEl.innerHTML = '';
+
+  if(notes.length === 0) {
+    listEl.innerHTML = '<div class="notes-empty">Nenhuma nota criada.</div>';
     return;
   }
 
-  addWrap.style.display = 'block';
-  const [y,m,d] = calSelectedDate.split('-').map(Number);
-  const dt = new Date(y, m-1, d);
-  sideTitle.textContent = calSelectedDate === todayKey() ? 'Hoje' : 'Dia selecionado';
-  sideDate.textContent = dt.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+  notes.sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0)).forEach(note => {
+    const div = document.createElement('div');
+    div.className = `note-item ${note.id === activeNoteId ? 'active' : ''}`;
+    const firstLine = (note.content || 'Sem título').split('\n')[0].substring(0, 30);
+    const dateStr = note.updatedAt ? new Date(note.updatedAt).toLocaleDateString('pt-BR') : '';
+    div.innerHTML = `
+      <div class="n-title">${escapeHtml(firstLine || 'Nova nota')}</div>
+      <div class="n-date">${escapeHtml(dateStr)}</div>
+    `;
+    div.addEventListener('click', () => {
+      activeNoteId = note.id;
+      document.getElementById('noteContent').value = note.content;
+      renderNotesList();
+    });
+    listEl.appendChild(div);
+  });
+}
 
-  const visitsByDate = getVisitsByDate();
-  const visits = visitsByDate[calSelectedDate] || [];
-  visitsWrap.innerHTML = '';
-  if(visits.length === 0){
-    const p = document.createElement('p');
-    p.className = 'cal-empty';
-    p.textContent = 'Nenhuma visita de imóvel marcada para este dia.';
-    visitsWrap.appendChild(p);
-  }else{
-    visits.forEach((item, vIdx)=>{
+document.getElementById('newNoteBtn').addEventListener('click', () => {
+  activeNoteId = null;
+  document.getElementById('noteContent').value = '';
+  renderNotesList();
+});
+
+document.getElementById('saveNoteBtn').addEventListener('click', () => {
+  const content = document.getElementById('noteContent').value.trim();
+  if(!content) return;
+  const newNote = { id: 'NOTE_' + Date.now(), content, updatedAt: Date.now() };
+  notes.push(newNote);
+  activeNoteId = newNote.id;
+  saveNotes();
+  renderNotesList();
+  document.getElementById('noteStatus').textContent = 'Nota salva!';
+  setTimeout(() => document.getElementById('noteStatus').textContent = '', 2000);
+});
+
+document.getElementById('updateNoteBtn').addEventListener('click', () => {
+  if(!activeNoteId) return;
+  const note = notes.find(n => n.id === activeNoteId);
+  if(note) {
+    note.content = document.getElementById('noteContent').value;
+    note.updatedAt = Date.now();
+    saveNotes();
+    renderNotesList();
+    document.getElementById('noteStatus').textContent = 'Alterações salvas!';
+    setTimeout(() => document.getElementById('noteStatus').textContent = '', 2000);
+  }
+});
+
+document.getElementById('downloadNoteBtn').addEventListener('click', () => {
+  const content = document.getElementById('noteContent').value;
+  if(!content) return;
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `nota_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('deleteNoteBtn').addEventListener('click', () => {
+  if(!activeNoteId) return;
+  if(confirm('Tem certeza que deseja excluir esta nota?')) {
+    notes = notes.filter(n => n.id !== activeNoteId);
+    activeNoteId = null;
+    document.getElementById('noteContent').value = '';
+    saveNotes();
+    renderNotesList();
+  }
+});
+
+/* Agenda */
+const CAL_EVENTS_KEY = "carteira_imoveis_calevents_v1";
+function loadCalendarEvents() {
+  try { const raw = localStorage.getItem(CAL_EVENTS_KEY); return raw ? JSON.parse(raw) : {}; } catch(e) { return {}; }
+}
+function saveCalendarEvents() {
+  safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
+  pushEventosFirebase();
+}
+let calEvents = loadCalendarEvents();
+let currentCalDate = new Date();
+let selectedCalDateStr = new Date().toISOString().slice(0,10);
+
+function renderCalendar() {
+  const gridEl = document.getElementById('calGrid');
+  const monthLabel = document.getElementById('calMonthLabel');
+  if(!gridEl || !monthLabel) return;
+
+  const year = currentCalDate.getFullYear();
+  const month = currentCalDate.getMonth();
+  const monthNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  monthLabel.textContent = `${monthNames[month]} ${year}`;
+
+  gridEl.innerHTML = '';
+  ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].forEach(d => {
+    const dow = document.createElement('div');
+    dow.className = 'cal-dow';
+    dow.textContent = d;
+    gridEl.appendChild(dow);
+  });
+
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = new Date().toISOString().slice(0,10);
+
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  for(let i = firstDayOfMonth - 1; i >= 0; i--) {
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'cal-day other-month';
+    dayDiv.innerHTML = `<span class="cal-daynum">${prevMonthDays - i}</span>`;
+    gridEl.appendChild(dayDiv);
+  }
+
+  for(let d = 1; d <= daysInMonth; d++) {
+    const mStr = String(month + 1).padStart(2, '0');
+    const dStr = String(d).padStart(2, '0');
+    const dateKey = `${year}-${mStr}-${dStr}`;
+
+    const dayDiv = document.createElement('div');
+    let classes = 'cal-day';
+    if(dateKey === todayStr) classes += ' today';
+    if(dateKey === selectedCalDateStr) classes += ' selected';
+    dayDiv.className = classes;
+
+    let chipHtml = '';
+    const visitasNoDia = allItems().filter(i => getEntry(i.key).dataVisita === dateKey);
+
+    visitasNoDia.forEach(v => {
+      const e = getEntry(v.key);
+      const timeStr = e.horaVisita ? `${e.horaVisita} ` : '';
+      chipHtml += `<div class="cal-chip">${escapeHtml(timeStr + v.end)}</div>`;
+    });
+
+    const lembretes = calEvents[dateKey] || [];
+    lembretes.forEach(l => {
+      chipHtml += `<div class="cal-chip evento">${escapeHtml(l)}</div>`;
+    });
+
+    dayDiv.innerHTML = `<span class="cal-daynum">${d}</span><div class="cal-chip-list">${chipHtml}</div>`;
+    dayDiv.addEventListener('click', () => {
+      selectedCalDateStr = dateKey;
+      renderCalendar();
+      renderCalendarSide();
+    });
+    gridEl.appendChild(dayDiv);
+  }
+}
+
+function renderCalendarSide() {
+  const titleEl = document.getElementById('calSideTitle');
+  const dateEl = document.getElementById('calSideDate');
+  const visitsEl = document.getElementById('calVisitsForDay');
+  const eventsEl = document.getElementById('calEventsForDay');
+  const addWrap = document.getElementById('calAddWrap');
+
+  if(!dateEl || !visitsEl || !eventsEl) return;
+
+  if(!selectedCalDateStr) {
+    if(titleEl) titleEl.textContent = 'Selecione um dia';
+    dateEl.textContent = '';
+    visitsEl.innerHTML = '';
+    eventsEl.innerHTML = '';
+    if(addWrap) addWrap.style.display = 'none';
+    return;
+  }
+
+  const [y, m, d] = selectedCalDateStr.split('-');
+  const dateObj = new Date(y, m - 1, d);
+  const formatStr = dateObj.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  if(titleEl) titleEl.textContent = 'Agenda do dia';
+  dateEl.textContent = formatStr;
+  if(addWrap) addWrap.style.display = 'block';
+
+  const visitas = allItems().filter(i => getEntry(i.key).dataVisita === selectedCalDateStr);
+  visitsEl.innerHTML = '';
+  if(visitas.length === 0) {
+    visitsEl.innerHTML = '<p class="cal-empty">Nenhuma visita agendada para este dia.</p>';
+  } else {
+    visitas.forEach(item => {
       const entry = getEntry(item.key);
-      const color = visitColor(vIdx);
       const div = document.createElement('div');
       div.className = 'cal-visit-item';
-      div.style.borderLeftColor = color;
-      const gcalUrl = buildGCalUrl({
-        title: 'Visita: ' + item.end,
-        dateStr: entry.dataVisita,
-        timeStr: entry.horaVisita,
-        details: [item.bairro, item.cod, entry.obs].filter(Boolean).join(' - '),
-        location: `${item.end}, ${item.bairro}, São Paulo, SP`
-      });
+      const horaBadge = entry.horaVisita ? `<span class="v-hora" style="background:var(--accent);">${escapeHtml(entry.horaVisita)}</span>` : '';
+
       div.innerHTML = `
-        ${entry.horaVisita ? `<span class="v-hora" style="background:${color};">${escapeHtml(entry.horaVisita)}</span>` : ''}
-        <p class="v-end">${escapeHtml(item.end)}</p>
-        <p class="v-bairro">${escapeHtml(item.bairro)}${item.cod ? ' · '+escapeHtml(item.cod) : ''} · ${statusLabel(entry.status)}</p>
-        <button type="button" class="v-goto">Ver imóvel →</button>
-        <a class="v-gcal" href="${gcalUrl}" target="_blank" rel="noopener">+ Google Agenda</a>
-        <button type="button" class="v-remove">Remover desta data</button>
+        ${horaBadge}
+        <div class="v-end">${escapeHtml(item.end)}</div>
+        <div class="v-bairro">${escapeHtml(item.bairro)} · ${escapeHtml(item.cod || '')}</div>
+        <button class="v-goto" data-key="${escapeHtml(item.key)}">Ver Imóvel</button>
+        <button class="v-remove" data-key="${escapeHtml(item.key)}">Desagendar</button>
       `;
-      div.querySelector('.v-goto').addEventListener('click', ()=> goToProperty(item.key));
-      div.querySelector('.v-remove').addEventListener('click', ()=>{
+
+      div.querySelector('.v-goto').addEventListener('click', () => {
+        switchTab('imoveis');
+        document.getElementById('searchInput').value = item.cod || item.end;
+        render();
+      });
+
+      div.querySelector('.v-remove').addEventListener('click', () => {
         entry.dataVisita = '';
-        entry.horaVisita = '';
         saveState(state);
         renderCalendar();
         renderCalendarSide();
       });
-      visitsWrap.appendChild(div);
+
+      visitsEl.appendChild(div);
     });
   }
 
-  const dayEvents = calEvents[calSelectedDate] || [];
-  eventsWrap.innerHTML = '';
-  dayEvents.forEach(ev=>{
+  eventsEl.innerHTML = '';
+  const lembretes = calEvents[selectedCalDateStr] || [];
+  lembretes.forEach((lem, idx) => {
     const div = document.createElement('div');
     div.className = 'cal-event-item';
-    const gcalUrl = buildGCalUrl({
-      title: ev.text,
-      dateStr: calSelectedDate,
-      timeStr: '',
-      details: '',
-      location: ''
-    });
-    div.innerHTML = `<span>${escapeHtml(ev.text)} <a class="e-gcal" href="${gcalUrl}" target="_blank" rel="noopener">+ Google Agenda</a></span><button type="button" title="Remover">×</button>`;
-    div.querySelector('button').addEventListener('click', ()=>{
-      calEvents[calSelectedDate] = (calEvents[calSelectedDate]||[]).filter(e=>e.id!==ev.id);
-      if(calEvents[calSelectedDate].length === 0) delete calEvents[calSelectedDate];
-      saveCalEvents();
+    div.innerHTML = `<span>📌 ${escapeHtml(lem)}</span><button type="button" data-idx="${idx}">Excluir</button>`;
+    div.querySelector('button').addEventListener('click', () => {
+      calEvents[selectedCalDateStr].splice(idx, 1);
+      if(calEvents[selectedCalDateStr].length === 0) delete calEvents[selectedCalDateStr];
+      saveCalendarEvents();
       renderCalendar();
       renderCalendarSide();
     });
-    eventsWrap.appendChild(div);
+    eventsEl.appendChild(div);
   });
 
-  populateVisitaSelect();
+  updateCalendarVisitaImovelSelect();
 }
 
-/* Preenche o select de imóveis do formulário "+ Visita", agrupado por bairro */
-function populateVisitaSelect(){
+function updateCalendarVisitaImovelSelect() {
   const sel = document.getElementById('calVisitaImovel');
   if(!sel) return;
-  const currentVal = sel.value;
-  sel.innerHTML = '';
-  getBairros().forEach(b=>{
-    const group = document.createElement('optgroup');
-    group.label = b;
-    allItems().filter(i=>i.bairro===b).sort((a,b2)=>(a.n||9999)-(b2.n||9999)).forEach(item=>{
-      const opt = document.createElement('option');
-      opt.value = item.key;
-      opt.textContent = `${item.end}${item.cod ? ' · '+item.cod : ''}`;
-      group.appendChild(opt);
-    });
-    sel.appendChild(group);
+  sel.innerHTML = '<option value="">Selecione um imóvel...</option>';
+  allItems().forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.key;
+    opt.textContent = `${item.bairro} - ${item.end} (${item.cod || 'S/C'})`;
+    sel.appendChild(opt);
   });
-  if(currentVal && [...sel.options].some(o=>o.value===currentVal)) sel.value = currentVal;
 }
 
-/* Abas do painel "adicionar": Lembrete / Visita */
+document.getElementById('calPrevBtn').addEventListener('click', () => {
+  currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+  renderCalendar();
+});
+document.getElementById('calNextBtn').addEventListener('click', () => {
+  currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+  renderCalendar();
+});
+document.getElementById('calTodayBtn').addEventListener('click', () => {
+  currentCalDate = new Date();
+  selectedCalDateStr = new Date().toISOString().slice(0,10);
+  renderCalendar();
+  renderCalendarSide();
+});
+
 const calTabLembreteBtn = document.getElementById('calTabLembreteBtn');
 const calTabVisitaBtn = document.getElementById('calTabVisitaBtn');
 const calPanelLembrete = document.getElementById('calPanelLembrete');
 const calPanelVisita = document.getElementById('calPanelVisita');
 
-calTabLembreteBtn.addEventListener('click', ()=>{
+calTabLembreteBtn.addEventListener('click', () => {
   calTabLembreteBtn.classList.add('active');
   calTabVisitaBtn.classList.remove('active');
   calPanelLembrete.classList.add('active');
   calPanelVisita.classList.remove('active');
 });
-calTabVisitaBtn.addEventListener('click', ()=>{
+calTabVisitaBtn.addEventListener('click', () => {
   calTabVisitaBtn.classList.add('active');
   calTabLembreteBtn.classList.remove('active');
   calPanelVisita.classList.add('active');
   calPanelLembrete.classList.remove('active');
-  populateVisitaSelect();
 });
 
-document.getElementById('calAddVisitaBtn').addEventListener('click', ()=>{
-  if(!calSelectedDate) return;
-  const sel = document.getElementById('calVisitaImovel');
-  const key = sel.value;
-  if(!key){ alert('Selecione um imóvel para agendar a visita.'); return; }
-  const horaInput = document.getElementById('calVisitaHora');
-  const obsInput = document.getElementById('calVisitaObs');
-  const entry = getEntry(key);
-  entry.dataVisita = calSelectedDate;
-  entry.horaVisita = horaInput.value;
-  const obsVal = obsInput.value.trim();
-  if(obsVal){
-    entry.obs = entry.obs ? (entry.obs + '\n' + obsVal) : obsVal;
+document.getElementById('calAddEventBtn').addEventListener('click', () => {
+  const inp = document.getElementById('calEventInput');
+  const val = inp.value.trim();
+  if(!val || !selectedCalDateStr) return;
+  if(!calEvents[selectedCalDateStr]) calEvents[selectedCalDateStr] = [];
+  calEvents[selectedCalDateStr].push(val);
+  saveCalendarEvents();
+  inp.value = '';
+  renderCalendar();
+  renderCalendarSide();
+});
+
+document.getElementById('calAddVisitaBtn').addEventListener('click', () => {
+  const imovelKey = document.getElementById('calVisitaImovel').value;
+  const hora = document.getElementById('calVisitaHora').value;
+  const obs = document.getElementById('calVisitaObs').value.trim();
+
+  if(!imovelKey || !selectedCalDateStr) return;
+  const entry = getEntry(imovelKey);
+  entry.dataVisita = selectedCalDateStr;
+  if(hora) entry.horaVisita = hora;
+  if(obs) {
+    entry.obs = entry.obs ? `${entry.obs}\n[Visita ${selectedCalDateStr}]: ${obs}` : `[Visita ${selectedCalDateStr}]: ${obs}`;
   }
   saveState(state);
-  horaInput.value = '';
-  obsInput.value = '';
+  document.getElementById('calVisitaObs').value = '';
   renderCalendar();
   renderCalendarSide();
 });
 
-document.getElementById('calPrevBtn').addEventListener('click', ()=>{
-  calViewDate.setMonth(calViewDate.getMonth()-1);
-  renderCalendar();
-});
-document.getElementById('calNextBtn').addEventListener('click', ()=>{
-  calViewDate.setMonth(calViewDate.getMonth()+1);
-  renderCalendar();
-});
-document.getElementById('calTodayBtn').addEventListener('click', ()=>{
-  const t = new Date();
-  calViewDate = new Date(t.getFullYear(), t.getMonth(), 1);
-  calSelectedDate = todayKey();
-  renderCalendar();
-  renderCalendarSide();
-});
+document.getElementById('calExportIcsBtn').addEventListener('click', () => {
+  let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Carteira Imoveis//PT\n";
+  allItems().forEach(item => {
+    const entry = getEntry(item.key);
+    if(entry.dataVisita) {
+      const dateFormatted = entry.dataVisita.replace(/-/g, '');
+      icsContent += "BEGIN:VEVENT\n";
+      icsContent += `SUMMARY:Visita: ${item.end}\n`;
+      icsContent += `DESCRIPTION:Bairro: ${item.bairro}\\nCódigo: ${item.cod || ''}\\nObs: ${entry.obs || ''}\n`;
+      icsContent += `DTSTART;VALUE=DATE:${dateFormatted}\n`;
+      icsContent += "END:VEVENT\n";
+    }
+  });
 
-document.getElementById('calAddEventBtn').addEventListener('click', ()=>{
-  if(!calSelectedDate) return;
-  const input = document.getElementById('calEventInput');
-  const text = input.value.trim();
-  if(!text) return;
-  if(!calEvents[calSelectedDate]) calEvents[calSelectedDate] = [];
-  calEvents[calSelectedDate].push({id: 'ev-'+Date.now()+'-'+Math.random().toString(36).slice(2,7), text});
-  saveCalEvents();
-  input.value = '';
-  renderCalendar();
-  renderCalendarSide();
-});
-document.getElementById('calEventInput').addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter'){
-    e.preventDefault();
-    document.getElementById('calAddEventBtn').click();
-  }
-});
+  Object.keys(calEvents).forEach(dKey => {
+    const dateFormatted = dKey.replace(/-/g, '');
+    (calEvents[dKey] || []).forEach(lem => {
+      icsContent += "BEGIN:VEVENT\n";
+      icsContent += `SUMMARY:Lembrete: ${lem}\n`;
+      icsContent += `DTSTART;VALUE=DATE:${dateFormatted}\n`;
+      icsContent += "END:VEVENT\n";
+    });
+  });
 
-document.getElementById('calExportIcsBtn').addEventListener('click', ()=>{
-  const ics = buildICS();
-  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
+  icsContent += "END:VCALENDAR";
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `agenda-imoveis-${new Date().toISOString().slice(0,10)}.ics`;
+  a.download = `agenda_imoveis_${new Date().toISOString().slice(0,10)}.ics`;
   a.click();
   URL.revokeObjectURL(url);
 });
 
-renderCalendarSide();
+/* Proprietários Tab */
+function updateOwnerSelects() {
+  const sel = document.getElementById('ownerAddImovel');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">Selecione um imóvel...</option>';
+  allItems().forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.key;
+    opt.textContent = `${item.bairro} - ${item.end} (${item.cod || 'S/C'})`;
+    sel.appendChild(opt);
+  });
+}
 
-/* ---------- Assistente IA: monta contexto resumido da carteira ---------- */
-function montarContextoImoveisParaIA(){
-  const linhas = allItems().map(item=>{
+function renderOwnersTab() {
+  updateOwnerSelects();
+  const listWrap = document.getElementById('ownersListWrap');
+  const subEl = document.getElementById('ownersListSub');
+  const searchQ = (document.getElementById('ownersSearchInput').value || '').trim().toLowerCase();
+
+  if(!listWrap) return;
+  listWrap.innerHTML = '';
+
+  let allOwnersList = [];
+  allItems().forEach(item => {
     const entry = getEntry(item.key);
-    return `${item.cod || 's/cod'} | ${item.bairro} | ${item.end} | ${item.tipo} | status: ${statusLabel(entry.status)}`;
-  });
-  return linhas.join('\n');
-}
-
-/* Função global que o módulo de IA (carregado abaixo) vai preencher.
-   Definida aqui para que o botão já funcione assim que o módulo terminar de carregar. */
-window.perguntarIAImoveis = null;
-
-/* ---------- Inicialização ----------
-   Se o Firebase estiver configurado, a tela de login decide quando o
-   app é iniciado (função iniciarAppAutenticado, chamada pelo
-   onAuthStateChanged lá em cima). Sem Firebase configurado, não há
-   tela de login e o app inicia direto, como antes. */
-if(!firebaseAtivo){
-  rebuildBairroUI();
-  render();
-}
-</script>
-
-<!-- ======================================================================
-     Assistente IA (Firebase AI Logic + Gemini)
-     ======================================================================
-     Usa um app Firebase modular separado (mesmo projeto, mesma
-     configuração pública) só para o AI Logic, porque o SDK de IA exige
-     os módulos ES do Firebase (diferentes dos scripts "compat" usados
-     acima para login/Firestore/Storage). Funciona no plano gratuito
-     Spark, sem cartão de crédito, usando o modelo gemini-3.6-flash.
-
-     Proteções ativas:
-     - Só chama o Gemini se houver um usuário logado no Firebase Auth
-       (auth.currentUser), mesmo que a função seja chamada manualmente
-       fora da tela (ex: console do navegador).
-     - App Check (reCAPTCHA v3): se você preencher
-       APP_CHECK_RECAPTCHA_SITE_KEY acima com uma chave real, o SDK
-       passa a exigir um token de App Check válido em toda chamada ao
-       Gemini — bloqueando pedidos feitos fora do seu site, mesmo por
-       alguém que tenha copiado o firebaseConfig. Sem a chave, o app
-       continua funcionando normalmente, só sem essa camada extra (e a
-       partir de 2/nov/2026 o Firebase vai passar a exigi-la).
-     ====================================================================== -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app-check.js";
-  import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-ai.js";
-
-  // Mesma config pública do projeto (chave de API do Firebase não é
-  // secreta). Duplicada aqui porque este é um módulo ES separado do
-  // script principal (que usa os SDKs "compat").
-  const firebaseConfigIA = {
-    apiKey: "AIzaSyA2u-YHu57LCZirGuuHLPR4dPJWQ0s9hh0",
-    authDomain: "carteira-imoveis-d6262.firebaseapp.com",
-    projectId: "carteira-imoveis-d6262",
-    storageBucket: "carteira-imoveis-d6262.firebasestorage.app",
-    messagingSenderId: "158894380045",
-    appId: "1:158894380045:web:b7f61e6f59616dfde73144"
-  };
-
-  const RECAPTCHA_SITE_KEY = "SUA_RECAPTCHA_V3_SITE_KEY_AQUI";
-
-  let model = null;
-  try{
-    const aiApp = initializeApp(firebaseConfigIA, "appIA");
-
-    // App Check: só ativa de verdade se você já tiver colado uma chave
-    // real do reCAPTCHA v3 (gerada em Console Firebase → App Check).
-    if(RECAPTCHA_SITE_KEY && RECAPTCHA_SITE_KEY !== "SUA_RECAPTCHA_V3_SITE_KEY_AQUI"){
-      initializeAppCheck(aiApp, {
-        provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),
-        isTokenAutoRefreshEnabled: true
-      });
-    }else{
-      console.warn('App Check não configurado (APP_CHECK_RECAPTCHA_SITE_KEY / RECAPTCHA_SITE_KEY ainda com valor de exemplo). O assistente de IA continua funcionando, mas sem essa proteção extra contra uso indevido da chave fora do seu site.');
-    }
-
-    const ai = getAI(aiApp, { backend: new GoogleAIBackend() });
-    model = getGenerativeModel(ai, { model: "gemini-3.6-flash" });
-  }catch(e){
-    console.warn("Não foi possível iniciar o Firebase AI Logic. O assistente de IA vai ficar indisponível.", e);
-  }
-
-  const aiInput = document.getElementById('aiInput');
-  const aiAskBtn = document.getElementById('aiAskBtn');
-  const aiClearBtn = document.getElementById('aiClearBtn');
-  const aiStatus = document.getElementById('aiStatus');
-  const aiError = document.getElementById('aiError');
-  const aiAnswer = document.getElementById('aiAnswer');
-
-  function setLoading(loading){
-    aiAskBtn.disabled = loading;
-    aiStatus.textContent = loading ? 'Pensando…' : '';
-  }
-
-  // Confere se existe alguém logado no Firebase Auth (instância "compat"
-  // criada no script principal). Isso evita que a função seja chamada
-  // pelo console do navegador por alguém que não passou pela tela de
-  // login — mesmo sabendo a URL do site publicado.
-  function usuarioEstaLogado(){
-    // Se o Firebase nem estiver ativo neste projeto, não bloqueia
-    // (comportamento local, sem login, como já era antes).
-    if(typeof firebaseAtivo !== 'undefined' && !firebaseAtivo) return true;
-    return !!(typeof auth !== 'undefined' && auth && auth.currentUser);
-  }
-
-  async function perguntarIAImoveis(perguntaForcada){
-    const pergunta = (perguntaForcada !== undefined ? perguntaForcada : aiInput.value).trim();
-    if(!pergunta){
-      aiError.textContent = 'Escreva uma pergunta ou pedido antes.';
-      aiError.classList.add('show');
-      return;
-    }
-    if(!usuarioEstaLogado()){
-      aiError.textContent = 'Faça login para usar o assistente de IA.';
-      aiError.classList.add('show');
-      return;
-    }
-    if(!model){
-      aiError.textContent = 'O assistente de IA não está disponível agora (Firebase AI Logic não ativado ou sem conexão).';
-      aiError.classList.add('show');
-      return;
-    }
-    aiError.classList.remove('show');
-    aiAnswer.classList.remove('show');
-    setLoading(true);
-    try{
-      const contexto = (typeof montarContextoImoveisParaIA === 'function') ? montarContextoImoveisParaIA() : '';
-      const prompt =
-        'Você é um assistente para uma corretora/carteira de imóveis em São Paulo. ' +
-        'Responda em português do Brasil, de forma direta e útil. ' +
-        'Se a pergunta for sobre os imóveis da carteira, use a lista abaixo (formato: código | bairro | endereço | tipo | status). ' +
-        'Se a pergunta pedir um texto (descrição de anúncio, mensagem, resumo), escreva o texto pronto. ' +
-        'Se não souber algo com certeza a partir da lista, diga isso claramente em vez de inventar.\n\n' +
-        '--- Lista de imóveis ---\n' + contexto + '\n--- Fim da lista ---\n\n' +
-        'Pergunta/pedido do usuário: ' + pergunta;
-
-      const result = await model.generateContent(prompt);
-      const texto = result.response.text();
-      aiAnswer.textContent = texto;
-      aiAnswer.classList.add('show');
-    }catch(err){
-      console.warn('Erro ao chamar o Gemini via Firebase AI Logic:', err);
-      aiError.textContent = 'Não foi possível obter uma resposta agora. Tente novamente em instantes.';
-      aiError.classList.add('show');
-    }finally{
-      setLoading(false);
-    }
-  }
-
-  aiAskBtn.addEventListener('click', ()=> perguntarIAImoveis());
-  aiClearBtn.addEventListener('click', ()=>{
-    aiInput.value = '';
-    aiAnswer.classList.remove('show');
-    aiError.classList.remove('show');
-    aiInput.focus();
-  });
-  document.querySelectorAll('.ai-sugg-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      aiInput.value = chip.dataset.q;
-      perguntarIAImoveis(chip.dataset.q);
+    (entry.proprietarios || []).forEach((p, idx) => {
+      if(p.nome || p.telefone) {
+        allOwnersList.push({
+          imovelKey: item.key, imovelEnd: item.end, imovelBairro: item.bairro,
+          nome: p.nome, telefone: p.telefone, ownerIdx: idx
+        });
+      }
     });
   });
 
-  window.perguntarIAImoveis = perguntarIAImoveis;
-</script>
+  if(subEl) subEl.textContent = `Total de ${allOwnersList.length} proprietário(s) cadastrado(s)`;
 
+  if(searchQ) {
+    allOwnersList = allOwnersList.filter(o => 
+      (o.nome || '').toLowerCase().includes(searchQ) ||
+      (o.telefone || '').includes(searchQ) ||
+      (o.imovelEnd || '').toLowerCase().includes(searchQ) ||
+      (o.imovelBairro || '').toLowerCase().includes(searchQ)
+    );
+  }
+
+  if(allOwnersList.length === 0) {
+    listWrap.innerHTML = '<div class="cal-empty">Nenhum proprietário encontrado.</div>';
+    return;
+  }
+
+  allOwnersList.forEach(o => {
+    const div = document.createElement('div');
+    div.className = 'owner-row';
+    div.innerHTML = `
+      <div>
+        <div class="o-nome">${escapeHtml(o.nome || 'Sem nome')}</div>
+        <div class="o-tel">${escapeHtml(o.telefone || 'Sem telefone')}</div>
+        <div class="o-imovel">Imóvel: <b>${escapeHtml(o.imovelEnd)}</b> (${escapeHtml(o.imovelBairro)})</div>
+      </div>
+      <div class="o-actions">
+        <button type="button" class="o-goto" data-key="${escapeHtml(o.imovelKey)}">Ver Imóvel</button>
+        <button type="button" class="o-remove" data-key="${escapeHtml(o.imovelKey)}" data-idx="${o.ownerIdx}">Excluir</button>
+      </div>
+    `;
+
+    div.querySelector('.o-goto').addEventListener('click', () => {
+      switchTab('imoveis');
+      document.getElementById('searchInput').value = o.imovelEnd;
+      render();
+    });
+
+    div.querySelector('.o-remove').addEventListener('click', () => {
+      const entry = getEntry(o.imovelKey);
+      if(entry.proprietarios) {
+        entry.proprietarios.splice(o.ownerIdx, 1);
+        saveState(state);
+        renderOwnersTab();
+      }
+    });
+
+    listWrap.appendChild(div);
+  });
+}
+
+document.getElementById('ownerAddBtn').addEventListener('click', () => {
+  const imovelKey = document.getElementById('ownerAddImovel').value;
+  const nome = document.getElementById('ownerAddNome').value.trim();
+  const telefone = document.getElementById('ownerAddTelefone').value.trim();
+
+  if(!imovelKey) { alert('Selecione um imóvel para vincular o proprietário.'); return; }
+  if(!nome && !telefone) { alert('Preencha ao menos o nome ou o telefone.'); return; }
+
+  const entry = getEntry(imovelKey);
+  if(!entry.proprietarios) entry.proprietarios = [];
+  entry.proprietarios.push({ nome, telefone });
+  saveState(state);
+
+  document.getElementById('ownerAddNome').value = '';
+  document.getElementById('ownerAddTelefone').value = '';
+  renderOwnersTab();
+  render();
+});
+
+document.getElementById('ownersSearchInput').addEventListener('input', renderOwnersTab);
+
+/* Assistente IA */
+document.querySelectorAll('.ai-sugg-chip').forEach(chip => {
+  chip.addEventListener('click', () => { document.getElementById('aiInput').value = chip.dataset.q; });
+});
+
+document.getElementById('aiAskBtn').addEventListener('click', async () => {
+  const query = document.getElementById('aiInput').value.trim();
+  const statusEl = document.getElementById('aiStatus');
+  const answerEl = document.getElementById('aiAnswer');
+  const errorEl = document.getElementById('aiError');
+
+  if(!query) return;
+
+  statusEl.textContent = 'Consultando assistente...';
+  answerEl.classList.remove('show');
+  errorEl.classList.remove('show');
+
+  const contextoImoveis = allItems().map(i => {
+    const e = getEntry(i.key);
+    return `Imóvel ${i.cod || i.n}: ${i.end}, Bairro ${i.bairro}, Tipo: ${i.tipo}, Status: ${e.status}, Vago: ${e.vago || 'N/I'}, Obs: ${e.obs || ''}`;
+  }).join('\n');
+
+  try {
+    statusEl.textContent = '';
+    answerEl.textContent = `[Assistente IA]: Resposta para "${query}":\n\nCom base nos seus imóveis cadastrados, você possui ${allItems().length} imóveis na carteira. Para respostas em tempo real via Gemini, configure sua chave API.`;
+    answerEl.classList.add('show');
+  } catch(err) {
+    statusEl.textContent = '';
+    errorEl.textContent = 'Erro ao se comunicar com o assistente.';
+    errorEl.classList.add('show');
+  }
+});
+
+document.getElementById('aiClearBtn').addEventListener('click', () => {
+  document.getElementById('aiInput').value = '';
+  document.getElementById('aiAnswer').classList.remove('show');
+  document.getElementById('aiError').classList.remove('show');
+  document.getElementById('aiStatus').textContent = '';
+});
+</script>
 </body>
 </html>

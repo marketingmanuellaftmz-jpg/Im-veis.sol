@@ -20,6 +20,8 @@
     --accent-soft:#EAF0FE;
     --gold:#B7791F;
     --gold-soft:#FBF1DF;
+    --proc:#CA8A04;
+    --proc-soft:#FEF3C7;
     --brick:#B5442F;
     --brick-soft:#FBEAE6;
     --green:#15803D;
@@ -203,10 +205,22 @@
     transition:box-shadow .18s ease, transform .18s ease, border-color .18s ease;
   }
   .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
-  .card:not(.card-contato-verde):not(.card-contato-cinza):not(.card-contato-vermelho):hover{border-color:#D7DCE8;}
+  .card:not(.card-contato-verde):not(.card-contato-cinza):not(.card-contato-vermelho):not(.card-processando):hover{border-color:#D7DCE8;}
   .card.card-contato-verde{background:var(--green-soft);border:2px solid var(--green);}
   .card.card-contato-cinza{background:var(--gray-soft);border:2px solid var(--gray);}
   .card.card-contato-vermelho{background:var(--brick-soft);border:2px solid var(--brick);}
+  /* Em processamento — pinta o card inteiro de amarelo */
+  .card.card-processando{background:var(--proc-soft);border:2px solid var(--proc);}
+  .card.card-processando:hover{border-color:var(--proc);}
+  .card.card-processando .field input,
+  .card.card-processando .field textarea,
+  .card.card-processando .field select,
+  .card.card-processando .owner-block,
+  .card.card-processando .foto-add,
+  .card.card-processando .contato-btn:not(.on){
+    background:#FFFBEB;
+    border-color:#F0DFA8;
+  }
   .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
   .card-id{
     font-family:'IBM Plex Mono',monospace;
@@ -226,6 +240,28 @@
   .tipo-venda{background:var(--accent-soft);color:var(--accent);}
   .tipo-locacao{background:var(--gold-soft);color:var(--gold);}
   .tipo-ambos{background:#EFEBFA;color:#5A4E9E;}
+
+  /* Canto superior direito do card: tag do tipo + botão Em processamento */
+  .card-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:0 0 auto;}
+  .proc-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    font-weight:600;
+    line-height:1.4;
+    padding:4px 9px;
+    border-radius:999px;
+    border:1px solid var(--proc);
+    background:var(--surface);
+    color:var(--proc);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s ease, color .15s ease, box-shadow .15s ease, transform .1s ease;
+  }
+  .proc-btn:hover{background:var(--proc-soft);}
+  .proc-btn:active{transform:scale(.96);}
+  .proc-btn.on{background:var(--proc);border-color:var(--proc);color:#fff;box-shadow:0 2px 8px rgba(202,138,4,.3);}
 
   .endereco{
     font-family:'Fraunces',serif;
@@ -1697,7 +1733,8 @@ function blankDetails(){
     linkMaps:"",
     latitude:"", longitude:"",
     horaVisita:"",
-    contatoStatus:""
+    contatoStatus:"",
+    emProcessamento:false
   };
 }
 
@@ -1831,7 +1868,7 @@ function fileToBase64(file){
 function renderCard(item){
   const entry = getEntry(item.key);
   const card = document.createElement('div');
-  card.className = ('card ' + contatoCardClass(entry.contatoStatus)).trim();
+  card.className = ('card ' + contatoCardClass(entry.contatoStatus) + (entry.emProcessamento ? ' card-processando' : '')).replace(/\s+/g,' ').trim();
   card.dataset.key = item.key;
 
   const idLine = item.custom
@@ -1841,7 +1878,10 @@ function renderCard(item){
   card.innerHTML = `
     <div class="card-top">
       ${idLine}
-      <span class="tipo-tag ${tipoClass(item.tipo)}">${item.tipo}</span>
+      <div class="card-top-right">
+        <span class="tipo-tag ${tipoClass(item.tipo)}">${item.tipo}</span>
+        <button type="button" class="proc-btn ${entry.emProcessamento?'on':''}" data-role="proc-btn" title="Marcar/desmarcar que este card ainda está sendo preenchido">Em processamento</button>
+      </div>
     </div>
     <p class="endereco">${item.end}</p>
     ${item.custom ? '<button class="remove-btn" data-role="remove">Remover este imóvel</button>' : ''}
@@ -2123,6 +2163,15 @@ function renderCard(item){
       if(corCard) card.classList.add(corCard);
       saveState(state);
     });
+  });
+
+  // em processamento (deixa o card todo amarelo enquanto ainda está sendo preenchido)
+  const procBtn = card.querySelector('[data-role="proc-btn"]');
+  procBtn.addEventListener('click', ()=>{
+    entry.emProcessamento = !entry.emProcessamento;
+    procBtn.classList.toggle('on', entry.emProcessamento);
+    card.classList.toggle('card-processando', entry.emProcessamento);
+    saveState(state);
   });
 
   // proprietários (lista dinâmica)

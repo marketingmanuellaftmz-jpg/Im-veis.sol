@@ -205,7 +205,32 @@
   .save-bar .save-status{
     font-family:'IBM Plex Mono',monospace;
     font-size:11.5px;line-height:1.3;color:var(--ink-soft);
+    background:none;border:none;padding:0;cursor:pointer;text-align:left;
+    text-decoration:underline;text-decoration-color:transparent;
+    transition:text-decoration-color .15s ease;
   }
+  .save-bar .save-status:hover{text-decoration-color:currentColor;}
+  .btn.save-alt{
+    background:var(--surface);border-color:var(--brick);color:var(--brick);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;
+    padding:9px 12px;white-space:nowrap;
+  }
+  .btn.save-alt:hover{background:var(--brick-soft);}
+  .diag-body{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;
+    color:var(--ink-soft);line-height:1.45;
+  }
+  .diag-row{
+    display:flex;justify-content:space-between;gap:14px;
+    padding:7px 0;border-bottom:1px solid var(--line);
+  }
+  .diag-row span:last-child{color:var(--ink);text-align:right;word-break:break-word;}
+  .diag-help{
+    margin-top:14px;padding:12px 14px;border-radius:10px;
+    background:var(--gold-soft);color:#7A5310;
+    font-family:'Inter',sans-serif;font-size:12.5px;line-height:1.5;
+  }
+  .modal-actions.diag-actions{flex-wrap:wrap;justify-content:flex-start;}
   .save-bar.ok .save-status{color:var(--green);}
   .save-bar.salvando .save-status{color:var(--accent);}
   .save-bar.pendente{border-color:var(--gold);}
@@ -1255,8 +1280,23 @@
 
 <!-- Barra fixa de salvamento: mostra o estado atual e força o salvamento na hora -->
 <div class="save-bar ok" id="saveBar">
-  <span class="save-status" id="saveStatus">Tudo salvo</span>
+  <button type="button" class="save-status" id="saveStatus" title="Ver diagnóstico do salvamento">Tudo salvo</button>
+  <button type="button" class="btn save-alt" id="saveBackupBtn" style="display:none;" title="Baixar agora um arquivo de segurança com tudo">Baixar cópia</button>
   <button type="button" class="btn save" id="saveAllBtn" title="Salvar agora (Ctrl+S)">Salvar</button>
+</div>
+
+<!-- Diagnóstico do salvamento: abre clicando no status da barra -->
+<div class="modal-overlay" id="diagOverlay">
+  <div class="modal">
+    <h3>Diagnóstico do salvamento</h3>
+    <div class="diag-body" id="diagBody"></div>
+    <div class="modal-actions diag-actions">
+      <button type="button" class="btn ghost" id="diagRestoreBtn">Restaurar cópia local</button>
+      <button type="button" class="btn ghost" id="diagBackupBtn">Baixar backup</button>
+      <button type="button" class="btn primary" id="diagRetryBtn">Tentar sincronizar</button>
+      <button type="button" class="btn ghost" id="diagCloseBtn">Fechar</button>
+    </div>
+  </div>
 </div>
 
 </div><!-- /#appShell -->
@@ -1491,6 +1531,10 @@ try{
   if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY_AQUI" && typeof firebase !== "undefined"){
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
+    /* Campos com valor "undefined" fazem o Firestore recusar a gravação
+       inteira (erro invalid-argument). Com isso ligado, ele simplesmente
+       ignora esses campos em vez de derrubar o salvamento. */
+    try{ db.settings({ignoreUndefinedProperties:true}); }catch(e){ /* versões antigas do SDK */ }
     auth = firebase.auth();
     storage = firebase.storage();
     db.enablePersistence({synchronizeTabs:true}).catch(()=>{
@@ -1641,11 +1685,19 @@ function setSyncStatus(texto){
   if(el) el.textContent = texto;
 }
 
+/* Erro na ESCUTA (leitura em tempo real). Diferente de erro de gravação:
+   aqui o Firestore encerra o canal, então marcamos para religar na
+   próxima vez que você salvar. */
 function avisoErroSync(rotulo){
   return (err)=>{
-    console.warn(`Falha ao sincronizar "${rotulo}" com o Firebase:`, err);
-    erroDeSalvamento = 'Sem conexão com a nuvem — os dados continuam salvos neste navegador.';
-    atualizarStatusSalvamento();
+    escutasAtivas = false;
+    const info = classificarErro(err);
+    registrarErro({
+      tipo: info.tipo,
+      repetir: info.repetir,
+      curto: info.curto,
+      longo: 'Ao acompanhar "' + rotulo + '" na nuvem: ' + info.longo
+    }, err, rotulo);
   };
 }
 
@@ -1659,13 +1711,22 @@ function avisoErroSync(rotulo){
    vinda da nuvem nunca sobrescreva (nem apague da tela) algo que você
    acabou de digitar ou acabou de adicionar.
    ====================================================================== */
-const LIMITE_NUVEM = 700000; /* ~0,7 MB — o Firestore aceita até 1 MB por documento */
+/* ---- Ajustes de comportamento ---- */
+const SINCRONIZAR_FOTOS_NA_NUVEM = false; /* fotos ficam só no aparelho: é o que mantém o documento pequeno e a sincronização confiável. Só mude para true se ativar o Storage (plano Blaze). */
+const LIMITE_NUVEM = 850000;              /* trava extra de tamanho: o Firestore recusa documentos acima de 1 MB */
+const TENTATIVAS_MAX = 4;                 /* tentativas automáticas antes de mostrar erro na tela */
+const TIMEOUT_ENVIO_MS = 12000;           /* passou disso, trata como "sem conexão / na fila" */
+const COPIA_KEY = "carteira_imoveis_copia_seguranca_v1";
 
 let enviosEmAndamento = 0;
-let erroDeSalvamento = '';
+let ultimoErro = null;            /* {tipo, curto, longo, code, mensagem, quando, doc} */
 let ultimoSalvamentoOk = null;
 let nuvemConectada = false;
 let fotosForaDaNuvem = false;
+const tamanhoEnvio = {estado:0, custom:0, notas:0, eventos:0};
+let pausaAutomaticaAte = 0;   /* depois de um erro permanente, para de tentar sozinho por um tempo */
+let ultimaCopiaLocal = 0;
+let localBloqueado = false;
 
 const pendenciaLocal  = {estado:0, custom:0, notas:0, eventos:0};
 const envioConfirmado = {estado:0, custom:0, notas:0, eventos:0};
@@ -1685,64 +1746,104 @@ function haAlteracoesNaoSalvas(){
   return pushEstadoFirebase.pendente() || pushCustomFirebase.pendente()
       || pushNotasFirebase.pendente()  || pushEventosFirebase.pendente();
 }
-function registrarEnvio(nome, promessa, marca){
-  enviosEmAndamento++;
-  atualizarStatusSalvamento();
-  return promessa.then(()=>{
-    envioConfirmado[nome] = Math.max(envioConfirmado[nome], marca);
-    erroDeSalvamento = '';
-    ultimoSalvamentoOk = new Date();
-  }).catch(err=>{
-    console.warn('Falha ao enviar "'+nome+'" para o Firebase:', err);
-    erroDeSalvamento = (err && err.code === 'invalid-argument')
-      ? 'A carteira ficou grande demais para a nuvem — reduza a quantidade de fotos.'
-      : 'Não foi possível sincronizar com a nuvem — salvo neste navegador.';
-  }).then(()=>{
-    enviosEmAndamento--;
-    atualizarStatusSalvamento();
+
+function esperar(ms){
+  return new Promise(r=> setTimeout(r, ms));
+}
+
+/* O Firestore, sem internet, guarda a gravação numa fila e só resolve a
+   promessa quando o servidor confirma. Sem um tempo-limite, a tela
+   ficaria em "Salvando…" para sempre. */
+function comTimeout(promessa, ms){
+  return new Promise((resolve, reject)=>{
+    let encerrado = false;
+    const t = setTimeout(()=>{
+      if(encerrado) return;
+      encerrado = true;
+      const e = new Error('Tempo esgotado ao falar com a nuvem');
+      e.code = 'timeout';
+      reject(e);
+    }, ms);
+    promessa.then(
+      v=>{ if(!encerrado){ encerrado = true; clearTimeout(t); resolve(v); } },
+      e=>{ if(!encerrado){ encerrado = true; clearTimeout(t); reject(e); } }
+    );
   });
 }
 
-function atualizarStatusSalvamento(){
-  const bar = document.getElementById('saveBar');
-  const el = document.getElementById('saveStatus');
-  let classe, curto, longo;
-  if(enviosEmAndamento > 0){
-    classe = 'salvando';
-    curto  = 'Salvando…';
-    longo  = 'Salvando…';
-  }else if(erroDeSalvamento){
-    classe = 'erro';
-    curto  = 'Erro ao sincronizar';
-    longo  = erroDeSalvamento + ' Clique em SALVAR para tentar de novo.';
-  }else if(haAlteracoesNaoSalvas()){
-    classe = 'pendente';
-    curto  = 'Alterações não salvas';
-    longo  = 'Há alterações ainda não enviadas — clique em SALVAR (ou aguarde alguns segundos).';
-  }else{
-    classe = 'ok';
-    const hora = ultimoSalvamentoOk
-      ? ultimoSalvamentoOk.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
-      : '';
-    curto = hora ? ('Salvo às ' + hora) : 'Tudo salvo';
-    if(firebaseAtivo){
-      longo = nuvemConectada
-        ? ('Salvo neste navegador e sincronizado com a nuvem' + (hora ? ' às ' + hora : '') + ' ✓')
-        : 'Salvo neste navegador. Conectando à nuvem…';
-    }else{
-      longo = 'Salvo automaticamente neste navegador ✓';
-    }
-    if(fotosForaDaNuvem){
-      longo += ' As fotos ficaram só neste aparelho (a carteira passou do tamanho que a nuvem aceita).';
-    }
+/* Traduz o erro técnico do Firebase para algo acionável, e diz se vale
+   tentar de novo sozinho. */
+function classificarErro(err){
+  const code = String((err && err.code) || '').toLowerCase();
+  if(code.includes('permission-denied')){
+    return {tipo:'erro', repetir:false, curto:'Nuvem recusou (permissão)',
+      longo:'A nuvem recusou a gravação por permissão. Quase sempre é uma destas duas coisas: (1) as Regras do Firestore têm uma lista de e-mails e o e-mail com que você entrou não está nela; (2) o App Check está com "enforcement" ligado no console do Firebase, mas a chave do reCAPTCHA v3 neste arquivo ainda é a de exemplo. Nada foi perdido: está tudo salvo neste navegador.'};
   }
-  if(bar) bar.className = 'save-bar ' + classe;
-  if(el) el.textContent = curto;
-  setSyncStatus(longo);
+  if(code.includes('unauthenticated')){
+    return {tipo:'erro', repetir:false, curto:'Sessão expirada',
+      longo:'Sua sessão no Firebase expirou. Clique em "Sair" e entre de novo para voltar a sincronizar. Nada foi perdido: os dados continuam salvos neste navegador.'};
+  }
+  if(code.includes('invalid-argument')){
+    return {tipo:'erro', repetir:false, curto:'Dados recusados pela nuvem',
+      longo:'A nuvem recusou o formato ou o tamanho dos dados. O app já envia as fichas sem as fotos justamente para não passar do limite de 1 MB por documento — se isso apareceu, use "Baixar cópia" agora e me mostre o código do erro.'};
+  }
+  if(code.includes('resource-exhausted')){
+    return {tipo:'erro', repetir:false, curto:'Cota da nuvem esgotada',
+      longo:'O limite gratuito diário do Firestore foi atingido. A sincronização volta sozinha quando a cota renovar. Enquanto isso, tudo continua sendo salvo neste navegador.'};
+  }
+  if(code.includes('failed-precondition')){
+    return {tipo:'erro', repetir:false, curto:'Firestore indisponível',
+      longo:'O Firestore respondeu "failed-precondition". Costuma ser o banco de dados não criado/ativado no console, ou o cache offline disputado por várias abas abertas ao mesmo tempo. Feche as outras abas do painel e tente de novo.'};
+  }
+  if(code.includes('unavailable') || code.includes('deadline-exceeded') || code === 'timeout' || code.includes('network')){
+    return {tipo:'offline', repetir:true, curto:'Sem conexão · na fila',
+      longo:'Sem conexão com a nuvem agora. A alteração ficou na fila e sobe sozinha assim que a internet voltar — e já está salva neste navegador.'};
+  }
+  return {tipo:'erro', repetir:true, curto:'Erro ao sincronizar',
+    longo:'Não foi possível sincronizar com a nuvem. Os dados estão salvos neste navegador. Clique em SALVAR para tentar de novo ou em "Baixar cópia" para guardar um arquivo de segurança.'};
 }
 
-/* Cópia do estado sem as fotos em base64 — usada quando a carteira
-   passa do tamanho que o Firestore aceita por documento. */
+function registrarErro(info, err, nome){
+  ultimoErro = {
+    tipo: info.tipo,
+    curto: info.curto,
+    longo: info.longo,
+    code: (err && err.code) ? String(err.code) : '—',
+    mensagem: (err && err.message) ? String(err.message).slice(0,200) : '',
+    quando: new Date(),
+    doc: nome || '—'
+  };
+  console.warn('[salvamento] falha em "'+(nome||'?')+'":', err);
+  atualizarStatusSalvamento();
+}
+
+/* Remove undefined, NaN e funções — valores que o Firestore recusa. */
+function limparParaFirestore(valor){
+  if(valor === undefined || typeof valor === 'function') return null;
+  if(valor === null) return null;
+  if(typeof valor === 'number') return isFinite(valor) ? valor : 0;
+  if(Array.isArray(valor)){
+    return valor
+      .filter(v => v !== undefined && typeof v !== 'function' && !Array.isArray(v))
+      .map(limparParaFirestore);
+  }
+  if(typeof valor === 'object'){
+    const out = {};
+    Object.keys(valor).forEach(k=>{
+      if(k.indexOf('__') === 0) return;
+      const v = valor[k];
+      if(v === undefined || typeof v === 'function') return;
+      out[k] = limparParaFirestore(v);
+    });
+    return out;
+  }
+  return valor;
+}
+
+/* Cópia do estado sem as fotos em base64. É o que vai para a nuvem:
+   fotos de celular, mesmo comprimidas, estouram o limite de 1 MB por
+   documento e derrubavam o salvamento inteiro. Elas continuam guardadas
+   neste aparelho normalmente. */
 function estadoSemFotosBase64(){
   const copia = {};
   Object.keys(state).forEach(k=>{
@@ -1757,15 +1858,35 @@ function estadoSemFotosBase64(){
   return copia;
 }
 
+function contarFotos(){
+  let n = 0;
+  Object.keys(state).forEach(k=>{
+    const e = state[k];
+    if(e && Array.isArray(e.fotos)) n += e.fotos.length;
+  });
+  return n;
+}
+
 function estadoParaNuvem(){
-  try{
-    if(JSON.stringify(state).length <= LIMITE_NUVEM){
-      fotosForaDaNuvem = false;
-      return state;
+  let payload;
+  if(SINCRONIZAR_FOTOS_NA_NUVEM){
+    payload = state;
+    try{
+      if(JSON.stringify(payload).length > LIMITE_NUVEM){
+        payload = estadoSemFotosBase64();
+        fotosForaDaNuvem = true;
+      }else{
+        fotosForaDaNuvem = false;
+      }
+    }catch(e){
+      payload = estadoSemFotosBase64();
+      fotosForaDaNuvem = true;
     }
-  }catch(e){ /* segue para a versão reduzida */ }
-  fotosForaDaNuvem = true;
-  return estadoSemFotosBase64();
+  }else{
+    payload = estadoSemFotosBase64();
+    fotosForaDaNuvem = contarFotos() > 0;
+  }
+  return limparParaFirestore(payload);
 }
 
 /* Aplica o que veio da nuvem sem apagar o que só existe aqui:
@@ -1804,26 +1925,170 @@ function mesclarCustom(remotos){
   return Array.from(mapa.values());
 }
 
-const pushEstadoFirebase = debounce(()=>{
-  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
+function montarPayload(nome){
+  const agora = Date.now();
+  if(nome === 'estado')  return {dados: estadoParaNuvem(), atualizadoEm: agora};
+  if(nome === 'custom')  return {itens: limparParaFirestore(customItems), atualizadoEm: agora};
+  if(nome === 'notas')   return {itens: limparParaFirestore(notes), atualizadoEm: agora};
+  if(nome === 'eventos') return {dados: limparParaFirestore(calEvents), atualizadoEm: agora};
+  return {atualizadoEm: agora};
+}
+
+/* Envio com tentativas automáticas e espera crescente entre elas.
+   Sem internet, deixa a gravação na fila do Firestore (ela sobe sozinha
+   depois) em vez de tratar como erro. */
+async function enviarDoc(nome, forcado){
+  const docRef = FIREBASE_DOCS ? FIREBASE_DOCS[nome] : null;
+  if(!docRef) return true;
+
+  /* Depois de um erro permanente (permissão, cota, formato), não adianta
+     repetir a cada tecla digitada: isso só queima cota e trava a tela.
+     O salvamento local continua normal e o botão SALVAR força a tentativa. */
+  if(!forcado && Date.now() < pausaAutomaticaAte) return false;
+
   const marca = Date.now();
-  registrarEnvio('estado', FIREBASE_DOCS.estado.set({dados: estadoParaNuvem()}), marca);
-}, 700);
-const pushCustomFirebase = debounce(()=>{
-  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
-  const marca = Date.now();
-  registrarEnvio('custom', FIREBASE_DOCS.custom.set({itens: customItems}), marca);
-}, 700);
-const pushNotasFirebase = debounce(()=>{
-  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
-  const marca = Date.now();
-  registrarEnvio('notas', FIREBASE_DOCS.notas.set({itens: notes}), marca);
-}, 700);
-const pushEventosFirebase = debounce(()=>{
-  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
-  const marca = Date.now();
-  registrarEnvio('eventos', FIREBASE_DOCS.eventos.set({dados: calEvents}), marca);
-}, 700);
+  let payload;
+  try{
+    payload = montarPayload(nome);
+    tamanhoEnvio[nome] = JSON.stringify(payload).length;
+  }catch(err){
+    registrarErro({tipo:'erro', repetir:false, curto:'Erro ao preparar os dados',
+      longo:'Não foi possível preparar os dados para envio. Use "Baixar cópia" para guardar um arquivo de segurança.'}, err, nome);
+    return false;
+  }
+
+  enviosEmAndamento++;
+  atualizarStatusSalvamento();
+  try{
+    for(let tentativa = 1; tentativa <= TENTATIVAS_MAX; tentativa++){
+      if(typeof navigator !== 'undefined' && navigator.onLine === false){
+        docRef.set(payload).catch(()=>{});   /* fica na fila do Firestore */
+        registrarErro(classificarErro({code:'unavailable'}), {code:'offline'}, nome);
+        return false;
+      }
+      try{
+        await comTimeout(docRef.set(payload), TIMEOUT_ENVIO_MS);
+        envioConfirmado[nome] = Math.max(envioConfirmado[nome], marca);
+        ultimoSalvamentoOk = new Date();
+        nuvemConectada = true;
+        ultimoErro = null;
+        pausaAutomaticaAte = 0;
+        salvarCopiaLocalDeSeguranca();
+        return true;
+      }catch(err){
+        const info = classificarErro(err);
+        if(!info.repetir || tentativa === TENTATIVAS_MAX){
+          if(!info.repetir) pausaAutomaticaAte = Date.now() + 60000;
+          registrarErro(info, err, nome);
+          return false;
+        }
+        await esperar(700 * Math.pow(2, tentativa - 1));
+      }
+    }
+    return false;
+  }finally{
+    enviosEmAndamento--;
+    atualizarStatusSalvamento();
+  }
+}
+
+/* ---- Cópia de segurança local (segunda rede de proteção) ----
+   Guarda, num espaço separado do navegador, uma cópia leve (sem fotos)
+   de tudo. Se o armazenamento principal for corrompido ou sobrescrito,
+   dá para restaurar por aqui no diagnóstico. */
+function salvarCopiaLocalDeSeguranca(forcar){
+  const agora = Date.now();
+  if(!forcar && agora - ultimaCopiaLocal < 120000) return;
+  ultimaCopiaLocal = agora;
+  try{
+    localStorage.setItem(COPIA_KEY, JSON.stringify({
+      versao: 2,
+      exportadoEm: new Date().toISOString(),
+      estado: estadoSemFotosBase64(),
+      custom: customItems,
+      notas: notes,
+      eventos: calEvents
+    }));
+  }catch(e){ /* a cópia é um extra: se não couber, segue a vida */ }
+}
+
+function montarBackupCompleto(){
+  return {
+    versao: 2,
+    exportadoEm: new Date().toISOString(),
+    estado: state,
+    custom: customItems,
+    notas: notes,
+    eventos: calEvents
+  };
+}
+
+function baixarBackup(){
+  try{
+    const blob = new Blob([JSON.stringify(montarBackupCompleto(), null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup-imoveis-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    return true;
+  }catch(e){
+    alert('Não foi possível gerar o arquivo de backup agora.');
+    return false;
+  }
+}
+
+function atualizarStatusSalvamento(){
+  const bar = document.getElementById('saveBar');
+  const el = document.getElementById('saveStatus');
+  const backupBtn = document.getElementById('saveBackupBtn');
+  let classe, curto, longo;
+
+  if(enviosEmAndamento > 0){
+    classe = 'salvando';
+    curto  = 'Salvando…';
+    longo  = 'Salvando…';
+  }else if(ultimoErro && ultimoErro.tipo === 'offline'){
+    classe = 'pendente';
+    curto  = ultimoErro.curto;
+    longo  = ultimoErro.longo;
+  }else if(ultimoErro){
+    classe = 'erro';
+    curto  = ultimoErro.curto;
+    longo  = ultimoErro.longo;
+  }else if(haAlteracoesNaoSalvas()){
+    classe = 'pendente';
+    curto  = 'Alterações não salvas';
+    longo  = 'Há alterações ainda não enviadas — clique em SALVAR (ou aguarde alguns segundos).';
+  }else{
+    classe = 'ok';
+    const hora = ultimoSalvamentoOk
+      ? ultimoSalvamentoOk.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+      : '';
+    curto = hora ? ('Salvo às ' + hora) : 'Tudo salvo';
+    if(firebaseAtivo){
+      longo = nuvemConectada
+        ? ('Salvo neste navegador e sincronizado com a nuvem' + (hora ? ' às ' + hora : '') + ' ✓')
+        : 'Salvo neste navegador. Conectando à nuvem…';
+    }else{
+      longo = 'Salvo automaticamente neste navegador ✓';
+    }
+    if(fotosForaDaNuvem){
+      longo += ' As fotos ficam guardadas só neste aparelho.';
+    }
+  }
+  if(localBloqueado){
+    classe = 'erro';
+    curto  = 'Navegador bloqueou o salvamento';
+    longo  = 'Este navegador está bloqueando o armazenamento local. Abra o arquivo direto no Chrome ou Safari e use "Baixar cópia" antes de fechar a página.';
+  }
+
+  if(bar) bar.className = 'save-bar ' + classe;
+  if(el) el.textContent = curto;
+  if(backupBtn) backupBtn.style.display = (classe === 'erro' || classe === 'pendente') ? '' : 'none';
+  setSyncStatus(longo + (firebaseAtivo ? ' · clique no status para ver o diagnóstico.' : ''));
+}
 
 /* Botão SALVAR: grava tudo no navegador e envia tudo para a nuvem na
    hora, sem esperar o tempo do salvamento automático. */
@@ -1832,21 +2097,24 @@ async function salvarTudoAgora(){
   pushCustomFirebase.cancel();
   pushNotasFirebase.cancel();
   pushEventosFirebase.cancel();
-  erroDeSalvamento = '';
+  ultimoErro = null;
   atualizarStatusSalvamento();
 
   salvarEstadoLocal();
   safeStorageSet(CUSTOM_KEY, JSON.stringify(customItems));
   safeStorageSet(NOTES_KEY, JSON.stringify(notes));
   safeStorageSet(CAL_EVENTS_KEY, JSON.stringify(calEvents));
+  salvarCopiaLocalDeSeguranca(true);
 
   if(FIREBASE_DOCS){
-    const marca = Date.now();
+    /* se a escuta em tempo real tiver caído (ex: erro de permissão), religa */
+    if(!escutasAtivas) iniciarSincronizacaoFirebase();
+    pausaAutomaticaAte = 0;
     await Promise.all([
-      registrarEnvio('estado',  FIREBASE_DOCS.estado.set({dados: estadoParaNuvem()}), marca),
-      registrarEnvio('custom',  FIREBASE_DOCS.custom.set({itens: customItems}), marca),
-      registrarEnvio('notas',   FIREBASE_DOCS.notas.set({itens: notes}), marca),
-      registrarEnvio('eventos', FIREBASE_DOCS.eventos.set({dados: calEvents}), marca)
+      enviarDoc('estado', true),
+      enviarDoc('custom', true),
+      enviarDoc('notas', true),
+      enviarDoc('eventos', true)
     ]);
   }else{
     ultimoSalvamentoOk = new Date();
@@ -1854,7 +2122,77 @@ async function salvarTudoAgora(){
   atualizarStatusSalvamento();
 }
 
+const pushEstadoFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
+  enviarDoc('estado');
+}, 700);
+const pushCustomFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
+  enviarDoc('custom');
+}, 700);
+const pushNotasFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
+  enviarDoc('notas');
+}, 700);
+const pushEventosFirebase = debounce(()=>{
+  if(!FIREBASE_DOCS){ ultimoSalvamentoOk = new Date(); atualizarStatusSalvamento(); return; }
+  enviarDoc('eventos');
+}, 700);
+
+/* ---- Painel de diagnóstico (abre clicando no status) ---- */
+function linhaDiag(rotulo, valor){
+  return '<div class="diag-row"><span>'+rotulo+'</span><span>'+escapeHtml(String(valor))+'</span></div>';
+}
+function abrirDiagnostico(){
+  const body = document.getElementById('diagBody');
+  const overlay = document.getElementById('diagOverlay');
+  if(!body || !overlay) return;
+
+  let copia = '—';
+  try{
+    const bruto = localStorage.getItem(COPIA_KEY);
+    if(bruto) copia = new Date(JSON.parse(bruto).exportadoEm).toLocaleString('pt-BR');
+  }catch(e){ copia = 'indisponível'; }
+
+  const usuario = (firebaseAtivo && auth && auth.currentUser) ? (auth.currentUser.email || 'logado') : 'não logado';
+  const pendentes = ['estado','custom','notas','eventos'].filter(n=> temEdicaoLocalPendente(n));
+
+  let html = '';
+  html += linhaDiag('Situação agora', document.getElementById('saveStatus').textContent);
+  html += linhaDiag('Salvo neste navegador', localBloqueado ? 'BLOQUEADO pelo navegador' : 'sim');
+  html += linhaDiag('Nuvem (Firebase)', firebaseAtivo ? (nuvemConectada ? 'conectada' : 'ativa, sem resposta ainda') : 'desativada');
+  html += linhaDiag('Conta', usuario);
+  html += linhaDiag('Internet', (typeof navigator !== 'undefined' && navigator.onLine === false) ? 'offline' : 'online');
+  html += linhaDiag('Última sincronização', ultimoSalvamentoOk ? ultimoSalvamentoOk.toLocaleString('pt-BR') : 'ainda não');
+  html += linhaDiag('Esperando envio', pendentes.length ? pendentes.join(', ') : 'nada');
+  html += linhaDiag('Imóveis', allItems().length + ' (' + customItems.length + ' adicionados por você)');
+  html += linhaDiag('Fotos guardadas', contarFotos() + (fotosForaDaNuvem ? ' (só neste aparelho)' : ''));
+  const maiorDoc = Object.keys(tamanhoEnvio).reduce((a,b)=> tamanhoEnvio[a] >= tamanhoEnvio[b] ? a : b, 'estado');
+  html += linhaDiag('Maior documento enviado', maiorDoc + ': ' + Math.round(tamanhoEnvio[maiorDoc]/1024) + ' KB (limite 1024 KB)');
+  if(pausaAutomaticaAte > Date.now()){
+    html += linhaDiag('Reenvio automático', 'pausado por ' + Math.ceil((pausaAutomaticaAte - Date.now())/1000) + 's');
+  }
+  html += linhaDiag('Cópia de segurança local', copia);
+  if(ultimoErro){
+    html += linhaDiag('Código do erro', ultimoErro.code);
+    html += linhaDiag('Quando', ultimoErro.quando.toLocaleString('pt-BR'));
+    html += linhaDiag('Documento', ultimoErro.doc);
+    html += '<div class="diag-help">' + escapeHtml(ultimoErro.longo) + (ultimoErro.mensagem ? '<br><br><em>' + escapeHtml(ultimoErro.mensagem) + '</em>' : '') + '</div>';
+  }else{
+    html += '<div class="diag-help">Nenhum erro registrado. Se o painel ficar muito tempo em "Alterações não salvas", clique em SALVAR.</div>';
+  }
+  body.innerHTML = html;
+  overlay.classList.add('open');
+}
+function fecharDiagnostico(){
+  const overlay = document.getElementById('diagOverlay');
+  if(overlay) overlay.classList.remove('open');
+}
+
 const saveAllBtn = document.getElementById('saveAllBtn');
+const saveStatusBtn = document.getElementById('saveStatus');
+const saveBackupBtn = document.getElementById('saveBackupBtn');
+
 saveAllBtn.addEventListener('click', async ()=>{
   saveAllBtn.disabled = true;
   try{
@@ -1863,12 +2201,61 @@ saveAllBtn.addEventListener('click', async ()=>{
     saveAllBtn.disabled = false;
   }
 });
+saveStatusBtn.addEventListener('click', abrirDiagnostico);
+saveBackupBtn.addEventListener('click', ()=> baixarBackup());
+
+document.getElementById('diagCloseBtn').addEventListener('click', fecharDiagnostico);
+document.getElementById('diagBackupBtn').addEventListener('click', ()=> baixarBackup());
+document.getElementById('diagRetryBtn').addEventListener('click', async ()=>{
+  fecharDiagnostico();
+  saveAllBtn.disabled = true;
+  try{ await salvarTudoAgora(); }finally{ saveAllBtn.disabled = false; }
+});
+document.getElementById('diagRestoreBtn').addEventListener('click', ()=>{
+  let copia = null;
+  try{ copia = JSON.parse(localStorage.getItem(COPIA_KEY) || 'null'); }catch(e){ copia = null; }
+  if(!copia || !copia.estado){ alert('Ainda não existe uma cópia de segurança local neste navegador.'); return; }
+  if(!confirm('Restaurar a cópia local de ' + new Date(copia.exportadoEm).toLocaleString('pt-BR') + '? As fichas atuais desta tela serão substituídas por ela (as fotos deste aparelho são mantidas).')) return;
+  aplicarEstadoDaNuvem(copia.estado);
+  if(Array.isArray(copia.custom)) customItems = mesclarCustom(copia.custom);
+  if(Array.isArray(copia.notas)) notes = copia.notas;
+  if(copia.eventos && typeof copia.eventos === 'object') calEvents = copia.eventos;
+  saveState(state); saveCustom(); saveNotes(); saveCalEvents();
+  rebuildBairroUI(); render(); renderNotesList(); renderCalendar(); renderCalendarSide();
+  fecharDiagnostico();
+  alert('Cópia local restaurada.');
+});
+document.getElementById('diagOverlay').addEventListener('click', (e)=>{
+  if(e.target === document.getElementById('diagOverlay')) fecharDiagnostico();
+});
 
 /* Ctrl+S / Cmd+S também salvam */
 document.addEventListener('keydown', (e)=>{
   if((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 's'){
     e.preventDefault();
     if(!saveAllBtn.disabled) saveAllBtn.click();
+  }
+  if(e.key === 'Escape') fecharDiagnostico();
+});
+
+/* Voltou a internet: reenvia tudo sozinho */
+window.addEventListener('online', ()=>{
+  if(ultimoErro && ultimoErro.tipo === 'offline') ultimoErro = null;
+  atualizarStatusSalvamento();
+  if(FIREBASE_DOCS) salvarTudoAgora();
+});
+window.addEventListener('offline', ()=>{
+  registrarErro(classificarErro({code:'unavailable'}), {code:'offline'}, 'rede');
+});
+
+/* Saindo da aba (trocou de app no celular): grava o que estiver pendente */
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'hidden' && haAlteracoesNaoSalvas()){
+    pushEstadoFirebase.flush();
+    pushCustomFirebase.flush();
+    pushNotasFirebase.flush();
+    pushEventosFirebase.flush();
+    salvarCopiaLocalDeSeguranca(true);
   }
 });
 
@@ -1881,16 +2268,43 @@ window.addEventListener('beforeunload', (e)=>{
 });
 
 /* Liga os "escutadores" em tempo real: qualquer alteração feita em outro
-   dispositivo/navegador chega aqui e atualiza a tela automaticamente. */
+   dispositivo/navegador chega aqui e atualiza a tela automaticamente.
+   Pode ser chamada de novo com segurança: cancela as escutas antigas
+   antes de abrir novas (é o que religa a sincronização depois de um
+   erro de permissão ou de conexão). */
+let escutasAtivas = false;
+let cancelarEscutas = [];
+
+function pararEscutas(){
+  cancelarEscutas.forEach(f=>{ try{ f(); }catch(e){} });
+  cancelarEscutas = [];
+  escutasAtivas = false;
+}
+
 function iniciarSincronizacaoFirebase(){
   if(!FIREBASE_DOCS){
     atualizarStatusSalvamento();
     return;
   }
+  pararEscutas();
+  escutasAtivas = true;
   setSyncStatus('Conectando à nuvem…');
 
-  FIREBASE_DOCS.estado.onSnapshot(snap=>{
+  const opcoes = {includeMetadataChanges: true};
+
+  /* Dado vindo do servidor (e não do cache) é a confirmação real de que
+     a conexão está de pé e de que o que saiu daqui chegou lá. */
+  function confirmarConexao(snap){
+    if(snap.metadata.fromCache) return;
     nuvemConectada = true;
+    if(ultimoErro && ultimoErro.tipo === 'offline'){
+      ultimoErro = null;
+      ultimoSalvamentoOk = new Date();
+    }
+  }
+
+  cancelarEscutas.push(FIREBASE_DOCS.estado.onSnapshot(opcoes, snap=>{
+    confirmarConexao(snap);
     if(snap.exists){
       /* só aceita os dados da nuvem quando não há nada esperando envio
          daqui — senão a tela seria redesenhada com a versão antiga e a
@@ -1908,10 +2322,10 @@ function iniciarSincronizacaoFirebase(){
       pushEstadoFirebase();
     }
     atualizarStatusSalvamento();
-  }, avisoErroSync('imóveis'));
+  }, avisoErroSync('imóveis')));
 
-  FIREBASE_DOCS.custom.onSnapshot(snap=>{
-    nuvemConectada = true;
+  cancelarEscutas.push(FIREBASE_DOCS.custom.onSnapshot(opcoes, snap=>{
+    confirmarConexao(snap);
     if(snap.exists){
       if(podeAplicarDaNuvem('custom', snap)){
         const dados = snap.data().itens;
@@ -1925,9 +2339,10 @@ function iniciarSincronizacaoFirebase(){
     }else{
       pushCustomFirebase();
     }
-  }, avisoErroSync('imóveis personalizados'));
+  }, avisoErroSync('imóveis adicionados')));
 
-  FIREBASE_DOCS.notas.onSnapshot(snap=>{
+  cancelarEscutas.push(FIREBASE_DOCS.notas.onSnapshot(opcoes, snap=>{
+    confirmarConexao(snap);
     if(snap.exists){
       if(podeAplicarDaNuvem('notas', snap)){
         const dados = snap.data().itens;
@@ -1940,9 +2355,10 @@ function iniciarSincronizacaoFirebase(){
     }else{
       pushNotasFirebase();
     }
-  }, avisoErroSync('notas'));
+  }, avisoErroSync('notas')));
 
-  FIREBASE_DOCS.eventos.onSnapshot(snap=>{
+  cancelarEscutas.push(FIREBASE_DOCS.eventos.onSnapshot(opcoes, snap=>{
+    confirmarConexao(snap);
     if(snap.exists){
       if(podeAplicarDaNuvem('eventos', snap)){
         const dados = snap.data().dados;
@@ -1956,7 +2372,7 @@ function iniciarSincronizacaoFirebase(){
     }else{
       pushEventosFirebase();
     }
-  }, avisoErroSync('agenda'));
+  }, avisoErroSync('agenda')));
 }
 /* ====================================================================== */
 
@@ -1971,6 +2387,8 @@ function safeStorageSet(key, value){
     return true;
   }catch(e){
     const espacoCheio = e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014);
+    if(!espacoCheio) localBloqueado = true;
+    if(typeof atualizarStatusSalvamento === 'function') atualizarStatusSalvamento();
     if(!storageAvisoMostrado){
       storageAvisoMostrado = true;
       alert(espacoCheio
@@ -3029,23 +3447,7 @@ document.addEventListener('keydown', (e)=>{
    O backup agora leva tudo: fichas dos imóveis, imóveis adicionados
    por você, notas e agenda. Backups antigos (só com as fichas)
    continuam sendo aceitos na importação. */
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const backup = {
-    versao: 2,
-    exportadoEm: new Date().toISOString(),
-    estado: state,
-    custom: customItems,
-    notas: notes,
-    eventos: calEvents
-  };
-  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `backup-imoveis-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
+document.getElementById('exportBtn').addEventListener('click', ()=> baixarBackup());
 
 document.getElementById('importInput').addEventListener('change', (e)=>{
   const file = e.target.files[0];
@@ -3072,6 +3474,7 @@ document.getElementById('importInput').addEventListener('change', (e)=>{
       renderNotesList();
       renderCalendar();
       renderCalendarSide();
+      salvarCopiaLocalDeSeguranca(true);
       alert('Backup importado com sucesso.');
     }catch(err){
       alert('Não foi possível ler esse arquivo. Verifique se é um backup exportado por este site.');
